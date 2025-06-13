@@ -1,0 +1,20 @@
+<div class="container">
+	<div class="banner">
+		<p>appareil non pris en charge, utilisez un appareil plus grand pour une meilleure expérience</p>
+	</div>
+  <div class="logo">
+    <img (click)="onLogoClick()" src="assets/logo.png" alt="Logo wandering soul">
+  </div>
+  
+<div class="accueil_btn">
+  <a class="accueil" (click)="onLogoClick()">Accueil</a>
+
+  @if (!isLoggedIn()) {
+    <button class="connexion_btn" (click)="login()">Se connecter</button>
+} @else {
+    <button class="connexion_btn" (click)="logout()">Se déconnecter</button>
+    <button class="admin_btn" (click)="admin()">admin</button>
+  }
+
+</div>
+

@@ -1,0 +1,157 @@
+
+body{
+	color:rgb(2,48,74);
+	z-index:1;
+}
+.banner{
+	position: absolute;
+	color:white;
+	background-color: black;
+	margin-bottom:100px;
+	width:100%;
+	text-align: center;
+	height:20px;
+	font-size: 7px;
+	margin-top:0;
+	padding-bottom:5px;
+	display:none;
+}
+.logo{
+	z-index:5;
+}
+.logo img{
+    display: block;
+    margin: auto;
+    width: 300px;
+    height: 100px;
+    cursor:pointer;
+    top:0;
+    left:0;
+    display: block;
+    margin-bottom:40px;
+	margin-left:50px;
+	color:rgb(2,48,74);
+		
+}
+.accueil_btn{
+	right:0;
+	top:0;
+	cursor:pointer;
+	margin-right:25px;
+}
+.connexion_btn, .admin_btn{
+	right:0;
+	top:0;
+	cursor:pointer;
+	margin-left:25px;
+	border-radius:25px;
+	padding: 10px 25px;
+	border:none;
+	color:white;
+	background-color: rgb(2,48,74);
+}
+.connexion_btn:hover{
+	background-color: rgb(2, 88, 149);;
+}
+@media only screen and (min-width: 600px) {
+
+	.container {
+		
+		padding:20px 60px;
+		display:flex;
+		justify-content: space-between;
+		align-items: center;
+
+      }
+    .logo img{
+        margin:0;
+        width: 150px;
+        height: 100%;
+        top:0;
+        left:0;
+		margin-left:25px;
+		margin-top:25px;
+        display: block;
+        cursor:pointer;
+    }
+	.accueil_btn {
+		position: relative;
+		right: 0;
+		top: 0;
+		cursor: pointer;
+		margin-right: 25px;
+	  }
+	  
+	  .accueil {
+		position: relative;
+	  }
+	  
+	  .accueil::after {
+		content: ''; 
+		position: absolute;
+		bottom: -5px; 
+		left: 50%;
+		transform: translateX(-50%); 
+		border-bottom: 3px solid lightseagreen; 
+		width: 15px;
+	  }
+	  
+
+ }
+
+ .modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	cursor:default;
+  }
+  
+  .modal-content {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	width: 90%;
+	max-width: 500px;
+	text-align: center;
+	position: relative;
+  }
+  
+  .close-button {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background: transparent;
+	border: none;
+	font-size: 20px;
+	cursor: pointer;
+  }
+  
+  @media screen and (max-width: 700px) {
+	.logo{
+		padding-top:50px;
+	}
+	.logo img{
+		display:block;
+		margin-left:auto;
+		margin-right:auto;
+		position:relative;
+		width:50%;
+		height:auto;
+	}
+	.accueil_btn{
+		display:none;
+	}
+	
+  }
+  @media screen and (max-width: 400px) {
+	.banner{
+		display:block;}
+	}
