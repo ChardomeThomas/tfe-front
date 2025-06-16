@@ -1,1 +1,43 @@
-<p>slider works!</p>
+<div class="card">
+  <p-carousel
+    [value]="products"
+    [numVisible]="4"
+    [numScroll]="1"
+    [responsiveOptions]="responsiveOptions"
+    styleClass="flex justify-center"
+  >
+    <ng-template let-product #item>
+      <div class="mx-auto max-w-[320px] border border-surface-200 dark:border-surface-700 rounded m-2 p-4">
+        <div class="mb-4">
+          <div class="relative">
+            <img
+              [src]="product.image"
+              [alt]="product.name"
+              class="w-full rounded-border"
+            />
+            <p-tag
+              [value]="product.inventoryStatus"
+              [severity]="getSeverity(product.inventoryStatus)"
+              class="absolute"
+              styleClass="dark:!bg-surface-900"
+              [ngStyle]="{ 'left.px': 5, 'top.px': 5 }"
+            />
+          </div>
+        </div>
+        <div class="mb-4 font-medium text-center">{{ product.name }}</div>
+
+        <div class="flex justify-between items-center">
+          <div class="flex items-center">
+            <div class="font-semibold text-sm mr-1">
+              {{ product.startDate | date: 'dd/MM/yyyy' }}
+            </div>
+            <span class="mx-1 text-sm">-</span>
+            <div class="font-semibold text-sm ml-1">
+              {{ product.endDate | date: 'dd/MM/yyyy' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </p-carousel>
+</div>

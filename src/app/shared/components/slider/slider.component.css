@@ -1,0 +1,5 @@
+@import "tailwindcss/preflight";  /* remplace @tailwind base */  
+@tailwind utilities;              /* remplace components + utilities */
+@import "tailwindcss";
+@plugin "tailwindcss-primeui";
+
