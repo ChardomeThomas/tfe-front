@@ -1,10 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
-/* src/styles.css */
-@import "tailwindcss/preflight";  /* remplace @tailwind base */  
-@tailwind utilities;              /* remplace components + utilities */
-@import "tailwindcss";
-@plugin "tailwindcss-primeui";
-
+/* src/app/slider/slider.component.scss */
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
 
 
 body {
@@ -54,3 +51,5 @@ p, li{
   .font-900 {
 	font-weight: 900;
   }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

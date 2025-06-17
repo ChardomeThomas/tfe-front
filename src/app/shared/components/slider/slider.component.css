@@ -1,5 +1,58 @@
-@import "tailwindcss/preflight";  /* remplace @tailwind base */  
-@tailwind utilities;              /* remplace components + utilities */
-@import "tailwindcss";
-@plugin "tailwindcss-primeui";
+html,
+    body {
+      position: relative;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body {
+      background: #000;
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    swiper-container {
+      width: 80%;
+      height: 60%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    swiper-slide {
+      text-align: center;
+      font-size: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    swiper-slide img {
+      width: auto;
+      height: 200px; /* Uniform height for all images */
+      object-fit: contain;
+    }
+
+    .swiper-button-prev,
+    .swiper-button-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+    }
+
+    .swiper-button-prev {
+      left: 5%; /* Positionne la flèche gauche dans les 10% restants */
+    }
+
+    .swiper-button-next {
+      right: 5%; /* Positionne la flèche droite dans les 10% restants */
+    }
 

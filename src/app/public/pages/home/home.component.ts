@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BackgroundComponent } from '../../../shared/components/background/background.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { CarouselModule } from 'primeng/carousel';
@@ -33,7 +33,8 @@ interface Product {
     SliderComponent
 ],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
+   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomeComponent {
 
