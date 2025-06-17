@@ -1,42 +1,60 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { AfterViewInit, Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
+import {
+  AfterViewInit,
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  CUSTOM_ELEMENTS_SCHEMA
+} from '@angular/core';
+import { CountryService } from '../../../core/services/country.service';
+import { Country } from '../../../../interfaces/country.interface';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-slider',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule],
   templateUrl: './slider.component.html',
   styleUrls: ['./slider.component.css'],
-   schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class SliderComponent implements OnInit, AfterViewInit {
   @ViewChild('swiperEl', { read: ElementRef }) swiperEl!: ElementRef<HTMLElement>;
 
-  slides: { name: string; flag: string }[] = [];
+  slides: { name: string; flag: string, id: number }[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private countryService: CountryService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.http.get<{ countries: { countryId: number; name: string; flag: string }[] }>('https://thomas-chardome.be/ajout-json/countries.json').subscribe((data) => {
-      this.slides = data.countries.map((country) => ({
-        name: country.name,
-        flag: country.flag,
-      }));
-    });
+    this.countryService.getCountries()
+      .subscribe((countries: Country[]) => {             
+        this.slides = countries.map(country => ({
+          name: country.name,
+          flag: country.flag,
+          id: country.countryId
+        }));
+      });
   }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-      if (this.swiperEl) {
-        const el = this.swiperEl.nativeElement as any;
-        if (el && el.initialize) {
-          el.initialize();
-        }
+      const el = (this.swiperEl?.nativeElement as any);
+      if (el && typeof el.initialize === 'function') {
+        el.initialize();
       } else {
-        console.error('swiperEl is undefined');
+        console.error('Impossible d\u2019initialiser le slider');
       }
     });
+  }
+
+    onCountryClick(country: number) {
+    this.router.navigate([`voyages/${country}`]);
   }
 }

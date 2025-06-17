@@ -1,0 +1,57 @@
+h1, h4, p {
+    margin: 0;
+    padding: 0;
+  }
+.test{
+    display: flex;
+    justify-content: space-around;
+}
+.example-card {
+  max-width: 300px;
+}
+mat-card-content{
+    margin-top:10px;
+}
+.center{
+    display: flex;
+    justify-content: center;
+}
+.example-header-image {
+  background-image: url('https://material.angular.dev/assets/img/examples/shiba1.jpg');
+  background-size: cover;
+}
+  .title {
+	position: relative;  /* Permet d'utiliser le pseudo-élément */
+	/* text-align: center; */
+	display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-wrap: nowrap;
+		flex-direction: column;
+	z-index: 2; /* Assure que le texte est visible au-dessus de l'image */
+	font-size:36px;
+	width:100%;
+	height:250px;
+  }
+  
+  .title h1, .title p {
+	position: relative;  /* Assurer que le texte est correctement superposé sur l'image */
+	z-index: 3;  /* Mettre le texte au-dessus de l'image */
+  }
+  
+  /* Style de l'image de fond */
+  .title::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-image: url('/assets/shadow_title.png'); /* Ton image de nuage */
+	background-position: center;
+	background-size: 34%;  /* Utilise 'contain' pour garder l'image à sa taille naturelle sans la déformer */
+	background-repeat: no-repeat;  /* Empêche l'image de se répéter */
+	z-index: 1;  /* Placer l'image derrière le texte */
+  }
+  
+

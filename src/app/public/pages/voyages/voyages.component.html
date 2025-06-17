@@ -1,1 +1,31 @@
-<p>voyages works!</p>
+<app-background>
+  <section class="title">
+    <h1>Découvrez nos Voyages</h1>
+    <p class="font-200">en {{ countryName }}</p>
+  </section>
+<div class="test" *ngIf="voyages.length > 0; else noVoyages">
+ 
+ 
+    <div  *ngFor="let voyage of voyages">
+     <mat-card class="example-card" appearance="outlined">
+  <mat-card-header  class="center">
+    
+ <h3>{{ voyage.name }}</h3>
+  </mat-card-header>
+  <img mat-card-image src="https://material.angular.dev/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+  <mat-card-content>
+<p class="center"> du {{ voyage.date_debut }}  au {{ voyage.date_fin }}</p>
+      
+  </mat-card-content>
+
+</mat-card>
+      
+</div>
+ 
+</div>
+
+<ng-template #noVoyages>
+  <p>Aucun voyage disponible pour ce pays.</p>
+</ng-template>
+
+</app-background>
