@@ -3,52 +3,28 @@ import { HomeComponent } from './public/pages/home/home.component';
 import { VoyagesComponent } from './public/pages/voyages/voyages.component';
 import { PhotosComponent } from './public/pages/photos/photos.component';
 import { DestinationsComponent } from './public/pages/destinations/destinations.component';
-import { AdminPaysComponent } from './admin/pages/pays/pays.component';
-import { AdminVillesComponent } from './admin/pages/villes/villes.component';
 import { AdminDestinationsComponent } from './admin/pages/destinations/destinations.component';
 import { AdminPhotosComponent } from './admin/pages/photos/photos.component';
-import { UsersComponent } from './admin/users/users.component';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
+import { JoursComponent } from './public/pages/jours/jours.component';
+import { AdminVoyagesComponent } from './admin/pages/voyages/voyages.component';
+import { AdminJoursComponent } from './admin/pages/jours/jours.component';
 
 export const routes: Routes = [
-  {
-    path: '',
-    component: HomeComponent
-  },
-  {
-    path: 'voyages/:countryId',
-    component: VoyagesComponent
-  },
-  {
-    path: 'destinations/:voyageId',
-    component: DestinationsComponent
-  },
-  {
-    path: 'photos/:destinationId',
-    component: PhotosComponent
-  },
-  {
-    path: 'admin',
-    component: DashboardComponent
-  },
-  {
-    path: 'admin/users',
-    component: UsersComponent
-  },
-  {
-    path: 'admin/pays',
-    component: AdminPaysComponent
-  },
-  {
-    path: 'admin/villes/:countryId',
-    component: AdminVillesComponent
-  },
-  {
-    path: 'admin/destinations/:voyageId',
-    component: AdminDestinationsComponent
-  },
-  {
-    path: 'admin/photos/:destinationId',
-    component: AdminPhotosComponent
-  }
+  // Public…
+  { path: '', component: HomeComponent },
+  { path: 'countries/:countryId/voyages', component: VoyagesComponent },
+  { path: 'countries/:countryId/voyages/:voyageId/destinations', component: DestinationsComponent },
+  { path: 'countries/:countryId/voyages/:voyageId/destinations/:destId/jours', component: JoursComponent },
+  { path: 'countries/:countryId/voyages/:voyageId/destinations/:destId/jours/:jourId/photos', component: PhotosComponent },
+
+  // Admin
+  { path: 'admin', component: DashboardComponent },
+  { path: 'admin/countries/:countryId/voyages', component: AdminVoyagesComponent },
+  { path: 'admin/countries/:countryId/voyages/:voyageId/destinations', component: AdminDestinationsComponent },
+  { path: 'admin/countries/:countryId/voyages/:voyageId/destinations/:destId/jours', component: AdminJoursComponent },
+  { path: 'admin/countries/:countryId/voyages/:voyageId/destinations/:destId/jours/:jourId/photos', component: AdminPhotosComponent },
+
+  // Fallback
+  { path: '**', redirectTo: '' }
 ];

@@ -1,0 +1,11 @@
+
+<mat-toolbar color="primary">
+  <span class="spacer"></span>
+  <img src="assets/logo.png" alt="Logo" class="logo"(click)="onLogoClick()" />
+</mat-toolbar>
+
+ <div  *ngFor="let voyage of voyages">
+    <p>{{ voyage.name }}</p>
+    <p>{{voyage.date_debut}}</p>
+    <p>{{voyage.date_fin}}</p>
+</div>

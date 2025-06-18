@@ -55,6 +55,6 @@ export class SliderComponent implements OnInit, AfterViewInit {
   }
 
     onCountryClick(country: number) {
-    this.router.navigate([`voyages/${country}`]);
+    this.router.navigate([`countries/${country}/voyages`]);
   }
 }

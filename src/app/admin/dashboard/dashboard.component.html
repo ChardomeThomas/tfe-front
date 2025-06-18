@@ -1,1 +1,118 @@
-<p>dashboard works!</p>
+<mat-toolbar color="primary">
+  <span class="spacer"></span>
+  <img src="assets/logo.png" alt="Logo" class="logo"(click)="onLogoClick()" />
+</mat-toolbar>
+
+<div class="container">
+  <!-- Section Utilisateurs -->
+  <mat-card class="section-card">
+    <mat-card-title>Utilisateurs</mat-card-title>
+    <div class="table-container">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z1">
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Nom</th>
+          <td mat-cell *matCellDef="let user">{{ user.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="username">
+          <th mat-header-cell *matHeaderCellDef>Pseudo</th>
+          <td mat-cell *matCellDef="let user">{{ user.username }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Rôle</th>
+          <td mat-cell *matCellDef="let user">{{ user.role }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let user">
+            <button mat-icon-button (click)="onEditUser(user)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="onDeleteUser(user)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </mat-card>
+
+  <!-- Section Pays -->
+  <mat-card class="section-card country-section">
+    <mat-card-title>Gestion des pays</mat-card-title>
+
+    <div class="add-country">
+      <!-- Autocomplete + bouton Valider -->
+      <div class="autocomplete">
+        <input
+          type="text"
+          [(ngModel)]="query"
+          (ngModelChange)="onChange($event)"
+          placeholder="Début du nom…"
+        />
+        <ul *ngIf="suggestions.length">
+          <li *ngFor="let c of suggestions" (click)="selectCountry(c)">
+            <img [src]="c.flags.png" width="20" alt="" />
+            {{ c.translations?.['fra']?.common || c.name.common }}
+          </li>
+        </ul>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="!selectedCountry"
+        (click)="addCountry()"
+      >
+        Valider
+      </button>
+    </div>
+
+    <!-- Liste des pays ajoutés -->
+    <mat-card class="section-card">
+      <mat-card-title>Liste des Pays</mat-card-title>
+      <div class="table-container">
+        <table mat-table [dataSource]="countries" class="mat-elevation-z1">
+
+          <ng-container matColumnDef="flag">
+            <th mat-header-cell *matHeaderCellDef>Image</th>
+            <td mat-cell *matCellDef="let country">
+              <img class="country-flag" [src]="country.flag" [alt]="country.name" />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="name" >
+            <th mat-header-cell *matHeaderCellDef>Nom</th>
+            <td mat-cell *matCellDef="let country">{{ country.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let country">
+              <button mat-icon-button color="warn" (click)="onCountryClick(country.countryId)">
+                <mat-icon>navigate_next</mat-icon>
+                
+              </button>
+                            <button mat-icon-button color="warn" (click)="deleteCountry(country)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['flag', 'name', 'actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['flag', 'name', 'actions'];"></tr>
+        </table>
+      </div>
+    </mat-card>
+  </mat-card>
+</div>

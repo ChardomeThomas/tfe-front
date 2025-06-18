@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Country, Voyage } from '../../../../interfaces/country.interface';
+import {  Voyage } from '../../../../interfaces/country.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VoyageService } from '../../../core/services/voyage.service';
 import { CountryService } from '../../../core/services/country.service';
@@ -7,13 +7,13 @@ import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 @Component({
-    selector: 'app-admin-pays',
-    imports: [CommonModule,MatToolbarModule],
-    templateUrl: './pays.component.html',
-    styleUrl: './pays.component.css'
+  selector: 'app-admin-voyages',
+  imports: [CommonModule,MatToolbarModule],
+  templateUrl: './voyages.component.html',
+  styleUrl: './voyages.component.css'
 })
-export class AdminPaysComponent {
-    voyages: Voyage[] = [];
+export class AdminVoyagesComponent {
+  voyages: Voyage[] = [];
    
     countryName: string | null = null;
 
