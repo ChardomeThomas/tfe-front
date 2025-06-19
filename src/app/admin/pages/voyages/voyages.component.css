@@ -26,3 +26,55 @@ mat-toolbar{
     height:100px;
     color: white;
 }
+
+mat-form-field {
+  width: 250px;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.form-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.table-container {
+  width: 100%;
+}
+
+.table-container table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+mat-header-cell, mat-cell {
+  text-align: center;
+  vertical-align: middle;
+  padding: 8px;
+}
+
+mat-column-name {
+  width: 33%;
+}
+
+mat-column-dates {
+  width: 33%;
+}
+
+mat-column-actions {
+  width: 34%;
+}
+
+mat-header-row, mat-row {
+  display: table-row;
+}
+
+.section-card {
+  margin-bottom: 16px;
+}
+
+mat-card-title {
+  margin-bottom: 24px;
+}

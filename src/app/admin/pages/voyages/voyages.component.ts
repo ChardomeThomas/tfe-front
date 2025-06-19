@@ -5,7 +5,8 @@ import {
   ReactiveFormsModule,
   FormGroup,
   FormControl,
-  Validators
+  Validators,
+  AbstractControl
 } from '@angular/forms';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -17,10 +18,22 @@ import { MatIconModule }    from '@angular/material/icon';
 import { MatButtonModule }  from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule }     from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter } from '@angular/material/core';
 import { Voyage } from '../../../../interfaces/country.interface';
 import { VoyageService } from '../../../core/services/voyage.service';
 
-
+export const EUROPEAN_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'DD/MM/YYYY',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @Component({
   selector: 'app-voyages',
@@ -35,10 +48,16 @@ import { VoyageService } from '../../../core/services/voyage.service';
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatDatepickerModule
   ],
   templateUrl: './voyages.component.html',
-  styleUrls: ['./voyages.component.css']
+  styleUrls: ['./voyages.component.css'],
+  providers: [
+    { provide: DateAdapter, useClass: NativeDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: EUROPEAN_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'fr' },
+  ]
 })
 export class AdminVoyagesComponent implements OnInit {
   countryId!: number;
@@ -46,8 +65,14 @@ export class AdminVoyagesComponent implements OnInit {
   deletedVoyages: Voyage[] = [];
   voyageForm = new FormGroup({
     name:        new FormControl<string>('', Validators.required),
-    date_debut:  new FormControl<string>('', Validators.required),
-    date_fin:    new FormControl<string>('', Validators.required),
+    date_debut:  new FormControl<string>('', [
+      Validators.required,
+      this.startDateValidator()
+    ]),
+    date_fin:    new FormControl<string>('', [
+      Validators.required,
+      this.endDateValidator()
+    ])
   });
 
   constructor(
@@ -129,5 +154,27 @@ export class AdminVoyagesComponent implements OnInit {
         this.loadVoyages();
         this.loadDeletedVoyages();
       });
+  }
+
+  private startDateValidator() {
+    return (control: AbstractControl) => {
+      const startDate = new Date(control.value);
+      const endDate = new Date(this.voyageForm?.get('date_fin')?.value || '');
+      if (endDate && startDate > endDate) {
+        return { afterEndDate: true };
+      }
+      return null;
+    };
+  }
+
+  private endDateValidator() {
+    return (control: AbstractControl) => {
+      const endDate = new Date(control.value);
+      const startDate = new Date(this.voyageForm?.get('date_debut')?.value || '');
+      if (startDate && startDate > endDate) {
+        return { beforeStartDate: true };
+      }
+      return null;
+    };
   }
 }
