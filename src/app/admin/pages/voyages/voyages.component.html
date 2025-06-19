@@ -4,8 +4,115 @@
   <img src="assets/logo.png" alt="Logo" class="logo"(click)="onLogoClick()" />
 </mat-toolbar>
 
- <div  *ngFor="let voyage of voyages">
-    <p>{{ voyage.name }}</p>
-    <p>{{voyage.date_debut}}</p>
-    <p>{{voyage.date_fin}}</p>
+<mat-toolbar color="primary">
+  <span>Voyages</span>
+</mat-toolbar>
+
+<div class="container">
+  <!-- Formulaire d'ajout -->
+  <mat-card class="section-card">
+    <mat-card-title>Ajouter un voyage</mat-card-title>
+    <form [formGroup]="voyageForm" (ngSubmit)="addVoyage()">
+      <mat-form-field appearance="fill">
+        <mat-label>Nom du voyage</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Date de début</mat-label>
+        <input matInput type="date" formControlName="date_debut" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Date de fin</mat-label>
+        <input matInput type="date" formControlName="date_fin" />
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="voyageForm.invalid">
+        Ajouter
+      </button>
+    </form>
+  </mat-card>
+
+  <!-- Voyages actifs -->
+  <mat-card class="section-card">
+    <mat-card-title>Voyages actifs</mat-card-title>
+    <div class="table-container">
+      <table mat-table [dataSource]="voyages" class="mat-elevation-z1">
+        <!-- Nom -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Nom</th>
+          <td mat-cell *matCellDef="let v">{{ v.name }}</td>
+        </ng-container>
+        <!-- Dates -->
+        <ng-container matColumnDef="dates">
+          <th mat-header-cell *matHeaderCellDef>Période</th>
+          <td mat-cell *matCellDef="let v">
+            {{ v.date_debut }} → {{ v.date_fin }}
+          </td>
+        </ng-container>
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let v">
+            <button
+              mat-button
+              color="accent"
+              *ngIf="v.status==='DRAFT'"
+              (click)="publish(v)"
+            >
+              Publier
+            </button>
+            <button
+              mat-button
+              color="accent"
+              *ngIf="v.status==='PUBLISHED'"
+              (click)="unpublish(v)"
+            >
+              Dépublier
+            </button>
+            <button mat-icon-button color="warn" (click)="delete(v)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['name','dates','actions']"></tr>
+        <tr mat-row        *matRowDef="let row; columns: ['name','dates','actions'];"></tr>
+      </table>
+    </div>
+  </mat-card>
+
+  <!-- Voyages supprimés -->
+  <mat-card class="section-card">
+    <mat-card-title>Voyages supprimés</mat-card-title>
+    <div class="table-container">
+      <table mat-table [dataSource]="deletedVoyages" class="mat-elevation-z1">
+        <!-- Nom -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Nom</th>
+          <td mat-cell *matCellDef="let v">{{ v.name }}</td>
+        </ng-container>
+        <!-- Dates -->
+        <ng-container matColumnDef="dates">
+          <th mat-header-cell *matHeaderCellDef>Période</th>
+          <td mat-cell *matCellDef="let v">
+            {{ v.date_debut }} → {{ v.date_fin }}
+          </td>
+        </ng-container>
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let v">
+            <button mat-button color="primary" (click)="restore(v)">
+              Restaurer
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['name','dates','actions']"></tr>
+        <tr mat-row        *matRowDef="let row; columns: ['name','dates','actions'];"></tr>
+      </table>
+    </div>
+  </mat-card>
 </div>

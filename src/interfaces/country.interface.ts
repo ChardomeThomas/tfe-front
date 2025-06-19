@@ -1,10 +1,11 @@
+// src/app/interfaces/country.interface.ts
+export interface Country {
+  countryId: number;
+  name: string;
+  flag: string;
+  status: 'DRAFT' | 'PUBLISHED';
+}
 
-
-  export interface Country {
-    countryId: number;
-    name: string;
-    flag: string;
-  }
 export interface Voyage {
     voyageId: number;
     name: string;

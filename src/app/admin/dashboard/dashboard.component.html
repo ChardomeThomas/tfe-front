@@ -1,6 +1,6 @@
 <mat-toolbar color="primary">
   <span class="spacer"></span>
-  <img src="assets/logo.png" alt="Logo" class="logo"(click)="onLogoClick()" />
+  <img src="assets/logo.png" alt="Logo" class="logo" (click)="onLogoClick()" />
 </mat-toolbar>
 
 <div class="container">
@@ -9,27 +9,31 @@
     <mat-card-title>Utilisateurs</mat-card-title>
     <div class="table-container">
       <table mat-table [dataSource]="dataSource" class="mat-elevation-z1">
-
+        <!-- Nom -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Nom</th>
           <td mat-cell *matCellDef="let user">{{ user.name }}</td>
         </ng-container>
 
+        <!-- Pseudo -->
         <ng-container matColumnDef="username">
           <th mat-header-cell *matHeaderCellDef>Pseudo</th>
           <td mat-cell *matCellDef="let user">{{ user.username }}</td>
         </ng-container>
 
+        <!-- Email -->
         <ng-container matColumnDef="email">
           <th mat-header-cell *matHeaderCellDef>Email</th>
           <td mat-cell *matCellDef="let user">{{ user.email }}</td>
         </ng-container>
 
+        <!-- Rôle -->
         <ng-container matColumnDef="role">
           <th mat-header-cell *matHeaderCellDef>Rôle</th>
           <td mat-cell *matCellDef="let user">{{ user.role }}</td>
         </ng-container>
 
+        <!-- Actions Utilisateurs -->
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let user">
@@ -52,8 +56,8 @@
   <mat-card class="section-card country-section">
     <mat-card-title>Gestion des pays</mat-card-title>
 
+    <!-- Formulaire d'ajout -->
     <div class="add-country">
-      <!-- Autocomplete + bouton Valider -->
       <div class="autocomplete">
         <input
           type="text"
@@ -78,12 +82,12 @@
       </button>
     </div>
 
-    <!-- Liste des pays ajoutés -->
+    <!-- Pays actifs -->
     <mat-card class="section-card">
-      <mat-card-title>Liste des Pays</mat-card-title>
+      <mat-card-title>Pays actifs</mat-card-title>
       <div class="table-container">
         <table mat-table [dataSource]="countries" class="mat-elevation-z1">
-
+          <!-- Drapeau -->
           <ng-container matColumnDef="flag">
             <th mat-header-cell *matHeaderCellDef>Image</th>
             <td mat-cell *matCellDef="let country">
@@ -91,28 +95,99 @@
             </td>
           </ng-container>
 
-          <ng-container matColumnDef="name" >
+          <!-- Nom -->
+          <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Nom</th>
             <td mat-cell *matCellDef="let country">{{ country.name }}</td>
           </ng-container>
 
+          <!-- Actions Pays -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Actions</th>
             <td mat-cell *matCellDef="let country">
-              <button mat-icon-button color="warn" (click)="onCountryClick(country.countryId)">
+              <!-- Navigation vers voyages -->
+              <button
+                mat-icon-button
+                [routerLink]="['/admin','countries',country.countryId,'voyages']"
+                matTooltip="Voir les voyages"
+              >
                 <mat-icon>navigate_next</mat-icon>
-                
               </button>
-                            <button mat-icon-button color="warn" (click)="deleteCountry(country)">
+              <!-- Publier / Dépublier -->
+              <button
+                mat-button
+                color="accent"
+                *ngIf="country.status === 'DRAFT'"
+                (click)="publishCountry(country)"
+              >
+                Publier
+              </button>
+              <button
+                mat-button
+                color="accent"
+                *ngIf="country.status === 'PUBLISHED'"
+                (click)="unpublishCountry(country)"
+              >
+                Dépublier
+              </button>
+              <!-- Supprimer (soft-delete) -->
+              <button mat-icon-button color="warn" (click)="deleteCountry(country)">
                 <mat-icon>delete</mat-icon>
               </button>
             </td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="['flag', 'name', 'actions']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['flag', 'name', 'actions'];"></tr>
+          <tr mat-header-row *matHeaderRowDef="['flag','name','actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['flag','name','actions'];"></tr>
         </table>
       </div>
     </mat-card>
+
+    <!-- Pays supprimés -->
+    <mat-card class="section-card">
+      <mat-card-title>Pays supprimés</mat-card-title>
+      <div class="table-container">
+        <table mat-table [dataSource]="deletedCountries" class="mat-elevation-z1">
+          <!-- Drapeau -->
+          <ng-container matColumnDef="flag">
+            <th mat-header-cell *matHeaderCellDef>Image</th>
+            <td mat-cell *matCellDef="let country">
+              <img class="country-flag" [src]="country.flag" [alt]="country.name" />
+            </td>
+          </ng-container>
+
+          <!-- Nom -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Nom</th>
+            <td mat-cell *matCellDef="let country">{{ country.name }}</td>
+          </ng-container>
+
+          <!-- Actions Pays supprimés -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let country">
+              <!-- Restaurer -->
+              <button mat-button color="primary" (click)="restoreCountry(country)">
+                Restaurer
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['flag','name','actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['flag','name','actions'];"></tr>
+        </table>
+      </div>
+    </mat-card>
+
+    <!-- Modal d’erreur pays existant -->
+    <ng-template #existsDialog>
+      <h2 mat-dialog-title>Pays déjà présent</h2>
+      <mat-dialog-content>
+        Le pays que vous essayez d’ajouter existe déjà dans la base.
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>OK</button>
+      </mat-dialog-actions>
+    </ng-template>
   </mat-card>
 </div>

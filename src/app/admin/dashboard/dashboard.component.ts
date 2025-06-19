@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
+import { CommonModule }  from '@angular/common';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -7,24 +8,21 @@ import {
   FormControl,
   Validators
 } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatTableDataSource, MatTableModule }         from '@angular/material/table';
+import { MatToolbarModule }           from '@angular/material/toolbar';
+import { MatCardModule }              from '@angular/material/card';
+import { MatIconModule }              from '@angular/material/icon';
+import { MatButtonModule }            from '@angular/material/button';
+import { MatFormFieldModule }         from '@angular/material/form-field';
+import { MatInputModule }             from '@angular/material/input';
+import { MatListModule }              from '@angular/material/list';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { catchError, of }             from 'rxjs';
 
-import { MatTableDataSource } from '@angular/material/table';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
-
-import { CountryResult } from '../../models/country-result.model';
-import { CountrySearchService } from '../../core/services/country-search.service';
-import { Country } from '../../../interfaces/country.interface';
-import { CountryService } from '../../core/services/country.service';
-import { HeaderComponent } from '../../shared/components/header/header.component';
+import { CountryResult }             from '../../models/country-result.model';
+import { CountryService }            from '../../core/services/country.service';
+import { CountrySearchService }      from '../../core/services/country-search.service';
+import { Country }                   from '../../../interfaces/country.interface';
 
 export interface User {
   id: number;
@@ -36,13 +34,12 @@ export interface User {
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterModule,
     MatToolbarModule,
     MatCardModule,
     MatTableModule,
@@ -51,35 +48,35 @@ export interface User {
     MatFormFieldModule,
     MatInputModule,
     MatListModule,
-    RouterModule // Added RouterModule to support <router-outlet>
-  ]
+    MatDialogModule
+  ],
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  // Utilisateurs
+  @ViewChild('existsDialog') existsDialog!: TemplateRef<any>;
+
   users: User[] = [
     { id: 1, name: 'Alice', username: 'alice01', email: 'alice@example.com', role: 'Admin' },
     { id: 2, name: 'Bob',   username: 'bob02',   email: 'bob@example.com',   role: 'User' }
   ];
   dataSource = new MatTableDataSource<User>(this.users);
-  displayedColumns: string[] = ['name', 'username', 'email', 'role', 'actions'];
+  displayedColumns = ['name', 'username', 'email', 'role', 'actions'];
 
-  // Autocomplete pays
   query = '';
-  suggestions: CountryResult[] = []
+  suggestions: CountryResult[] = [];
   selectedCountry?: CountryResult;
 
-  // Formulaire d'envoi
   countryForm: FormGroup;
-
-  // Liste des pays ajoutés
   countries: Country[] = [];
+  deletedCountries: Country[] = [];
 
   constructor(
     private countrySearchService: CountrySearchService,
     private countryService: CountryService,
-    private http: HttpClient,
     private router: Router,
-    private route: ActivatedRoute // Added ActivatedRoute
+    private route: ActivatedRoute,
+    private dialog: MatDialog
   ) {
     this.countryForm = new FormGroup({
       name: new FormControl('', [Validators.required]),
@@ -88,15 +85,41 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    // précharge la liste des pays pour l'autocomplete
     this.countrySearchService.loadAll().subscribe();
-    // charge la liste initiale depuis le backend
-    this.refreshCountriesList();
+    this.loadCountries();
+    this.loadDeletedCountries();
   }
 
-  // Gestion autocomplete
+  private loadCountries() {
+    this.countryService.getCountries()
+      .pipe(
+        catchError(err => {
+          console.error('Chargement pays actifs échoué :', err);
+          return of([] as Country[]);
+        })
+      )
+      .subscribe(list => {
+        this.countries = list;
+      });
+  }
+
+  private loadDeletedCountries() {
+    this.countryService.getDeletedCountries()
+      .pipe(
+        catchError(err => {
+          console.error('Chargement pays supprimés échoué :', err);
+          return of([] as Country[]);
+        })
+      )
+      .subscribe(list => {
+        this.deletedCountries = list;
+      });
+  }
+
   onChange(val: string) {
-    this.suggestions = val.length >= 2 ? this.countrySearchService.suggest(val) : [];
+    this.suggestions = val.length >= 2
+      ? this.countrySearchService.suggest(val)
+      : [];
     this.selectedCountry = undefined;
   }
 
@@ -105,39 +128,55 @@ export class DashboardComponent implements OnInit {
     this.query = this.countrySearchService.normalize(name);
     this.suggestions = [];
     this.selectedCountry = c;
-
-    // Pré-remplit le formulaire
-    this.countryForm.patchValue({
-      name: name,
-      flag: c.flags.png
-    });
+    this.countryForm.patchValue({ name, flag: c.flags.png });
   }
 
-  // Ajout local et envoi backend
   addCountry() {
-    if (this.countryForm.valid) {
-      const { name, flag } = this.countryForm.value;
-      this.countryService.addCountry({ name, flag }).subscribe({
-        next: resp => {
-          console.log('Pays ajouté côté serveur :', resp);
-          this.refreshCountriesList();
+    if (this.countryForm.invalid) {
+      console.error('Formulaire invalide.');
+      return;
+    }
+    const { name, flag } = this.countryForm.value;
+    this.countryService.addCountry({ name, flag })
+      .subscribe({
+        next: () => {
+          this.loadCountries();
           this.resetSelection();
         },
-        error: err => console.error('Erreur lors de l’ajout :', err)
+        error: err => {
+          if (err.status === 409) {
+            this.dialog.open(this.existsDialog);
+          } else {
+            console.error('Erreur ajout :', err);
+          }
+        }
       });
-    } else {
-      console.error('Le formulaire est invalide.');
-    }
   }
 
-  deleteCountry(country: Country) {
-    this.countryService.deleteCountry(country).subscribe({
-      next: () => {
-        console.log(`Pays supprimé : ${country.name}`);
-        this.refreshCountriesList();
-      },
-      error: err => console.error('Erreur lors de la suppression :', err)
-    });
+  publishCountry(c: Country) {
+    this.countryService.publishCountry(c.countryId)
+      .subscribe(() => this.loadCountries());
+  }
+
+  unpublishCountry(c: Country) {
+    this.countryService.unpublishCountry(c.countryId)
+      .subscribe(() => this.loadCountries());
+  }
+
+  deleteCountry(c: Country) {
+    this.countryService.deleteCountry(c.countryId)
+      .subscribe(() => {
+        this.loadCountries();
+        this.loadDeletedCountries();
+      });
+  }
+
+  restoreCountry(c: Country) {
+    this.countryService.restoreCountry(c.countryId)
+      .subscribe(() => {
+        this.loadCountries();
+        this.loadDeletedCountries();
+      });
   }
 
   onEditUser(user: User) {
@@ -149,23 +188,14 @@ export class DashboardComponent implements OnInit {
     this.dataSource.data = this.users;
   }
 
+  onLogoClick() {
+    this.router.navigate(['']);
+  }
+
   private resetSelection() {
     this.query = '';
     this.selectedCountry = undefined;
     this.suggestions = [];
     this.countryForm.reset();
   }
-
-  private refreshCountriesList() {
-    this.countryService.getCountries().subscribe(list => {
-      this.countries = list.map(c => ({ flag: c.flag, name: c.name, countryId: c.countryId }));
-    });
-  }
-     onLogoClick() {
-     this.router.navigate(['']);
-   }
-   
-onCountryClick(country: number) {
-  this.router.navigate([`admin/countries/${country}/voyages`]);
-}
 }
