@@ -1,6 +1,6 @@
 <mat-toolbar color="primary">
   <span class="spacer"></span>
-  <img src="assets/logo.png" alt="Logo" class="logo" (click)="onLogoClick()" />
+  <img src="assets/logo.png" alt="Logo" class="logo" [routerLink]="['/']" />
 </mat-toolbar>
 
 <div class="container">
@@ -83,101 +83,83 @@
     </div>
 
     <!-- Pays actifs -->
-    <mat-card class="section-card">
-      <mat-card-title>Pays actifs</mat-card-title>
-      <div class="table-container">
-        <table mat-table [dataSource]="countries" class="mat-elevation-z1">
-          <!-- Drapeau -->
-          <ng-container matColumnDef="flag">
-            <th mat-header-cell *matHeaderCellDef>Image</th>
-            <td mat-cell *matCellDef="let country">
-              <img class="country-flag" [src]="country.flag" [alt]="country.name" />
-            </td>
-          </ng-container>
+    <app-item-table
+      title="Pays actifs"
+      [dataSource]="countries"
+      [columns]="['flag', 'name']"
+      [actionsTemplate]="activeCountryActions"
+    ></app-item-table>
 
-          <!-- Nom -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Nom</th>
-            <td mat-cell *matCellDef="let country">{{ country.name }}</td>
-          </ng-container>
+    <ng-template #activeCountryActions let-country>
+      <button
+        mat-icon-button
+        [routerLink]="['/admin','countries',country.countryId,'voyages']"
+        matTooltip="Voir les voyages"
+      >
+        <mat-icon>navigate_next</mat-icon>
+      </button>
+      <button
+        mat-button
+        color="accent"
+        *ngIf="country.status === 'DRAFT'"
+        (click)="publishCountry(country)"
+      >
+        Publier
+      </button>
+      <button
+        mat-button
+        color="accent"
+        *ngIf="country.status === 'PUBLISHED'"
+        (click)="unpublishCountry(country)"
+      >
+        Dépublier
+      </button>
+      <button mat-icon-button color="warn" (click)="deleteCountry(country)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </ng-template>
 
-          <!-- Actions Pays -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let country">
-              <!-- Navigation vers voyages -->
-              <button
-                mat-icon-button
-                [routerLink]="['/admin','countries',country.countryId,'voyages']"
-                matTooltip="Voir les voyages"
-              >
-                <mat-icon>navigate_next</mat-icon>
-              </button>
-              <!-- Publier / Dépublier -->
-              <button
-                mat-button
-                color="accent"
-                *ngIf="country.status === 'DRAFT'"
-                (click)="publishCountry(country)"
-              >
-                Publier
-              </button>
-              <button
-                mat-button
-                color="accent"
-                *ngIf="country.status === 'PUBLISHED'"
-                (click)="unpublishCountry(country)"
-              >
-                Dépublier
-              </button>
-              <!-- Supprimer (soft-delete) -->
-              <button mat-icon-button color="warn" (click)="deleteCountry(country)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
+    <!-- Pays non publiés -->
+    <app-item-table
+      title="Pays non publiés"
+      [dataSource]="unpublishedCountries"
+      [columns]="['flag', 'name']"
+      [actionsTemplate]="unpublishedCountryActions"
+    ></app-item-table>
 
-          <tr mat-header-row *matHeaderRowDef="['flag','name','actions']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['flag','name','actions'];"></tr>
-        </table>
-      </div>
-    </mat-card>
+    <ng-template #unpublishedCountryActions let-country>
+      <button
+        mat-icon-button
+        [routerLink]="['/admin','countries',country.countryId,'voyages']"
+        matTooltip="Voir les voyages"
+      >
+        <mat-icon>navigate_next</mat-icon>
+      </button>
+      <button
+        mat-button
+        color="accent"
+        (click)="publishCountry(country)"
+      >
+        Publier
+      </button>
+      <button mat-icon-button color="warn" (click)="deleteCountry(country)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </ng-template>
 
     <!-- Pays supprimés -->
-    <mat-card class="section-card">
-      <mat-card-title>Pays supprimés</mat-card-title>
-      <div class="table-container">
-        <table mat-table [dataSource]="deletedCountries" class="mat-elevation-z1">
-          <!-- Drapeau -->
-          <ng-container matColumnDef="flag">
-            <th mat-header-cell *matHeaderCellDef>Image</th>
-            <td mat-cell *matCellDef="let country">
-              <img class="country-flag" [src]="country.flag" [alt]="country.name" />
-            </td>
-          </ng-container>
+    <app-item-table
+      title="Pays supprimés"
+      [dataSource]="deletedCountries"
+      [columns]="['flag', 'name']"
+      [actionsTemplate]="deletedCountryActions"
+    ></app-item-table>
 
-          <!-- Nom -->
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Nom</th>
-            <td mat-cell *matCellDef="let country">{{ country.name }}</td>
-          </ng-container>
-
-          <!-- Actions Pays supprimés -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let country">
-              <!-- Restaurer -->
-              <button mat-button color="primary" (click)="restoreCountry(country)">
-                Restaurer
-              </button>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="['flag','name','actions']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['flag','name','actions'];"></tr>
-        </table>
-      </div>
-    </mat-card>
+    <ng-template #deletedCountryActions let-country>
+      <button mat-button color="primary" (click)="restoreCountry(country)">
+        Restaurer
+      </button>
+    </ng-template>
 
     <!-- Modal d’erreur pays existant -->
     <ng-template #existsDialog>

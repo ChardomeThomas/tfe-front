@@ -3,125 +3,105 @@
   <img src="assets/logo.png" alt="Logo" class="logo"(click)="onLogoClick()" />
 </mat-toolbar>
 
-<mat-toolbar color="primary">
-  <span>Voyages</span>
-</mat-toolbar>
-
 <div class="container">
   <!-- Formulaire d'ajout -->
   <mat-card class="section-card">
     <mat-card-title>Ajouter un voyage</mat-card-title>
-    <form [formGroup]="voyageForm" (ngSubmit)="addVoyage()">
-      <mat-form-field appearance="fill">
-        <mat-label>Nom du voyage</mat-label>
-        <input matInput formControlName="name" />
-      </mat-form-field>
+    <form [formGroup]="voyageForm" (ngSubmit)="addVoyage()" class="form-container">
+      <div class="form-fields">
+        <mat-form-field appearance="fill">
+          <mat-label>Nom du voyage</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Date de début</mat-label>
-        <input matInput [matDatepicker]="startPicker" formControlName="date_debut" />
-        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-        <mat-datepicker #startPicker></mat-datepicker>
-        <mat-error *ngIf="voyageForm.get('date_debut')?.hasError('afterEndDate')">
-          La date de début ne peut pas être après la date de fin.
-        </mat-error>
-      </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Date de début</mat-label>
+          <input matInput [matDatepicker]="startPicker" formControlName="date_debut" />
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+          <mat-error *ngIf="voyageForm.get('date_debut')?.hasError('afterEndDate')">
+            La date de début ne peut pas être après la date de fin.
+          </mat-error>
+        </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Date de fin</mat-label>
-        <input matInput [matDatepicker]="endPicker" formControlName="date_fin" />
-        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-        <mat-datepicker #endPicker></mat-datepicker>
-        <mat-error *ngIf="voyageForm.get('date_fin')?.hasError('beforeStartDate')">
-          La date de fin ne peut pas être avant la date de début.
-        </mat-error>
-      </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Date de fin</mat-label>
+          <input matInput [matDatepicker]="endPicker" formControlName="date_fin" />
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+          <mat-error *ngIf="voyageForm.get('date_fin')?.hasError('beforeStartDate')">
+            La date de fin ne peut pas être avant la date de début.
+          </mat-error>
+        </mat-form-field>
+      </div>
 
-      <button mat-raised-button color="primary" type="submit" [disabled]="voyageForm.invalid">
-        Ajouter
-      </button>
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="voyageForm.invalid">
+          Ajouter
+        </button>
+      </div>
     </form>
   </mat-card>
 
   <!-- Voyages actifs -->
   <mat-card class="section-card">
     <mat-card-title>Voyages actifs</mat-card-title>
-    <div class="table-container">
-      <table mat-table [dataSource]="voyages" class="mat-elevation-z1">
-        <!-- Nom -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Nom</th>
-          <td mat-cell *matCellDef="let v">{{ v.name }}</td>
-        </ng-container>
-        <!-- Dates -->
-        <ng-container matColumnDef="dates">
-          <th mat-header-cell *matHeaderCellDef>Période</th>
-          <td mat-cell *matCellDef="let v">
-            {{ v.date_debut | date:'dd/MM/yyyy' }} → {{ v.date_fin | date:'dd/MM/yyyy' }}
-          </td>
-        </ng-container>
-        <!-- Actions -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let v">
-            <button
-              mat-button
-              color="accent"
-              *ngIf="v.status==='DRAFT'"
-              (click)="publish(v)"
-            >
-              Publier
-            </button>
-            <button
-              mat-button
-              color="accent"
-              *ngIf="v.status==='PUBLISHED'"
-              (click)="unpublish(v)"
-            >
-              Dépublier
-            </button>
-            <button mat-icon-button color="warn" (click)="delete(v)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+    <app-item-table
+      [dataSource]="voyages"
+      [columns]="['name', 'dates']"
+      [actionsTemplate]="activeVoyageActions"
+    ></app-item-table>
 
-        <tr mat-header-row *matHeaderRowDef="['name','dates','actions']"></tr>
-        <tr mat-row        *matRowDef="let row; columns: ['name','dates','actions'];"></tr>
-      </table>
-    </div>
+    <ng-template #activeVoyageActions let-voyage>
+      <button
+        mat-button
+        color="accent"
+        (click)="unpublish(voyage)"
+      >
+        Dépublier
+      </button>
+      <button mat-icon-button color="warn" (click)="delete(voyage)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </ng-template>
+  </mat-card>
+
+  <!-- Voyages non publiés -->
+  <mat-card class="section-card">
+    <mat-card-title>Voyages non publiés</mat-card-title>
+    <app-item-table
+      [dataSource]="unpublishedVoyages"
+      [columns]="['name', 'dates']"
+      [actionsTemplate]="unpublishedVoyageActions"
+    ></app-item-table>
+
+    <ng-template #unpublishedVoyageActions let-voyage>
+      <button
+        mat-button
+        color="primary"
+        (click)="publish(voyage)"
+      >
+        Publier
+      </button>
+      <button mat-icon-button color="warn" (click)="delete(voyage)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </ng-template>
   </mat-card>
 
   <!-- Voyages supprimés -->
   <mat-card class="section-card">
     <mat-card-title>Voyages supprimés</mat-card-title>
-    <div class="table-container">
-      <table mat-table [dataSource]="deletedVoyages" class="mat-elevation-z1">
-        <!-- Nom -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Nom</th>
-          <td mat-cell *matCellDef="let v">{{ v.name }}</td>
-        </ng-container>
-        <!-- Dates -->
-        <ng-container matColumnDef="dates">
-          <th mat-header-cell *matHeaderCellDef>Période</th>
-          <td mat-cell *matCellDef="let v">
-            {{ v.date_debut | date:'dd/MM/yyyy' }} → {{ v.date_fin | date:'dd/MM/yyyy' }}
-          </td>
-        </ng-container>
-        <!-- Actions -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Actions</th>
-          <td mat-cell *matCellDef="let v">
-            <button mat-button color="primary" (click)="restore(v)">
-              Restaurer
-            </button>
-          </td>
-        </ng-container>
+    <app-item-table
+      [dataSource]="deletedVoyages"
+      [columns]="['name', 'dates']"
+      [actionsTemplate]="deletedVoyageActions"
+    ></app-item-table>
 
-        <tr mat-header-row *matHeaderRowDef="['name','dates','actions']"></tr>
-        <tr mat-row        *matRowDef="let row; columns: ['name','dates','actions'];"></tr>
-      </table>
-    </div>
+    <ng-template #deletedVoyageActions let-voyage>
+      <button mat-button color="primary" (click)="restore(voyage)">
+        Restaurer
+      </button>
+    </ng-template>
   </mat-card>
 </div>

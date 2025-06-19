@@ -1,0 +1,43 @@
+.table-container {
+  width: 100%;
+}
+
+.table-container table {
+  table-layout: fixed; /* Forcer une largeur fixe pour les colonnes */
+  width: 100%;
+}
+
+mat-header-cell, mat-cell {
+  text-align: center;
+  vertical-align: middle;
+  padding: 8px;
+  width: 200px; /* Largeur fixe pour aligner les colonnes */
+}
+
+mat-header-cell:first-child, mat-cell:first-child {
+  width: 150px; /* Largeur spécifique pour la colonne des noms */
+}
+
+mat-header-cell.flag, mat-cell.flag {
+  width: 100px; /* Largeur fixe pour la colonne Drapeau */
+}
+
+mat-header-cell.name, mat-cell.name {
+  width: 200px; /* Largeur fixe pour la colonne Nom */
+}
+
+mat-header-cell.dates, mat-cell.dates {
+  width: 250px; /* Largeur fixe pour la colonne Période */
+}
+
+mat-header-cell.actions, mat-cell.actions {
+  width: 150px; /* Largeur fixe pour la colonne Actions */
+}
+
+mat-header-row, mat-row {
+  display: table-row;
+}
+
+.section-card {
+  margin-bottom: 16px;
+}

@@ -23,6 +23,7 @@ import { CountryResult }             from '../../models/country-result.model';
 import { CountryService }            from '../../core/services/country.service';
 import { CountrySearchService }      from '../../core/services/country-search.service';
 import { Country }                   from '../../../interfaces/country.interface';
+import { ItemTableComponent }        from '../../shared/components/item-table/item-table.component';
 
 export interface User {
   id: number;
@@ -48,7 +49,8 @@ export interface User {
     MatFormFieldModule,
     MatInputModule,
     MatListModule,
-    MatDialogModule
+    MatDialogModule,
+    ItemTableComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
@@ -70,6 +72,7 @@ export class DashboardComponent implements OnInit {
   countryForm: FormGroup;
   countries: Country[] = [];
   deletedCountries: Country[] = [];
+  unpublishedCountries: Country[] = []; // Liste des pays non publiés
 
   constructor(
     private countrySearchService: CountrySearchService,
@@ -99,7 +102,9 @@ export class DashboardComponent implements OnInit {
         })
       )
       .subscribe(list => {
-        this.countries = list;
+        // Filtrer les pays actifs et non publiés
+        this.countries = list.filter(country => country.status === 'PUBLISHED');
+        this.unpublishedCountries = list.filter(country => country.status === 'DRAFT');
       });
   }
 
@@ -159,8 +164,13 @@ export class DashboardComponent implements OnInit {
   }
 
   unpublishCountry(c: Country) {
-    this.countryService.unpublishCountry(c.countryId)
-      .subscribe(() => this.loadCountries());
+    this.countryService.unpublishCountry(c.countryId).subscribe(() => {
+      // Retirer le pays de la liste des actifs
+      this.countries = this.countries.filter(country => country.countryId !== c.countryId);
+
+      // Ajouter le pays à la liste des non publiés
+      this.unpublishedCountries = [...this.unpublishedCountries, { ...c, status: 'DRAFT' }];
+    });
   }
 
   deleteCountry(c: Country) {

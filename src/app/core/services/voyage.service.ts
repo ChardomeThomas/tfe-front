@@ -30,6 +30,16 @@ export class VoyageService {
       .pipe(map(r => r.voyages));
   }
 
+  /** Voyages dépubliés pour un pays */
+  getUnpublishedVoyagesByCountryId(countryId: number): Observable<Voyage[]> {
+    const params = new HttpParams()
+        .set('countryId', countryId.toString())
+        .set('unpublished', '1');
+    return this.http
+      .get<{voyages: Voyage[]}>(this.apiUrl, { params })
+      .pipe(map(r => r.voyages));
+  }
+
   addVoyage(data: {
     countryId: number;
     name: string;

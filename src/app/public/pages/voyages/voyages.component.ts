@@ -32,13 +32,14 @@ export class VoyagesComponent implements OnInit {
                 .subscribe(voyages => {
                     this.voyages = voyages;
                     console.log(this.voyages);
-                    
+                
                 });
 
             this.countryService.getCountries()
                 .subscribe(countries => {
-                    const country = countries.find(c => c.countryId === +countryId);
+                    const country = countries.find(c => c.countryId.toString() === countryId); // Convert countryId to string for comparison
                     this.countryName = country ? country.name : null;
+                    console.log('Country Name:', this.countryName); // Debugging log
                 });
         }
     }

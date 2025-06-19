@@ -32,12 +32,15 @@ mat-toolbar{
   flex-direction: column;
   gap: 16px;
   padding: 16px;
+  margin: 0 auto; /* Center the container */
+  max-width: 1200px; /* Add a maximum width */
 }
 
 
 
 .section-card {
   padding: 16px;
+  margin-bottom: 16px; /* Add space below each card */
 }
 
 .table-container {
