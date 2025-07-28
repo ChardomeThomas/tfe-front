@@ -1,7 +1,7 @@
 <app-background>
   <div class="flex justify-center py-8">
     <div class="w-full md:w-3/4">
-      <h1 class="text-3xl font-bold mb-6 text-center">Jours du voyage</h1>
+      <h1 class="text-3xl font-bold mb-6 text-gray-700-mb relative after:content-[''] after:block after:mt-2 after:border-t-2 after:border-gray-700 after:w-[40px] after:ml-0">Jours</h1>
       <div *ngIf="voyageDescription" class="text-lg text-center text-gray-700 mb-8">{{ voyageDescription }}</div>
       <div *ngIf="jours.length === 0" class="text-center text-gray-500">Aucun jour trouvé pour ce voyage.</div>
       <div class="flex flex-col gap-6">
