@@ -28,18 +28,16 @@ export class VoyagesComponent implements OnInit {
     ngOnInit(): void {
         const countryId = this.route.snapshot.paramMap.get('countryId');
         if (countryId) {
-            this.voyageService.getVoyagesByCountryId(+countryId)
+            this.voyageService.getVoyagesByPointOfInterestId(+countryId)
                 .subscribe(voyages => {
                     this.voyages = voyages;
                     console.log(this.voyages);
-                
                 });
-
             this.countryService.getCountries()
                 .subscribe(countries => {
-                    const country = countries.find(c => c.id.toString() === countryId); // Convert countryId to string for comparison
+                    const country = countries.find(c => c.id.toString() === countryId);
                     this.countryName = country ? country.name : null;
-                    console.log('Country Name:', this.countryName); // Debugging log
+                    console.log('Country Name:', this.countryName);
                 });
         }
     }

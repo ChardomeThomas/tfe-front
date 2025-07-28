@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { SliderComponent } from "../../../shared/components/slider/slider.component";
 import { Country } from '../../../../interfaces/country.interface';
 import { CountryService } from '../../../core/services/country.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 
 @Component({
@@ -21,7 +21,8 @@ import { ActivatedRoute } from '@angular/router';
     CarouselModule,
     ButtonModule,
     TagModule,
-    SliderComponent
+    SliderComponent,
+    RouterModule
 ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],

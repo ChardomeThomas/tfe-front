@@ -10,12 +10,15 @@ export interface Country {
 }
 
 export interface Voyage {
-  voyageId: number;
-  name: string;
-  countryId: number;
-  date_debut: string;
-  date_fin: string;
-  status: 'DRAFT' | 'PUBLISHED'; // Suppression du statut 'DELETED'
+  id: number;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  publishedDate: string | null;
+  pointOfInterestId: number;
+  pointOfInterestName: string;
+  published: boolean;
 }
   export interface Jour{
     dayId: number;

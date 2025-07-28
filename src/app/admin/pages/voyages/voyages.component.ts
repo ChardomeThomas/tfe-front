@@ -103,8 +103,8 @@ export class AdminVoyagesComponent implements OnInit {
         })
       )
       .subscribe(list => {
-        this.voyages = list.filter(v => v.status === 'PUBLISHED');
-        this.unpublishedVoyages = list.filter(v => v.status === 'DRAFT');
+        this.voyages = list.filter(v => v.published);
+        this.unpublishedVoyages = list.filter(v => !v.published);
       });
   }
 
@@ -141,42 +141,32 @@ export class AdminVoyagesComponent implements OnInit {
   }
 
   publish(v: Voyage) {
-    this.voyageService.publishVoyage(v.voyageId)
+    this.voyageService.publishVoyage(v.id)
       .subscribe(() => {
-        // Retirer le voyage de la liste des non publiés
-        this.unpublishedVoyages = this.unpublishedVoyages.filter(voyage => voyage.voyageId !== v.voyageId);
-
-        // Ajouter le voyage à la liste des publiés
-        this.voyages = [...this.voyages, { ...v, status: 'PUBLISHED' }];
+        this.unpublishedVoyages = this.unpublishedVoyages.filter(voyage => voyage.id !== v.id);
+        this.voyages = [...this.voyages, v];
       });
   }
 
   unpublish(voyage: Voyage) {
-    this.voyageService.unpublishVoyage(voyage.voyageId).subscribe(() => {
-      // Retirer le voyage de la liste des publiés
-      this.voyages = this.voyages.filter(v => v.voyageId !== voyage.voyageId);
-
-      // Ajouter le voyage à la liste des non publiés
-      this.unpublishedVoyages = [...this.unpublishedVoyages, { ...voyage, status: 'DRAFT' }];
+    this.voyageService.unpublishVoyage(voyage.id).subscribe(() => {
+      this.voyages = this.voyages.filter(v => v.id !== voyage.id);
+      this.unpublishedVoyages = [...this.unpublishedVoyages, voyage];
     });
   }
 
   delete(v: Voyage) {
-    this.voyageService.deleteVoyage(v.voyageId)
+    this.voyageService.deleteVoyage(v.id)
       .subscribe(() => {
-        // Retirer le voyage des listes actives et non publiées
-        this.voyages = this.voyages.filter(voyage => voyage.voyageId !== v.voyageId);
-        this.unpublishedVoyages = this.unpublishedVoyages.filter(voyage => voyage.voyageId !== v.voyageId);
-
-        // Recharger la liste des voyages supprimés
+        this.voyages = this.voyages.filter(voyage => voyage.id !== v.id);
+        this.unpublishedVoyages = this.unpublishedVoyages.filter(voyage => voyage.id !== v.id);
         this.loadDeletedVoyages();
       });
   }
 
   restore(v: Voyage) {
-    this.voyageService.restoreVoyage(v.voyageId)
+    this.voyageService.restoreVoyage(v.id)
       .subscribe(() => {
-        // Recharger les listes des voyages actifs et supprimés
         this.loadVoyages();
         this.loadDeletedVoyages();
       });

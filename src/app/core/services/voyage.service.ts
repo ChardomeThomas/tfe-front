@@ -68,4 +68,16 @@ export class VoyageService {
   restoreVoyage(id: number): Observable<any> {
     return this.http.post(this.apiUrl, { action: 'restore', voyageId: id }, { headers: this.headers });
   }
+
+  /** Voyages par point d'intérêt (id pays) */
+  getVoyagesByPointOfInterestId(pointOfInterestId: number): Observable<Voyage[]> {
+    const url = `http://localhost:48080/api/trips/point-of-interest/${pointOfInterestId}`;
+    return this.http.get<Voyage[]>(url);
+  }
+
+  /** Récupère un voyage par son id */
+  getVoyageById(id: number): Observable<Voyage> {
+    const url = `http://localhost:48080/api/trips/${id}`;
+    return this.http.get<Voyage>(url);
+  }
 }

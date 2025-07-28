@@ -4,7 +4,12 @@
 
 @font-face {
   font-family: 'Helvetica';
-  src: url('/assets/font/helvetica-255-webfont/Helvetica.woff') format('woff');
+  /* src: url('/assets/font/helvetica-255-webfont/Helvetica.woff2') format('woff2'), */
+      src: url('/assets/font/helvetica-255-webfont/Helvetica.woff') format('woff');
   font-weight: normal;
   font-style: normal;
+}
+
+body {
+  font-family: 'Helvetica', Arial, sans-serif;
 }

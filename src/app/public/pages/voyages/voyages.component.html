@@ -1,31 +1,30 @@
 <app-background>
-  <section class="title">
-    <h1>Découvrez nos Voyages</h1>
-    <p class="font-200">en {{ countryName }}</p>
-  </section>
-<div class="test" *ngIf="voyages.length > 0; else noVoyages">
- 
- 
-    <div  *ngFor="let voyage of voyages">
-     <mat-card class="example-card" appearance="outlined">
-  <mat-card-header  class="center">
-    
- <h3>{{ voyage.name }}</h3>
-  </mat-card-header>
-  <img mat-card-image src="https://material.angular.dev/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
-  <mat-card-content>
-<p class="center"> du {{ voyage.date_debut }}  au {{ voyage.date_fin }}</p>
-      
-  </mat-card-content>
-
-</mat-card>
-      
-</div>
-
-</div>
-
-<ng-template #noVoyages>
-  <p>Aucun voyage disponible pour ce pays.</p>
-</ng-template>
-
+    <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Découvrez nos Voyages</h1>
+    <p class="text-2xl md:text-3xl lg:text-4xl  text-gray-900 dark:text-white mb-4 text-center">en {{ countryName }}</p>
+  <div *ngIf="voyages.length > 0; else noVoyages">
+    <div *ngFor="let voyage of voyages" class="max-h-[32rem] min-h-[28rem] w-80 mx-auto mb-8">
+      <div class="bg-white shadow-lg border-4 border-white h-full flex flex-col overflow-hidden" style="border-width:2mm;">
+        <img
+          class="w-full h-80 object-cover"
+          src="https://material.angular.dev/assets/img/examples/shiba2.jpg"
+          alt="Photo du voyage"
+        />
+        <div class="p-5 flex-1 flex flex-col justify-between">
+          <h3 class="text-xl font-bold text-center mb-2">{{ voyage.title }}</h3>
+          <div class="flex justify-center gap-4 mb-2">
+            <span class="text-sm font-medium text-gray-700">{{ voyage.startDate }}</span>
+            <span class="text-sm font-medium text-gray-700"> - </span>
+            <span class="text-sm font-medium text-gray-700">{{ voyage.endDate }}</span>
+           
+          </div>
+          <p class="text-gray-700 text-center">
+            {{ voyage.description.split(' ').slice(0, 15).join(' ') }}<span *ngIf="voyage.description.split(' ').length > 15">...</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #noVoyages>
+    <p>Aucun voyage disponible pour ce pays.</p>
+  </ng-template>
 </app-background>

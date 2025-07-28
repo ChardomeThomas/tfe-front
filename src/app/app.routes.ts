@@ -16,9 +16,11 @@ export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'countries/:countryId/voyages', component: VoyagesComponent },
-  { path: 'countries/:countryId/voyages/:voyageId/destinations', component: DestinationsComponent },
-  { path: 'countries/:countryId/voyages/:voyageId/destinations/:destId/jours', component: JoursComponent },
-  { path: 'countries/:countryId/voyages/:voyageId/destinations/:destId/jours/:jourId/photos', component: PhotosComponent },
+  { path: 'countries/:countryId/voyages/:voyageId/jours', component: JoursComponent },
+  { path: 'countries/:countryId/voyages/:voyageId/jours/:jourId/photos', component: PhotosComponent },
+  // { path: 'countries/:countryId/voyages/:voyageId/destinations', component: DestinationsComponent },
+  // { path: 'countries/:countryId/voyages/:voyageId/destinations/:destId/jours', component: JoursComponent },
+  // { path: 'countries/:countryId/voyages/:voyageId/destinations/:destId/jours/:jourId/photos', component: PhotosComponent },
 
   // Admin
   { path: 'admin', component: DashboardComponent },
