@@ -103,8 +103,8 @@ export class DashboardComponent implements OnInit {
       )
       .subscribe(list => {
         // Filtrer les pays actifs et non publiés
-        this.countries = list.filter(country => country.status === 'PUBLISHED');
-        this.unpublishedCountries = list.filter(country => country.status === 'DRAFT');
+        this.countries = list.filter(country => country.published_date !== null);
+        this.unpublishedCountries = list.filter(country => country.published_date === null);
       });
   }
 
@@ -159,22 +159,22 @@ export class DashboardComponent implements OnInit {
   }
 
   publishCountry(c: Country) {
-    this.countryService.publishCountry(c.countryId)
+    this.countryService.publishCountry(c.id)
       .subscribe(() => this.loadCountries());
   }
 
   unpublishCountry(c: Country) {
-    this.countryService.unpublishCountry(c.countryId).subscribe(() => {
+    this.countryService.unpublishCountry(c.id).subscribe(() => {
       // Retirer le pays de la liste des actifs
-      this.countries = this.countries.filter(country => country.countryId !== c.countryId);
+      this.countries = this.countries.filter(country => country.id !== c.id);
 
       // Ajouter le pays à la liste des non publiés
-      this.unpublishedCountries = [...this.unpublishedCountries, { ...c, status: 'DRAFT' }];
+      this.unpublishedCountries = [...this.unpublishedCountries, { ...c, published_date: null }];
     });
   }
 
   deleteCountry(c: Country) {
-    this.countryService.deleteCountry(c.countryId)
+    this.countryService.deleteCountry(c.id)
       .subscribe(() => {
         this.loadCountries();
         this.loadDeletedCountries();
@@ -182,7 +182,7 @@ export class DashboardComponent implements OnInit {
   }
 
   restoreCountry(c: Country) {
-    this.countryService.restoreCountry(c.countryId)
+    this.countryService.restoreCountry(c.id)
       .subscribe(() => {
         this.loadCountries();
         this.loadDeletedCountries();

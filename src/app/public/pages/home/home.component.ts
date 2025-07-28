@@ -6,6 +6,9 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { CommonModule } from '@angular/common';
 import { SliderComponent } from "../../../shared/components/slider/slider.component";
+import { Country } from '../../../../interfaces/country.interface';
+import { CountryService } from '../../../core/services/country.service';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -22,10 +25,72 @@ import { SliderComponent } from "../../../shared/components/slider/slider.compon
 ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomeComponent {
+ countries: Country[] = [];
+ cards = [
+    {
+      title: 'Noteworthy technology acquisitions 2021',
+      description: 'Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.',
+      imageUrl: '../../../assets/country.jpg'
+    },
+    {
+      title: 'Noteworthy technology acquisitions 2021',
+      description: 'Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.',
+      imageUrl: '../../../assets/country.jpg'
+    },
+    {
+      title: 'Noteworthy technology acquisitions 2021',
+      description: 'Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.',
+      imageUrl: '../../../assets/country.jpg'
+    },
+    {
+      title: 'Noteworthy technology acquisitions 2021',
+      description: 'Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.',
+      imageUrl: '../../../assets/country.jpg'
+    },
+    {
+      title: 'Noteworthy technology acquisitions 2021',
+      description: 'Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.',
+      imageUrl: '../../../assets/country.jpg'
+    },
+    {
+      title: 'Noteworthy technology acquisitions 2021',
+      description: 'Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.',
+      imageUrl: '../../../assets/country.jpg'
+    },
+    {
+      title: 'Noteworthy technology acquisitions 2021',
+      description: 'Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.',
+      imageUrl: '../../../assets/country.jpg'
+    },
+    {
+      title: 'Noteworthy technology acquisitions 2021',
+      description: 'Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.',
+      imageUrl: '../../../assets/country.jpg'
+    },
+    {
+      title: 'Noteworthy technology acquisitions 2021',
+      description: 'Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.',
+      imageUrl: '../../../assets/country.jpg'
+    },
+    {
+      title: 'Noteworthy technology acquisitions 2021',
+      description: 'Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.',
+      imageUrl: '../../../assets/country.jpg'
+    },
+  ];
+  constructor(private countryService: CountryService) {}
 
+  ngOnInit(): void {
+    this.countryService.getCountries().subscribe({
+      next: (countries: Country[]) => {
+        this.countries = countries;
+      },
+      error: (error) => {
+        console.error('Erreur:', error);
+      }
+    });
+  }
+    }
 
-
-}

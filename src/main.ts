@@ -13,7 +13,8 @@ const providers: ApplicationConfig['providers'] = [
   ...appConfig.providers,
 
   // 2) Le nouveau provider HTTP standalone
-  provideHttpClient()
+  provideHttpClient(),
+  
 ];
 
 bootstrapApplication(AppComponent, { providers })

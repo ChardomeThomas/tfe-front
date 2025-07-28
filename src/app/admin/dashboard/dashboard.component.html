@@ -86,7 +86,7 @@
     <app-item-table
       title="Pays actifs"
       [dataSource]="countries"
-      [columns]="['flag', 'name']"
+      [columns]="['url', 'name']"
       [actionsTemplate]="activeCountryActions"
     ></app-item-table>
 
@@ -123,7 +123,7 @@
     <app-item-table
       title="Pays non publiés"
       [dataSource]="unpublishedCountries"
-      [columns]="['flag', 'name']"
+      [columns]="['url', 'name']"
       [actionsTemplate]="unpublishedCountryActions"
     ></app-item-table>
 
@@ -151,7 +151,7 @@
     <app-item-table
       title="Pays supprimés"
       [dataSource]="deletedCountries"
-      [columns]="['flag', 'name']"
+      [columns]="['url', 'name']"
       [actionsTemplate]="deletedCountryActions"
     ></app-item-table>
 

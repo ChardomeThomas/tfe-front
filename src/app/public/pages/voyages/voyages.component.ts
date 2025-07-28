@@ -37,7 +37,7 @@ export class VoyagesComponent implements OnInit {
 
             this.countryService.getCountries()
                 .subscribe(countries => {
-                    const country = countries.find(c => c.countryId.toString() === countryId); // Convert countryId to string for comparison
+                    const country = countries.find(c => c.id.toString() === countryId); // Convert countryId to string for comparison
                     this.countryName = country ? country.name : null;
                     console.log('Country Name:', this.countryName); // Debugging log
                 });

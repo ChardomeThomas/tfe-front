@@ -1,20 +1,38 @@
-<div class="container">
-	<div class="banner">
-		<p>appareil non pris en charge, utilisez un appareil plus grand pour une meilleure expérience</p>
-	</div>
+<header class="flex items-center justify-between px-4 py-2">
+  <!-- Logo -->
   <div class="logo">
-    <img (click)="onLogoClick()" src="assets/logo.png" alt="Logo wandering soul">
+    <img
+      (click)="onLogoClick()"
+      src="assets/logo.png"
+      alt="Logo wandering soul"
+      class="w-[300px] h-[100px] sm:w-[150px] sm:h-auto cursor-pointer"
+    />
   </div>
-  
-<div class="accueil_btn">
-  <a class="accueil" (click)="onLogoClick()">Accueil</a>
 
+  <!-- Liens / boutons -->
   @if (!isLoggedIn()) {
-    <button class="connexion_btn" (click)="login()">Se connecter</button>
-} @else {
-    <button class="connexion_btn" (click)="logout()">Se déconnecter</button>
-    <button class="admin_btn" (click)="admin()">admin</button>
+    <div class="flex items-center space-x-4">
+      <a (click)="onLogoClick()" class="text-gray-800 hover:text-gray-600 cursor-pointer">Accueil</a>
+      <button (click)="goToLogin()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
+        Se connecter
+      </button>
+    </div>
+  } @else {
+    <div class="flex items-center space-x-4">
+      <a (click)="onLogoClick()" class="text-gray-800 hover:text-gray-600 cursor-pointer">Accueil</a>
+      <button (click)="logout()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
+        Se déconnecter
+      </button>
+      <button (click)="admin()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
+        Admin
+      </button>
+    </div>
   }
+</header>
 
+<!-- Banner sur petits écrans -->
+<div class="banner bg-black text-white text-center p-2 sm:hidden">
+  <p class="text-xs">
+    appareil non pris en charge, utilisez un appareil plus grand pour une meilleure expérience
+  </p>
 </div>
-

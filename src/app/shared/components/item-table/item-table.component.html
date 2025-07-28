@@ -7,14 +7,19 @@
           {{ column === 'flag' ? 'Drapeau' : column === 'name' ? 'Nom' : column === 'dates' ? 'Période' : column | titlecase }}
         </th>
         <td mat-cell *matCellDef="let element">
-          <ng-container *ngIf="column === 'flag'; else defaultCell">
+          <ng-container *ngIf="column === 'flag'; else urlOrDefaultCell">
             <img [src]="element[column]" alt="Drapeau" width="40" height="30" />
           </ng-container>
-          <ng-template #defaultCell>
-            <ng-container *ngIf="column === 'dates'; else textCell">
-              {{ element.date_debut | date:'dd/MM/yyyy' }} → {{ element.date_fin | date:'dd/MM/yyyy' }}
+          <ng-template #urlOrDefaultCell>
+            <ng-container *ngIf="column === 'url'; else defaultCell">
+              <img [src]="element.url" alt="Drapeau de {{ element.name }}" width="32" height="20" style="object-fit:cover; border-radius:3px;" />
             </ng-container>
-            <ng-template #textCell>{{ element[column] }}</ng-template>
+            <ng-template #defaultCell>
+              <ng-container *ngIf="column === 'dates'; else textCell">
+                {{ element.date_debut | date:'dd/MM/yyyy' }} → {{ element.date_fin | date:'dd/MM/yyyy' }}
+              </ng-container>
+              <ng-template #textCell>{{ element[column] }}</ng-template>
+            </ng-template>
           </ng-template>
         </td>
       </ng-container>

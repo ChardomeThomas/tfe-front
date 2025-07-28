@@ -1,9 +1,12 @@
 // src/app/interfaces/country.interface.ts
 export interface Country {
-  countryId: number;
+  id: number;
   name: string;
-  flag: string;
-  status: 'DRAFT' | 'PUBLISHED';
+  url:string;
+  published_date: Date | null;
+  deleted_at: Date | null;
+  parent_point_of_interest_id: number | null;
+  type: 'PAYS' | 'DESTINATION';
 }
 
 export interface Voyage {

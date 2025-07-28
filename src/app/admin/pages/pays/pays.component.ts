@@ -36,7 +36,7 @@ export class AdminPaysComponent {
 
             this.countryService.getCountries()
                 .subscribe(countries => {
-                    const country = countries.find(c => c.countryId === +countryId);
+                    const country = countries.find(c => c.id === +countryId);
                     this.countryName = country ? country.name : null;
                 });
         }

@@ -38,11 +38,11 @@ export class SliderComponent implements OnInit, AfterViewInit {
       .subscribe((countries: Country[]) => {
         // Ne garder que les countries publiés
         this.slides = countries
-          .filter(c => c.status === 'PUBLISHED')
+          .filter(c => c.type === 'PAYS')
           .map(c => ({
             name: c.name,
-            flag: c.flag,
-            id: c.countryId
+            flag: c.url,
+            id: c.id
           }));
       });
   }

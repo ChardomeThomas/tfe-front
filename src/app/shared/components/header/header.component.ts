@@ -11,18 +11,18 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class HeaderComponent {
  
-currentPage: string = '';
+  currentPage: string = '';
   currentForm: string = ''; 
 
-   constructor(private router: Router, private authService: AuthService) {
-//     // Mise à jour de currentPage dès qu'une navigation se termine
+  constructor(private router: Router, private authService: AuthService) {
+    // Mise à jour de currentPage dès qu'une navigation se termine
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.currentPage = event.urlAfterRedirects;
         console.log('Current URL:', this.currentPage);
       }
     });
-   }
+  }
 
   ngOnInit() {
     const url = new URL(window.location.href);
@@ -32,32 +32,38 @@ currentPage: string = '';
     }
   }
   
-   onLogoClick() {
-     this.router.navigate(['']);
-   }
+  onLogoClick() {
+    this.router.navigate(['']);
+  }
 
-  login(): void {
-    this.authService.login(); 
-    window.location.href = window.location.href.split('?')[0] + '?reload=' + new Date().getTime();
+  // Redirige vers la page de connexion au lieu de connecter directement
+  goToLogin(): void {
+    this.router.navigate(['/login']);
   }
+
+  // Redirige vers l'admin (nécessite d'être connecté)
   admin(): void {
-    this.router.navigate(['admin']);
-  
+    if (this.isLoggedIn()) {
+      this.router.navigate(['/admin']);
+    } else {
+      // Rediriger vers login si pas connecté
+      this.router.navigate(['/login']);
+    }
   }
   
+  // Déconnexion et redirection
   logout(): void {
     this.authService.logout(); 
-    window.location.href = window.location.href.split('?')[0] + '?reload=' + new Date().getTime();
+    this.router.navigate(['/login']); // Ou vers la page d'accueil
   }
   
-//   // Vérifie si l'utilisateur est connecté
+  // Vérifie si l'utilisateur est connecté
   isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
   }
   
-//   // Méthode utilitaire pour obtenir les segments de l'URL (sans les query params)
+  // Méthode utilitaire pour obtenir les segments de l'URL (sans les query params)
   private getUrlSegments(): string[] {
     return this.currentPage.split('?')[0].split('/').filter(segment => segment.length > 0);
   }
-  
 }
