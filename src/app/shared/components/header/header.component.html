@@ -20,11 +20,15 @@
   } @else {
     <div class="flex items-center space-x-4">
       <a (click)="onLogoClick()" class="text-gray-800 hover:text-gray-600 cursor-pointer">Accueil</a>
-      <button (click)="logout()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
-        Se déconnecter
+      <button (click)="admin()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
+        Profil
       </button>
       <button (click)="admin()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
         Admin
+      </button>
+      <span>|</span>
+      <button (click)="logout()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
+        Se déconnecter
       </button>
     </div>
   }

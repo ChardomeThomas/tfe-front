@@ -3,12 +3,13 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { BackgroundComponent } from '../../../shared/components/background/background.component';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  imports: [ReactiveFormsModule]
+  imports: [ReactiveFormsModule, BackgroundComponent]
 })
 export class LoginComponent {
   loginForm: FormGroup;
