@@ -20,19 +20,49 @@ export interface Voyage {
   pointOfInterestName: string;
   published: boolean;
 }
-  export interface Jour{
-    dayId: number;
-    day_number: number;
-    cityId: number;
-    description:string;
-	url:string;
-  }
-export interface Photo {
-  idPhoto: number;
-  idDay:   number;
-  title:   string;
-  url:     string;
+export interface DestinationParent {
+  id: number;
+  url: string | null;
+  name: string;
+  publishedDate: string | null;
+  type: 'PAYS';
+  parent: null;
+  published: boolean;
+}
+
+export interface Destination {
+  id: number;
+  url: string | null;
+  name: string;
+  publishedDate: string | null;
+  type: 'DESTINATION';
+  parent: DestinationParent;
+  published: boolean;
+}
+
+export interface Jour {
+  id: number;
+  date: string;
+  title: string;
   description: string;
-  isPrivate:   boolean;
-  loaded:      boolean;
+  tripId: number;
+  destinations: Destination[];
+  published_date?: string | null;
+  deleted_at?: string | null;
+  trip_id?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+export interface Photo {
+  id: number;
+  url: string;
+  thumbnail_url: string;
+  description: string;
+  is_public: boolean;
+  favorite: boolean;
+  day_id: number;
+  published_date: string | null;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { VoyageService } from '../../../core/services/voyage.service';
 import { CountryService } from '../../../core/services/country.service';
@@ -21,6 +21,7 @@ export class VoyagesComponent implements OnInit {
 
     constructor(
         private route: ActivatedRoute,
+        private router: Router,
         private voyageService: VoyageService,
         private countryService: CountryService
     ) {}
@@ -39,6 +40,13 @@ export class VoyagesComponent implements OnInit {
                     this.countryName = country ? country.name : null;
                     console.log('Country Name:', this.countryName);
                 });
+        }
+    }
+
+    goToDays(voyageId: number) {
+        const countryId = this.route.snapshot.paramMap.get('countryId');
+        if (countryId) {
+            this.router.navigate(['/countries', countryId, 'voyages', voyageId, 'jours']);
         }
     }
 }
