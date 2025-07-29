@@ -1,7 +1,7 @@
 <app-background>
+  <div *ngIf="voyages.length > 0; else noVoyages">
     <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Découvrez nos Voyages</h1>
     <p class="text-2xl md:text-3xl lg:text-4xl  text-gray-900 dark:text-white mb-4 text-center">en {{ countryName }}</p>
-  <div *ngIf="voyages.length > 0; else noVoyages">
     <div *ngFor="let voyage of voyages" class="max-h-[32rem] min-h-[28rem] w-80 mx-auto mb-8">
       <div class="bg-white shadow-lg border-4 border-white h-full flex flex-col overflow-hidden cursor-pointer" style="border-width:2mm;"
            (click)="goToDays(voyage.id)">
@@ -27,6 +27,14 @@
     </div>
   </div>
   <ng-template #noVoyages>
-    <p>Aucun voyage disponible pour ce pays.</p>
+      <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Veuillez patienter</h1>
+    <div class="flex flex-col items-center justify-center mt-8">
+      <div class="w-64 h-64 sm:w-96 sm:h-96 md:w-[32rem] md:h-[32rem] lg:w-[560px] lg:h-[560px] flex items-center justify-center">
+        <ng-lottie [options]="loaderOptions" class="w-full h-full" style="width:100%;height:100%"></ng-lottie>
+      </div>
+      <span class="text-2xl sm:text-3xl font-bold text-gray-700 mt-2 text-center block">
+        {{ displayText }}
+      </span>
+    </div>
   </ng-template>
 </app-background>

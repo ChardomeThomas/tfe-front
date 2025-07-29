@@ -7,10 +7,12 @@ import { Voyage, Country } from '../../../../interfaces/country.interface';
 import { BackgroundComponent } from "../../../shared/components/background/background.component";
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { AnimationOptions } from 'ngx-lottie';
+import { LottieComponent } from 'ngx-lottie';
 
 @Component({
     selector: 'app-voyages',
-    imports: [CommonModule, BackgroundComponent, MatCardModule, MatButtonModule],
+    imports: [CommonModule, BackgroundComponent, MatCardModule, MatButtonModule, LottieComponent],
     standalone: true,
     templateUrl: './voyages.component.html',
     styleUrl: './voyages.component.css'
@@ -18,7 +20,13 @@ import { MatCardModule } from '@angular/material/card';
 export class VoyagesComponent implements OnInit {
     voyages: Voyage[] = [];
     countryName: string | null = null;
-
+    baseText = 'Voyages en cours';
+  displayText = '';
+  dotCount = 0;
+  intervalId: any;
+loaderOptions: AnimationOptions = {
+  path: '/assets/lottie/Earth.json'
+};
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -27,7 +35,12 @@ export class VoyagesComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        const countryId = this.route.snapshot.paramMap.get('countryId');
+         this.intervalId = setInterval(() => {
+      this.dotCount = (this.dotCount + 1) % 4; // 0 → 1 → 2 → 3 → 0
+      this.displayText = this.baseText + '.'.repeat(this.dotCount);
+    }, 500); // Vitesse (500ms entre chaque ajout de point)
+          const countryId = this.route.snapshot.paramMap.get('countryId');
+        
         if (countryId) {
             this.voyageService.getVoyagesByPointOfInterestId(+countryId)
                 .subscribe(voyages => {
@@ -49,4 +62,7 @@ export class VoyagesComponent implements OnInit {
             this.router.navigate(['/countries', countryId, 'voyages', voyageId, 'jours']);
         }
     }
+      ngOnDestroy(): void {
+    clearInterval(this.intervalId);
+  }
 }

@@ -1,1 +1,42 @@
-<p>photos works!</p>
+<app-background>
+  <div >
+    <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Photos du jour</h1>
+    
+    <!-- Loader affiché pendant le chargement -->
+
+
+    <!-- Préchargement invisible des images -->
+    <div style="display: none;">
+      <img
+        *ngFor="let photo of photos"
+        [src]="photo.url"
+        (load)="onImageLoad()"
+        (error)="onImageError()"
+        [alt]="photo.description"
+      />
+    </div>
+
+    <!-- Messages d'erreur et états -->
+    <div *ngIf="error" class="text-red-500">{{ error }}</div>
+    <div *ngIf="!loading && !error && photos.length === 0 && allLoaded" class="text-gray-500">
+      Aucune photo trouvée pour ce jour.
+    </div>
+
+    <!-- Grille affichée après préchargement complet -->
+    <ngx-masonry 
+      *ngIf="allLoaded && !error && photos.length > 0" 
+      [options]="{ gutter: 16, percentPosition: true }">
+      <div ngxMasonryItem *ngFor="let photo of photos" class="masonry-item w-[300px] mb-4 transition-[top,left] duration-[400ms] ease-in-out ml-4">
+        <img
+          [src]="photo.url"
+          class="w-full block mb-2 rounded-2xl "
+          loading="lazy"
+          decoding="async"
+        />
+        <div >
+          <small>{{ photo.description }}</small>
+        </div>
+      </div>
+    </ngx-masonry>
+  </div>
+</app-background>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackgroundComponent } from '../../../shared/components/background/background.component';
 import { Jour } from '../../../../interfaces/country.interface';
 import { DayService } from '../../../core/services/day.service';
@@ -22,10 +22,18 @@ export class JoursComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private dayService: DayService,
     private photoService: PhotoService,
     private voyageService: VoyageService
   ) {}
+  onJourClick(jour: Jour) {
+    const countryId = this.route.snapshot.paramMap.get('countryId');
+    const voyageId = this.route.snapshot.paramMap.get('voyageId');
+    if (countryId && voyageId && jour.id) {
+      this.router.navigate([`/countries/${countryId}/voyages/${voyageId}/jours/${jour.id}/photos`]);
+    }
+  }
 
   ngOnInit() {
     const tripId = this.route.snapshot.paramMap.get('voyageId');
