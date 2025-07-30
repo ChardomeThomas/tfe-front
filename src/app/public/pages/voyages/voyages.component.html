@@ -7,9 +7,9 @@
            (click)="goToDays(voyage.id)">
         <div class="flex-1 flex flex-col">
           <img
-            class="w-full h-full object-cover flex-1"
-            src="https://material.angular.dev/assets/img/examples/shiba2.jpg"
-            alt="Photo du voyage"
+            class="w-[300px] h-[250px] object-cover"
+            [src]="voyage.photoUrl || 'https://material.angular.dev/assets/img/examples/shiba2.jpg'"
+            [alt]="voyage.title"
           />
         </div>
         <div class="p-5 flex-1 flex flex-col justify-between">

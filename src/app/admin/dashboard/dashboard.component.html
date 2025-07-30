@@ -82,6 +82,7 @@
       </button>
     </div>
 
+  
     <!-- Pays actifs -->
     <app-item-table
       title="Pays actifs"
@@ -93,27 +94,30 @@
     <ng-template #activeCountryActions let-country>
       <button
         mat-icon-button
-        [routerLink]="['/admin','countries',country.countryId,'voyages']"
+        [routerLink]="['/admin','countries',country.id,'voyages']"
         matTooltip="Voir les voyages"
       >
         <mat-icon>navigate_next</mat-icon>
       </button>
+      <!-- Publier si en draft -->
       <button
         mat-button
         color="accent"
-        *ngIf="country.status === 'DRAFT'"
+        *ngIf="country.publishedDate == null"
         (click)="publishCountry(country)"
       >
         Publier
       </button>
+      <!-- Dépublier si publié -->
       <button
         mat-button
         color="accent"
-        *ngIf="country.status === 'PUBLISHED'"
+        *ngIf="country.publishedDate != null"
         (click)="unpublishCountry(country)"
       >
         Dépublier
       </button>
+      <!-- Supprimer -->
       <button mat-icon-button color="warn" (click)="deleteCountry(country)">
         <mat-icon>delete</mat-icon>
       </button>
@@ -130,7 +134,7 @@
     <ng-template #unpublishedCountryActions let-country>
       <button
         mat-icon-button
-        [routerLink]="['/admin','countries',country.countryId,'voyages']"
+        [routerLink]="['/admin','countries',country.id,'voyages']"
         matTooltip="Voir les voyages"
       >
         <mat-icon>navigate_next</mat-icon>
@@ -162,14 +166,19 @@
     </ng-template>
 
     <!-- Modal d’erreur pays existant -->
-    <ng-template #existsDialog>
-      <h2 mat-dialog-title>Pays déjà présent</h2>
-      <mat-dialog-content>
-        Le pays que vous essayez d’ajouter existe déjà dans la base.
+<ng-template #existsDialog let-data>
+  <div class="p-6 rounded-xl bg-white shadow-2xl border border-red-200 min-w-[320px] max-w-[90vw] text-center">
+    <div class="flex flex-col items-center gap-2">
+      <mat-icon class="text-red-500 text-4xl !mb-2">error_outline</mat-icon>
+      <h2 mat-dialog-title class="text-xl font-bold text-red-600 mb-2">Erreur</h2>
+      <mat-dialog-content class="text-gray-700 text-base mb-4">
+        {{ data }}
       </mat-dialog-content>
-      <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close>OK</button>
+      <mat-dialog-actions align="center">
+        <button mat-raised-button color="primary" mat-dialog-close class="px-6 py-2 rounded-lg shadow bg-gradient-to-r from-red-400 to-pink-500 text-white font-semibold hover:from-red-500 hover:to-pink-600 transition-all">OK</button>
       </mat-dialog-actions>
-    </ng-template>
+    </div>
+  </div>
+</ng-template>
   </mat-card>
 </div>

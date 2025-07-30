@@ -1,6 +1,7 @@
+// src/app/dashboard/dashboard.component.ts
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { CommonModule }  from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -8,22 +9,22 @@ import {
   FormControl,
   Validators
 } from '@angular/forms';
-import { MatTableDataSource, MatTableModule }         from '@angular/material/table';
-import { MatToolbarModule }           from '@angular/material/toolbar';
-import { MatCardModule }              from '@angular/material/card';
-import { MatIconModule }              from '@angular/material/icon';
-import { MatButtonModule }            from '@angular/material/button';
-import { MatFormFieldModule }         from '@angular/material/form-field';
-import { MatInputModule }             from '@angular/material/input';
-import { MatListModule }              from '@angular/material/list';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { catchError, of }             from 'rxjs';
+import { catchError, of } from 'rxjs';
 
-import { CountryResult }             from '../../models/country-result.model';
-import { CountryService }            from '../../core/services/country.service';
-import { CountrySearchService }      from '../../core/services/country-search.service';
-import { Country }                   from '../../../interfaces/country.interface';
-import { ItemTableComponent }        from '../../shared/components/item-table/item-table.component';
+import { CountryResult } from '../../models/country-result.model';
+import { CountrySearchService } from '../../core/services/country-search.service';
+import { Country } from '../../../interfaces/country.interface';
+import { CountryAdminService } from '../../core/services/admin/countryAdmin.service';
+import { ItemTableComponent } from '../../shared/components/item-table/item-table.component';
 
 export interface User {
   id: number;
@@ -72,52 +73,38 @@ export class DashboardComponent implements OnInit {
   countryForm: FormGroup;
   countries: Country[] = [];
   deletedCountries: Country[] = [];
-  unpublishedCountries: Country[] = []; // Liste des pays non publiés
+  unpublishedCountries: Country[] = [];
 
   constructor(
     private countrySearchService: CountrySearchService,
-    private countryService: CountryService,
+    private countryAdminService: CountryAdminService,
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog
   ) {
     this.countryForm = new FormGroup({
-      name: new FormControl('', [Validators.required]),
+      name: new FormControl('', Validators.required),
       flag: new FormControl('', [Validators.required, Validators.pattern('https?://.+')])
     });
   }
 
   ngOnInit() {
     this.countrySearchService.loadAll().subscribe();
-    this.loadCountries();
-    this.loadDeletedCountries();
+    this.loadAdminSummary();
   }
 
-  private loadCountries() {
-    this.countryService.getCountries()
+  private loadAdminSummary() {
+    this.countryAdminService.getAdminSummary()
       .pipe(
         catchError(err => {
-          console.error('Chargement pays actifs échoué :', err);
-          return of([] as Country[]);
+          console.error('Échec chargement résumé admin :', err);
+          return of({ deleted: [], drafts: [], published: [] });
         })
       )
-      .subscribe(list => {
-        // Filtrer les pays actifs et non publiés
-        this.countries = list.filter(country => country.published_date !== null);
-        this.unpublishedCountries = list.filter(country => country.published_date === null);
-      });
-  }
-
-  private loadDeletedCountries() {
-    this.countryService.getDeletedCountries()
-      .pipe(
-        catchError(err => {
-          console.error('Chargement pays supprimés échoué :', err);
-          return of([] as Country[]);
-        })
-      )
-      .subscribe(list => {
-        this.deletedCountries = list;
+      .subscribe(summary => {
+        this.deletedCountries     = summary.deleted;
+        this.unpublishedCountries = summary.drafts;
+        this.countries            = summary.published;
       });
   }
 
@@ -136,57 +123,56 @@ export class DashboardComponent implements OnInit {
     this.countryForm.patchValue({ name, flag: c.flags.png });
   }
 
-  addCountry() {
-    if (this.countryForm.invalid) {
-      console.error('Formulaire invalide.');
-      return;
-    }
-    const { name, flag } = this.countryForm.value;
-    this.countryService.addCountry({ name, flag })
-      .subscribe({
-        next: () => {
-          this.loadCountries();
-          this.resetSelection();
-        },
-        error: err => {
-          if (err.status === 409) {
-            this.dialog.open(this.existsDialog);
-          } else {
-            console.error('Erreur ajout :', err);
-          }
-        }
-      });
+addCountry() {
+  if (this.countryForm.invalid) {
+    console.error('Formulaire invalide.');
+    return;
   }
+  const { name, flag } = this.countryForm.value;
+this.countryAdminService.addCountry({ name, flag }).subscribe({
+    next: () => {
+      this.loadAdminSummary();
+      this.resetSelection();
+    },
+    error: err => {
+      let userMsg = 'Erreur lors de l’ajout.'; // fallback général
+
+      if (err.status === 409) {
+        userMsg = err.error?.message || 'Le pays existe déjà.';
+      }
+      else if (err.status === 403) {
+        userMsg = 'Le pays existe déjà.';
+      }
+      else if (err.status === 0) {
+        userMsg = 'Impossible de joindre le serveur.';
+      }
+
+      this.dialog.open(this.existsDialog, {
+        data: userMsg
+      });
+    }
+  });
+}
+
 
   publishCountry(c: Country) {
-    this.countryService.publishCountry(c.id)
-      .subscribe(() => this.loadCountries());
+    this.countryAdminService.publishCountry(c.id)
+      .subscribe(() => this.loadAdminSummary());
   }
 
   unpublishCountry(c: Country) {
-    this.countryService.unpublishCountry(c.id).subscribe(() => {
-      // Retirer le pays de la liste des actifs
-      this.countries = this.countries.filter(country => country.id !== c.id);
-
-      // Ajouter le pays à la liste des non publiés
-      this.unpublishedCountries = [...this.unpublishedCountries, { ...c, published_date: null }];
-    });
+    this.countryAdminService.unpublishCountry(c.id)
+      .subscribe(() => this.loadAdminSummary());
   }
 
   deleteCountry(c: Country) {
-    this.countryService.deleteCountry(c.id)
-      .subscribe(() => {
-        this.loadCountries();
-        this.loadDeletedCountries();
-      });
+    this.countryAdminService.deleteCountry(c.id)
+      .subscribe(() => this.loadAdminSummary());
   }
 
   restoreCountry(c: Country) {
-    this.countryService.restoreCountry(c.id)
-      .subscribe(() => {
-        this.loadCountries();
-        this.loadDeletedCountries();
-      });
+    this.countryAdminService.restoreCountry(c.id)
+      .subscribe(() => this.loadAdminSummary());
   }
 
   onEditUser(user: User) {

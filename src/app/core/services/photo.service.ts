@@ -7,6 +7,11 @@ import { Photo } from '../../../interfaces/country.interface';
   providedIn: 'root'
 })
 export class PhotoService {
+  /** Récupère une photo favorite aléatoire pour un voyage */
+  getRandomFavoritePhotoByTripId(tripId: number): Observable<{ url: string }> {
+    const url = `http://localhost:48080/api/photos/trip/${tripId}/random-favorite`;
+    return this.http.get<{ url: string }>(url);
+  }
   constructor(private http: HttpClient) { }
 
   getPhotosByDay(dayId: number, role: string = ''): Observable<Photo[]> {

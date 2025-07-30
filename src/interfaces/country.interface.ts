@@ -3,8 +3,8 @@ export interface Country {
   id: number;
   name: string;
   url:string;
-  published_date: Date | null;
-  deleted_at: Date | null;
+  publishedDate: Date | null;
+  deletedAt: Date | null;
   parent_point_of_interest_id: number | null;
   type: 'PAYS' | 'DESTINATION';
 }
@@ -19,6 +19,7 @@ export interface Voyage {
   pointOfInterestId: number;
   pointOfInterestName: string;
   published: boolean;
+  photoUrl?: string;
 }
 export interface DestinationParent {
   id: number;
@@ -56,13 +57,13 @@ export interface Jour {
 export interface Photo {
   id: number;
   url: string;
-  thumbnail_url: string;
+  thumbnailUrl: string;
   description: string;
-  is_public: boolean;
+  isPublic: boolean;
   favorite: boolean;
-  day_id: number;
-  published_date: string | null;
-  deleted_at: string | null;
-  created_at: string;
-  updated_at: string;
+  dayId: number;
+  publishedDate: string | null;
+  deletedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 }

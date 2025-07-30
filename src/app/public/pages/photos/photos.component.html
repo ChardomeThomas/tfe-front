@@ -2,14 +2,19 @@
   <div >
     <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Photos du jour</h1>
     
+
     <!-- Loader affiché pendant le chargement -->
+    <div *ngIf="!allLoaded" class="flex flex-col items-center justify-center min-h-[300px]">
+      <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid mb-4"></div>
+      <div class="text-gray-500">Chargement des photos...</div>
+    </div>
 
 
     <!-- Préchargement invisible des images -->
     <div style="display: none;">
       <img
         *ngFor="let photo of photos"
-        [src]="photo.url"
+        [src]="photo.thumbnailUrl"
         (load)="onImageLoad()"
         (error)="onImageError()"
         [alt]="photo.description"
@@ -28,7 +33,7 @@
       [options]="{ gutter: 16, percentPosition: true }">
       <div ngxMasonryItem *ngFor="let photo of photos" class="masonry-item w-[300px] mb-4 transition-[top,left] duration-[400ms] ease-in-out ml-4">
         <img
-          [src]="photo.url"
+          [src]="photo.thumbnailUrl"
           class="w-full block mb-2 rounded-2xl "
           loading="lazy"
           decoding="async"

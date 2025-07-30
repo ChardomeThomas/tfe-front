@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { VoyageService } from '../../../core/services/voyage.service';
+import { PhotoService } from '../../../core/services/photo.service';
 import { CountryService } from '../../../core/services/country.service';
 import { Voyage, Country } from '../../../../interfaces/country.interface';
 import { BackgroundComponent } from "../../../shared/components/background/background.component";
@@ -31,7 +32,8 @@ loaderOptions: AnimationOptions = {
         private route: ActivatedRoute,
         private router: Router,
         private voyageService: VoyageService,
-        private countryService: CountryService
+        private countryService: CountryService,
+        private photoService: PhotoService
     ) {}
 
     ngOnInit(): void {
@@ -45,7 +47,21 @@ loaderOptions: AnimationOptions = {
             this.voyageService.getVoyagesByPointOfInterestId(+countryId)
                 .subscribe(voyages => {
                     this.voyages = voyages;
-                    console.log(this.voyages);
+                    console.log('Voyages récupérés:', this.voyages);
+                    // Pour chaque voyage, récupérer la photo favorite aléatoire
+                    this.voyages.forEach(voyage => {
+                        console.log('Appel photo pour voyage.id =', voyage.id);
+                        this.photoService.getRandomFavoritePhotoByTripId(voyage.id).subscribe({
+                            next: (res) => {
+                                voyage.photoUrl = res.url;
+                                console.log(`Photo URL pour voyage ${voyage.id}:`, voyage.photoUrl);
+                            },
+                            error: () => {
+                                voyage.photoUrl = 'https://material.angular.dev/assets/img/examples/shiba2.jpg';
+                                console.log(`Photo URL par défaut pour voyage ${voyage.id}:`, voyage.photoUrl);
+                            }
+                        });
+                    });
                 });
             this.countryService.getCountries()
                 .subscribe(countries => {
