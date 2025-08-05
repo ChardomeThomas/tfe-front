@@ -1,5 +1,5 @@
-<app-background>
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 p-4">
+
+<div class="min-h-screen flex items-center justify-center  p-4">
   <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
     <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Connexion</h2>
     
@@ -45,7 +45,7 @@
             <span>Le mot de passe est requis</span>
           }
           @if (password?.errors?.['minlength']) {
-            <span>Le mot de passe doit contenir au moins 6 caractères</span>
+            <span>Le mot de passe doit contenir au moins 3 caractères</span>
           }
         </div>
       </div>
@@ -73,4 +73,3 @@
     </form>
   </div>
 </div>
-</app-background>

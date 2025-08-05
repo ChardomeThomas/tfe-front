@@ -2,8 +2,6 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './public/pages/home/home.component';
 import { VoyagesComponent } from './public/pages/voyages/voyages.component';
 import { PhotosComponent } from './public/pages/photos/photos.component';
-import { DestinationsComponent } from './public/pages/destinations/destinations.component';
-import { AdminDestinationsComponent } from './admin/pages/destinations/destinations.component';
 import { AdminPhotosComponent } from './admin/pages/photos/photos.component';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { JoursComponent } from './public/pages/jours/jours.component';
@@ -25,9 +23,9 @@ export const routes: Routes = [
   // Admin
   { path: 'admin', component: DashboardComponent },
   { path: 'admin/countries/:countryId/voyages', component: AdminVoyagesComponent },
-  { path: 'admin/countries/:countryId/voyages/:voyageId/destinations', component: AdminDestinationsComponent },
-  { path: 'admin/countries/:countryId/voyages/:voyageId/destinations/:destId/jours', component: AdminJoursComponent },
-  { path: 'admin/countries/:countryId/voyages/:voyageId/destinations/:destId/jours/:jourId/photos', component: AdminPhotosComponent },
+  // { path: 'admin/countries/:countryId/voyages/:voyageId/destinations', component: AdminDestinationsComponent },
+  { path: 'admin/countries/:countryId/voyages/:voyageId/jours', component: AdminJoursComponent },
+  { path: 'admin/countries/:countryId/voyages/:voyageId/jours/:jourId/photos', component: AdminPhotosComponent },
 
   // Fallback
   { path: '**', redirectTo: '' }

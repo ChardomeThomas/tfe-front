@@ -20,7 +20,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule }     from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter } from '@angular/material/core';
-import { Voyage } from '../../../../interfaces/country.interface';
+import { Voyage } from '../../../interfaces/voyage.interface';
 import { VoyageService } from '../../../core/services/voyage.service';
 import { ItemTableComponent } from '../../../shared/components/item-table/item-table.component';
 

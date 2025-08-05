@@ -1,4 +1,4 @@
-<app-background>
+
   <div class="flex justify-center py-8">
     <div class="w-full md:w-3/4">
       <h1 class="text-3xl font-bold mb-6 text-gray-700-mb relative after:content-[''] after:block after:mt-2 after:border-t-2 after:border-gray-700 after:w-[40px] after:ml-0">Jours</h1>
@@ -13,7 +13,7 @@
             </div>
             <div class="flex-1 flex flex-col gap-2 justify-center">
               <div class="text-lg font-semibold">{{ jour.title }}</div>
-              <div class="text-sm text-gray-500">Date : {{ jour.date | date:'longDate' }}</div>
+              <div class="text-sm text-gray-500">Date : {{ jour.date | date:'longDate':'fr-FR'  }}</div>
               <div *ngIf="jour.destinations?.length" class="text-sm text-blue-800">
                 Destinations :
                 <span *ngFor="let dest of jour.destinations; let last = last">
@@ -30,4 +30,3 @@
       </div>
     </div>
   </div>
-</app-background>

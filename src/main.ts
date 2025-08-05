@@ -4,7 +4,10 @@ import { register as registerSwiperElements } from 'swiper/element/bundle';
 import { importProvidersFrom, ApplicationConfig } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { appConfig } from './app/app.config';  // supposé exposer un ApplicationConfig
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
 
+registerLocaleData(localeFr);
 registerSwiperElements();
 
 // On crée un tableau de providers qui mélange :

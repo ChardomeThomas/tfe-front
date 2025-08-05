@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { VoyageService } from '../../../core/services/voyage.service';
 import { PhotoService } from '../../../core/services/photo.service';
 import { CountryService } from '../../../core/services/country.service';
-import { Voyage, Country } from '../../../../interfaces/country.interface';
+import { Voyage } from '../../../interfaces/voyage.interface';
+import { Country } from '../../../interfaces/country.interface';
 import { BackgroundComponent } from "../../../shared/components/background/background.component";
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -13,7 +14,7 @@ import { LottieComponent } from 'ngx-lottie';
 
 @Component({
     selector: 'app-voyages',
-    imports: [CommonModule, BackgroundComponent, MatCardModule, MatButtonModule, LottieComponent],
+    imports: [CommonModule, MatCardModule, MatButtonModule, LottieComponent],
     standalone: true,
     templateUrl: './voyages.component.html',
     styleUrl: './voyages.component.css'

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { PhotoService } from '../../../core/services/photo.service';
-import { Photo } from '../../../../interfaces/country.interface';
+import { Photo } from '../../../interfaces/photo.interface';
 import { BackgroundComponent } from '../../../shared/components/background/background.component';
 import { NgxMasonryComponent, NgxMasonryModule } from 'ngx-masonry';
 import { HttpClient, HttpClientModule } from '@angular/common/http';

@@ -1,28 +1,31 @@
-<app-background>
+
   <div *ngIf="voyages.length > 0; else noVoyages">
     <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Découvrez nos Voyages</h1>
-    <p class="text-2xl md:text-3xl lg:text-4xl  text-gray-900 dark:text-white mb-4 text-center">en {{ countryName }}</p>
-    <div *ngFor="let voyage of voyages" class="max-h-[32rem] min-h-[28rem] w-80 mx-auto mb-8">
-      <div class="bg-white shadow-lg border-4 border-white h-full flex flex-col overflow-hidden cursor-pointer" style="border-width:2mm;"
-           (click)="goToDays(voyage.id)">
-        <div class="flex-1 flex flex-col">
-          <img
-            class="w-[300px] h-[250px] object-cover"
-            [src]="voyage.photoUrl || 'https://material.angular.dev/assets/img/examples/shiba2.jpg'"
-            [alt]="voyage.title"
-          />
-        </div>
-        <div class="p-5 flex-1 flex flex-col justify-between">
-          <h3 class="text-xl font-bold text-center mb-2">{{ voyage.title }}</h3>
-          <div class="flex justify-center gap-4 mb-2">
-            <span class="text-sm font-medium text-gray-700">{{ voyage.startDate }}</span>
-            <span class="text-sm font-medium text-gray-700"> - </span>
-            <span class="text-sm font-medium text-gray-700">{{ voyage.endDate }}</span>
+    <p class="text-2xl md:text-3xl lg:text-4xl  text-gray-900 dark:text-white mb-4 text-center">{{ countryName }}</p>
+    
+    <div class="container mx-auto px-6 py-8">
+      <div class="flex flex-wrap justify-center gap-6">
+        <ng-container *ngFor="let voyage of voyages">
+          <div class="w-64 h-88 bg-white border border-gray-200 rounded-lg shadow-lg flex flex-col overflow-hidden cursor-pointer"
+               (click)="goToDays(voyage.id)">
+            <img
+              class="w-full h-48 object-cover"
+              [src]="voyage.photoUrl || 'https://material.angular.dev/assets/img/examples/shiba2.jpg'"
+              [alt]="voyage.title"
+            />
+            <div class="px-4 pt-4 pb-8 flex-1 flex flex-col">
+              <h3 class="text-lg font-bold text-left mb-2">{{ voyage.title }}</h3>
+              <div class="flex justify-start gap-2 mb-2">
+                <span class="text-xs font-medium text-gray-700">{{ voyage.startDate | date:'dd/MM/yyyy'}}</span>
+                <span class="text-xs font-medium text-gray-700"> - </span>
+                <span class="text-xs font-medium text-gray-700">{{ voyage.endDate | date:'dd/MM/yyyy'}}</span>
+              </div>
+              <p class="text-gray-700 text-left text-sm">
+                {{ voyage.description.split(' ').slice(0, 12).join(' ') }}<span *ngIf="voyage.description.split(' ').length > 12">...</span>
+              </p>
+            </div>
           </div>
-          <p class="text-gray-700 text-center">
-            {{ voyage.description.split(' ').slice(0, 15).join(' ') }}<span *ngIf="voyage.description.split(' ').length > 15">...</span>
-          </p>
-        </div>
+        </ng-container>
       </div>
     </div>
   </div>
@@ -30,11 +33,11 @@
       <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Veuillez patienter</h1>
     <div class="flex flex-col items-center justify-center mt-8">
       <div class="w-64 h-64 sm:w-96 sm:h-96 md:w-[32rem] md:h-[32rem] lg:w-[560px] lg:h-[560px] flex items-center justify-center">
-        <ng-lottie [options]="loaderOptions" class="w-full h-full" style="width:100%;height:100%"></ng-lottie>
+        <ng-lottie [options]="loaderOptions" class="w-full h-full"></ng-lottie>
       </div>
       <span class="text-2xl sm:text-3xl font-bold text-gray-700 mt-2 text-center block">
         {{ displayText }}
       </span>
     </div>
   </ng-template>
-</app-background>
+

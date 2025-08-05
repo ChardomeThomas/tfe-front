@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Voyage } from '../../../interfaces/country.interface';
+import { Voyage } from '../../interfaces/voyage.interface';
 
 @Injectable({ providedIn: 'root' })
 export class VoyageService {

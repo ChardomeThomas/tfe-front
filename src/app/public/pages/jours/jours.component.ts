@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackgroundComponent } from '../../../shared/components/background/background.component';
-import { Jour } from '../../../../interfaces/country.interface';
+import { Jour } from '../../../interfaces/jour.interface';
 import { DayService } from '../../../core/services/day.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { PhotoService } from '../../../core/services/photo.service';
-import { Photo } from '../../../../interfaces/country.interface';
+import { Photo } from '../../../interfaces/photo.interface';
 import { VoyageService } from '../../../core/services/voyage.service';
-import { Voyage } from '../../../../interfaces/country.interface';
+import { Voyage } from '../../../interfaces/voyage.interface';
 
 @Component({
   selector: 'app-jours',

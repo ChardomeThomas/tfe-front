@@ -20,9 +20,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { catchError, of } from 'rxjs';
 
-import { CountryResult } from '../../models/country-result.model';
+import { CountryResult } from '../../interfaces/country-result.model';
 import { CountrySearchService } from '../../core/services/country-search.service';
-import { Country } from '../../../interfaces/country.interface';
+import { Country } from '../../interfaces/country.interface';
 import { CountryAdminService } from '../../core/services/admin/countryAdmin.service';
 import { ItemTableComponent } from '../../shared/components/item-table/item-table.component';
 
