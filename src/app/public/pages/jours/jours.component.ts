@@ -8,10 +8,11 @@ import { PhotoService } from '../../../core/services/photo.service';
 import { Photo } from '../../../interfaces/photo.interface';
 import { VoyageService } from '../../../core/services/voyage.service';
 import { Voyage } from '../../../interfaces/voyage.interface';
+import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 
 @Component({
   selector: 'app-jours',
-  imports: [BackgroundComponent, CommonModule, DatePipe],
+  imports: [BackgroundComponent, CommonModule, DatePipe, LottieComponent],
   templateUrl: './jours.component.html',
   styleUrl: './jours.component.css'
 })
@@ -19,7 +20,13 @@ export class JoursComponent implements OnInit {
   jours: Jour[] = [];
   randomPhotos: { [dayId: number]: Photo | null } = {};
   voyageDescription: string = '';
-
+      baseText = 'Nous sommes en route vers notre prochaine destination';
+        dotCount = 0;
+  intervalId: any;
+  displayText = '';
+loaderOptions: AnimationOptions = {
+  path: '/assets/lottie/Travel.json'
+};
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -27,6 +34,7 @@ export class JoursComponent implements OnInit {
     private photoService: PhotoService,
     private voyageService: VoyageService
   ) {}
+  
   onJourClick(jour: Jour) {
     const countryId = this.route.snapshot.paramMap.get('countryId');
     const voyageId = this.route.snapshot.paramMap.get('voyageId');
@@ -36,6 +44,10 @@ export class JoursComponent implements OnInit {
   }
 
   ngOnInit() {
+             this.intervalId = setInterval(() => {
+      this.dotCount = (this.dotCount + 1) % 4; // 0 → 1 → 2 → 3 → 0
+      this.displayText = this.baseText + '.'.repeat(this.dotCount);
+    }, 500); 
     const tripId = this.route.snapshot.paramMap.get('voyageId');
     if (tripId) {
       this.voyageService.getVoyageById(Number(tripId)).subscribe((voyage: Voyage) => {

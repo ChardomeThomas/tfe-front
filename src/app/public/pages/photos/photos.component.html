@@ -1,13 +1,13 @@
 
-  <div >
+  <div *ngIf="photos.length > 0; else noPhotos">
     <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Photos du jour</h1>
     
 
-    <!-- Loader affiché pendant le chargement -->
+    <!-- Loader affiché pendant le chargement
     <div *ngIf="!allLoaded" class="flex flex-col items-center justify-center min-h-[300px]">
       <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-solid mb-4"></div>
       <div class="text-gray-500">Chargement des photos...</div>
-    </div>
+    </div> -->
 
 
     <!-- Préchargement invisible des images -->
@@ -28,19 +28,137 @@
     </div>
 
     <!-- Grille affichée après préchargement complet -->
-    <ngx-masonry 
+    <div class="ml-30">
+    <ngx-masonry class="ml-auto mr-auto"
       *ngIf="allLoaded && !error && photos.length > 0" 
       [options]="{ gutter: 16, percentPosition: true }">
       <div ngxMasonryItem *ngFor="let photo of photos" class="masonry-item w-[300px] mb-4 transition-[top,left] duration-[400ms] ease-in-out ml-4">
         <img
           [src]="photo.thumbnailUrl"
-          class="w-full block mb-2 rounded-2xl "
+          class="w-full block mb-2 rounded-2xl cursor-pointer hover:opacity-90 transition-opacity"
           loading="lazy"
           decoding="async"
+          (click)="openModal(photo)"
         />
-        <div >
+        <div>
           <small>{{ photo.description }}</small>
         </div>
       </div>
     </ngx-masonry>
   </div>
+
+    <!-- Modal pour afficher la photo en grand -->
+    <div 
+      *ngIf="showModal && selectedPhoto" 
+      class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+      (click)="onOverlayClick($event)"
+    >
+      <div class="relative max-w-[95vw] max-h-[90vh] flex flex-col bg-white bg-opacity-95 backdrop-blur-sm rounded-xl shadow-2xl">
+        <!-- Bouton de fermeture -->
+        <button 
+          (click)="closeModal()" 
+          class="absolute top-4 right-4 text-gray-700 text-2xl hover:text-gray-500 z-10 bg-white bg-opacity-80 rounded-full w-10 h-10 flex items-center justify-center shadow-lg"
+        >
+          ×
+        </button>
+        
+        <!-- Container principal responsive -->
+        <div class="flex flex-col lg:flex-row max-h-[85vh] overflow-hidden">
+          
+          <!-- Section Image et Description (gauche sur desktop, haut sur mobile) -->
+          <div class="flex flex-col lg:w-2/3 lg:border-r lg:border-gray-200">
+            <!-- Image en grand -->
+            <div class="flex-shrink-0 p-6 pb-4 flex justify-center items-center">
+              <img 
+                [src]="selectedPhoto.url" 
+                [alt]="selectedPhoto.description"
+                class="max-w-full max-h-[50vh] lg:max-h-[70vh] object-contain rounded-lg"
+              />
+            </div>
+            
+            <!-- Description -->
+            <div *ngIf="selectedPhoto.description" class="px-6 pb-4 lg:pb-6">
+              <p class="text-gray-800 text-center font-medium">{{ selectedPhoto.description }}</p>
+            </div>
+          </div>
+          
+          <!-- Section Commentaires (droite sur desktop, bas sur mobile) -->
+          <div class="flex-1 lg:w-1/3 flex flex-col overflow-hidden">
+            <div class="px-6 py-4 lg:py-6 overflow-y-auto flex-1">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">Commentaires</h3>
+              
+              <!-- Simulation de commentaires existants -->
+              <div class="space-y-3 mb-4">
+                <div class="bg-gray-50 rounded-lg p-3">
+                  <div class="flex items-center mb-2">
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
+                      JD
+                    </div>
+                    <span class="font-medium text-gray-800 text-sm">Jean Dupont</span>
+                    <span class="text-gray-500 text-xs ml-2">2h</span>
+                  </div>
+                  <p class="text-gray-700 text-sm">Magnifique photo ! J'adore la lumière dans cette prise.</p>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-3">
+                  <div class="flex items-center mb-2">
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
+                      ML
+                    </div>
+                    <span class="font-medium text-gray-800 text-sm">Marie Laurent</span>
+                    <span class="text-gray-500 text-xs ml-2">1j</span>
+                  </div>
+                  <p class="text-gray-700 text-sm">Quel endroit incroyable ! Merci pour le partage 📸</p>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-3">
+                  <div class="flex items-center mb-2">
+                    <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
+                      PD
+                    </div>
+                    <span class="font-medium text-gray-800 text-sm">Pierre Durand</span>
+                    <span class="text-gray-500 text-xs ml-2">3j</span>
+                  </div>
+                  <p class="text-gray-700 text-sm">Les couleurs sont vraiment saisissantes ! 🌅</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Formulaire d'ajout de commentaire (fixe en bas) -->
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 bg-opacity-50">
+              <h4 class="text-sm font-medium text-gray-800 mb-3">Ajouter un commentaire</h4>
+              <div class="flex gap-3">
+                <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+                  V
+                </div>
+                <div class="flex-1">
+                  <textarea 
+                    class="w-full p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    rows="2"
+                    placeholder="Écrivez votre commentaire..."
+                  ></textarea>
+                  <div class="flex justify-end mt-2">
+                    <button class="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-xs font-medium">
+                      Publier
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+     <ng-template #noPhotos>
+      <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Veuillez patienter</h1>
+    <div class="flex flex-col items-center justify-center mt-8">
+      <div class="w-64 h-64 sm:w-96 sm:h-96 md:w-[32rem] md:h-[32rem] lg:w-[560px] lg:h-[560px] flex items-center justify-center">
+        <ng-lottie [options]="loaderOptions" class="w-full h-full"></ng-lottie>
+      </div>
+      <span class="text-2xl sm:text-3xl font-bold text-gray-700 mt-2 text-center block">
+        {{ displayText }}
+      </span>
+    </div>
+  </ng-template>
