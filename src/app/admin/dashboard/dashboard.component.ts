@@ -17,22 +17,20 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
 import { catchError, of } from 'rxjs';
 
 import { CountryResult } from '../../interfaces/country-result.model';
 import { CountrySearchService } from '../../core/services/country-search.service';
 import { Country } from '../../interfaces/country.interface';
+import { User } from '../../interfaces/user.interface';
 import { CountryAdminService } from '../../core/services/admin/countryAdmin.service';
+import { UserService } from '../../core/services/admin/userService.service';
+import { AuthService } from '../../core/services/auth.service';
 import { ItemTableComponent } from '../../shared/components/item-table/item-table.component';
-
-export interface User {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  role: string;
-}
 
 @Component({
   selector: 'app-dashboard',
@@ -50,7 +48,10 @@ export interface User {
     MatFormFieldModule,
     MatInputModule,
     MatListModule,
+    MatSelectModule,
+    MatOptionModule,
     MatDialogModule,
+    MatMenuModule,
     ItemTableComponent
   ],
   templateUrl: './dashboard.component.html',
@@ -59,12 +60,14 @@ export interface User {
 export class DashboardComponent implements OnInit {
   @ViewChild('existsDialog') existsDialog!: TemplateRef<any>;
 
-  users: User[] = [
-    { id: 1, name: 'Alice', username: 'alice01', email: 'alice@example.com', role: 'Admin' },
-    { id: 2, name: 'Bob',   username: 'bob02',   email: 'bob@example.com',   role: 'User' }
-  ];
+  users: User[] = [];
   dataSource = new MatTableDataSource<User>(this.users);
-  displayedColumns = ['name', 'username', 'email', 'role', 'actions'];
+  displayedColumns = ['username', 'email', 'role', 'actions'];
+
+  // Gestion des rôles
+  currentUserRole: string = '';
+  availableRoles: string[] = [];
+  allRoles = ['INVITED', 'FRIEND', 'ADMIN', 'SUPERADMIN'];
 
   query = '';
   suggestions: CountryResult[] = [];
@@ -78,6 +81,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private countrySearchService: CountrySearchService,
     private countryAdminService: CountryAdminService,
+    private userService: UserService,
+    private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog
@@ -91,6 +96,8 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.countrySearchService.loadAll().subscribe();
     this.loadAdminSummary();
+    this.loadUsers();
+    this.setCurrentUserRole();
   }
 
   private loadAdminSummary() {
@@ -106,6 +113,102 @@ export class DashboardComponent implements OnInit {
         this.unpublishedCountries = summary.drafts;
         this.countries            = summary.published;
       });
+  }
+
+  private loadUsers() {
+    this.userService.getUsers()
+      .pipe(
+        catchError(err => {
+          console.error('Erreur lors du chargement des utilisateurs :', err);
+          return of([]);
+        })
+      )
+      .subscribe(users => {
+        this.users = users;
+        this.dataSource.data = this.users;
+      });
+  }
+
+  private setCurrentUserRole() {
+    // D'abord essayer de récupérer le rôle depuis le token JWT
+    const roleFromToken = this.authService.getUserRole();
+    if (roleFromToken) {
+      this.currentUserRole = roleFromToken;
+      console.log('Current user role from token:', this.currentUserRole);
+      this.setAvailableRoles();
+      return;
+    }
+
+    // Si pas de rôle dans le token, récupérer via l'email
+    const email = this.authService.getUserEmail();
+    if (email) {
+      console.log('Fetching user role via email:', email);
+      this.userService.getCurrentUser(email).subscribe({
+        next: (user) => {
+          if (user) {
+            this.currentUserRole = user.role;
+            console.log('Current user role from API:', this.currentUserRole);
+            this.setAvailableRoles();
+          } else {
+            console.error('Utilisateur non trouvé avec l\'email:', email);
+          }
+        },
+        error: (error) => {
+          console.error('Erreur lors de la récupération du rôle utilisateur:', error);
+        }
+      });
+    } else {
+      console.error('Impossible de récupérer l\'email du token');
+    }
+    
+    console.log('Token info:', this.authService.getUserInfo());
+  }
+
+  private setAvailableRoles() {
+    if (this.currentUserRole === 'ROLE_SUPERADMIN') {
+      this.availableRoles = ['INVITED', 'FRIEND', 'ADMIN'];
+    } else if (this.currentUserRole === 'ROLE_ADMIN') {
+      this.availableRoles = ['INVITED', 'FRIEND'];
+    } else {
+      this.availableRoles = [];
+    }
+    console.log('Available roles set to:', this.availableRoles);
+  }
+
+  canChangeRole(userRole: string): boolean {
+    // Un utilisateur ne peut pas modifier son propre rôle
+    // Et ne peut modifier que les rôles inférieurs au sien
+    console.log('canChangeRole check:', {
+      currentUserRole: this.currentUserRole,
+      userRole: userRole,
+      canChange: this.currentUserRole === 'ROLE_SUPERADMIN' ? userRole !== 'SUPERADMIN' : false
+    });
+    
+    if (this.currentUserRole === 'ROLE_SUPERADMIN') {
+      return userRole !== 'SUPERADMIN';
+    } else if (this.currentUserRole === 'ROLE_ADMIN') {
+      return userRole === 'INVITED' || userRole === 'FRIEND';
+    }
+    return false;
+  }
+
+  onRoleChange(user: User, newRole: string) {
+    if (!this.canChangeRole(user.role)) {
+      return;
+    }
+
+    this.userService.updateUserRole(user.id, newRole).subscribe({
+      next: () => {
+        console.log(`Rôle de ${user.username} changé vers ${newRole}`);
+        // Mettre à jour localement
+        user.role = newRole;
+        this.dataSource.data = [...this.users];
+      },
+      error: (error) => {
+        console.error('Erreur lors du changement de rôle:', error);
+        // Optionnel: afficher un message d'erreur à l'utilisateur
+      }
+    });
   }
 
   onChange(val: string) {

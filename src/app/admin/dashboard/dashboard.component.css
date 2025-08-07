@@ -105,3 +105,55 @@ mat-toolbar{
   justify-content: center;
 }
 
+/* Styles pour la gestion des rôles */
+.role-select {
+  width: 120px;
+  font-size: 12px;
+}
+
+.role-select .mat-mdc-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+.role-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.role-superadmin {
+  background-color: #dc2626;
+  color: white;
+}
+
+.role-admin {
+  background-color: #ea580c;
+  color: white;
+}
+
+.role-amis {
+  background-color: #16a34a;
+  color: white;
+}
+
+.role-invited {
+  background-color: #6b7280;
+  color: white;
+}
+
+/* Réduire la taille des form fields dans le tableau */
+::ng-deep .role-select .mat-mdc-form-field {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+::ng-deep .role-select .mat-mdc-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+::ng-deep .role-select .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+

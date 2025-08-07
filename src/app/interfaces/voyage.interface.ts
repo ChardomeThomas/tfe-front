@@ -9,4 +9,6 @@ export interface Voyage {
   pointOfInterestName: string;
   published: boolean;
   photoUrl?: string;
+  deletedAt?: string | null; // Date de suppression pour les soft deletes
+  status?: string; // Statut du voyage (actif, supprimé, etc.)
 }

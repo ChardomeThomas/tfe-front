@@ -45,24 +45,38 @@ loaderOptions: AnimationOptions = {
           const countryId = this.route.snapshot.paramMap.get('countryId');
         
         if (countryId) {
+            // Récupérer tous les voyages et filtrer côté client pour ne garder que les publiés
             this.voyageService.getVoyagesByPointOfInterestId(+countryId)
-                .subscribe(voyages => {
-                    this.voyages = voyages;
-                    console.log('Voyages récupérés:', this.voyages);
-                    // Pour chaque voyage, récupérer la photo favorite aléatoire
-                    this.voyages.forEach(voyage => {
-                        console.log('Appel photo pour voyage.id =', voyage.id);
-                        this.photoService.getRandomFavoritePhotoByTripId(voyage.id).subscribe({
-                            next: (res) => {
-                                voyage.photoUrl = res.url;
-                                console.log(`Photo URL pour voyage ${voyage.id}:`, voyage.photoUrl);
-                            },
-                            error: () => {
-                                voyage.photoUrl = 'https://material.angular.dev/assets/img/examples/shiba2.jpg';
-                                console.log(`Photo URL par défaut pour voyage ${voyage.id}:`, voyage.photoUrl);
-                            }
+                .subscribe({
+                    next: (allVoyages) => {
+                        // Filtrer pour ne garder que les voyages publiés
+                        this.voyages = allVoyages.filter(voyage => 
+                            voyage.published === true && 
+                            voyage.publishedDate !== null && 
+                            voyage.publishedDate !== undefined
+                        );
+                        console.log('Tous les voyages récupérés:', allVoyages);
+                        console.log('Voyages publiés filtrés:', this.voyages);
+                        
+                        // Pour chaque voyage publié, récupérer la photo favorite aléatoire
+                        this.voyages.forEach(voyage => {
+                            console.log('Appel photo pour voyage.id =', voyage.id);
+                            this.photoService.getRandomFavoritePhotoByTripId(voyage.id).subscribe({
+                                next: (res) => {
+                                    voyage.photoUrl = res.url;
+                                    console.log(`Photo URL pour voyage ${voyage.id}:`, voyage.photoUrl);
+                                },
+                                error: () => {
+                                    voyage.photoUrl = 'https://material.angular.dev/assets/img/examples/shiba2.jpg';
+                                    console.log(`Photo URL par défaut pour voyage ${voyage.id}:`, voyage.photoUrl);
+                                }
+                            });
                         });
-                    });
+                    },
+                    error: (error) => {
+                        console.error('Erreur lors de la récupération des voyages:', error);
+                        this.voyages = []; // Pas de voyages en cas d'erreur
+                    }
                 });
             this.countryService.getCountries()
                 .subscribe(countries => {

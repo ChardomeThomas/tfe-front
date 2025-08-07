@@ -8,11 +8,13 @@ import { JoursComponent } from './public/pages/jours/jours.component';
 import { AdminVoyagesComponent } from './admin/pages/voyages/voyages.component';
 import { AdminJoursComponent } from './admin/pages/jours/jours.component';
 import { LoginComponent } from './public/pages/login/login.component';
+import { RegisterComponent } from './public/pages/register/register.component';
 
 export const routes: Routes = [
   // Public…
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: 'countries/:countryId/voyages', component: VoyagesComponent },
   { path: 'countries/:countryId/voyages/:voyageId/jours', component: JoursComponent },
   { path: 'countries/:countryId/voyages/:voyageId/jours/:jourId/photos', component: PhotosComponent },

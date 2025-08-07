@@ -1,0 +1,20 @@
+/* Styles spécifiques pour le composant comments */
+
+/* Animation pour l'ajout/suppression de commentaires */
+.comment-item {
+  transition: all 0.3s ease;
+}
+
+.comment-item:hover {
+  background-color: #f8fafc;
+}
+
+/* Amélioration du bouton de suppression */
+.delete-button {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.comment-item:hover .delete-button {
+  opacity: 1;
+}

@@ -1,0 +1,13 @@
+/* Styles personnalisés pour le composant d'inscription */
+/* La plupart des styles sont gérés par Tailwind CSS dans le template */
+
+/* Animation pour les transitions de validation */
+.form-field-transition {
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Style personnalisé pour le focus ring si différent de Tailwind */
+.custom-focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}

@@ -1,7 +1,7 @@
 // login.component.ts
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { BackgroundComponent } from '../../../shared/components/background/background.component';
 
@@ -9,7 +9,7 @@ import { BackgroundComponent } from '../../../shared/components/background/backg
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  imports: [ReactiveFormsModule, BackgroundComponent]
+  imports: [ReactiveFormsModule, BackgroundComponent, RouterModule]
 })
 export class LoginComponent {
   loginForm: FormGroup;

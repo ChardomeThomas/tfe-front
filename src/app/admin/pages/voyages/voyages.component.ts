@@ -21,7 +21,7 @@ import { MatInputModule }     from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter } from '@angular/material/core';
 import { Voyage } from '../../../interfaces/voyage.interface';
-import { VoyageService } from '../../../core/services/voyage.service';
+import { VoyageAdminService } from '../../../core/services/admin/VoyageAdminService.service';
 import { ItemTableComponent } from '../../../shared/components/item-table/item-table.component';
 
 export const EUROPEAN_DATE_FORMATS = {
@@ -67,12 +67,12 @@ export class AdminVoyagesComponent implements OnInit {
   deletedVoyages: Voyage[] = [];
   unpublishedVoyages: Voyage[] = []; // Voyages dépubliés
   voyageForm = new FormGroup({
-    name:        new FormControl<string>('', Validators.required),
-    date_debut:  new FormControl<string>('', [
+    title:       new FormControl<string>('', Validators.required),
+    startDate:   new FormControl<string>('', [
       Validators.required,
       this.startDateValidator()
     ]),
-    date_fin:    new FormControl<string>('', [
+    endDate:     new FormControl<string>('', [
       Validators.required,
       this.endDateValidator()
     ])
@@ -81,101 +81,146 @@ export class AdminVoyagesComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private voyageService: VoyageService
+    private voyageAdminService: VoyageAdminService
   ) {}
 
   ngOnInit() {
     this.countryId = Number(this.route.snapshot.paramMap.get('countryId'));
-    this.loadVoyages();
-    this.loadDeletedVoyages();
+    this.loadAdminSummary();
   }
 
   onLogoClick() {
     this.router.navigate(['']);
   }
 
-  private loadVoyages() {
-    this.voyageService.getVoyagesByCountryId(this.countryId)
+  private loadAdminSummary() {
+    this.voyageAdminService.getAdminSummary(this.countryId)
       .pipe(
         catchError(err => {
-          console.error('Erreur chargement voyages :', err);
-          return of([] as Voyage[]);
+          console.error('Erreur chargement résumé admin voyages :', err);
+          return of({ deleted: [], drafts: [], published: [] });
         })
       )
-      .subscribe(list => {
-        this.voyages = list.filter(v => v.published);
-        this.unpublishedVoyages = list.filter(v => !v.published);
-      });
-  }
-
-  private loadDeletedVoyages() {
-    this.voyageService.getDeletedVoyagesByCountryId(this.countryId)
-      .pipe(
-        catchError(err => {
-          console.error('Erreur chargement voyages supprimés :', err);
-          return of([] as Voyage[]);
-        })
-      )
-      .subscribe(list => {
-        this.deletedVoyages = list;
+      .subscribe(summary => {
+        this.voyages = summary.published;
+        this.unpublishedVoyages = summary.drafts;
+        this.deletedVoyages = summary.deleted;
+        console.log('Voyages actifs:', this.voyages);
+        console.log('Voyages non publiés:', this.unpublishedVoyages);
+        console.log('Voyages supprimés:', this.deletedVoyages);
       });
   }
 
   addVoyage() {
     if (this.voyageForm.invalid) return;
 
-    // On s'assure que ce sont bien des string, grâce à la déclaration FormControl<string>
-    const name: string       = this.voyageForm.get('name')!.value!;
-    const date_debut: string = this.voyageForm.get('date_debut')!.value!;
-    const date_fin: string   = this.voyageForm.get('date_fin')!.value!;
+    try {
+      // On s'assure que ce sont bien des string, grâce à la déclaration FormControl<string>
+      const title: string = this.voyageForm.get('title')!.value!;
+      const startDateValue = this.voyageForm.get('startDate')!.value!;
+      const endDateValue = this.voyageForm.get('endDate')!.value!;
 
-    this.voyageService.addVoyage({
-      countryId:  this.countryId,
-      name,
-      date_debut,
-      date_fin
-    }).subscribe(() => {
-      this.voyageForm.reset();
-      this.loadVoyages();
-    });
+      // Conversion des dates au format DD-MM-YYYY attendu par le backend
+      const startDate = this.formatDateToBackend(startDateValue);
+      const endDate = this.formatDateToBackend(endDateValue);
+
+      console.log('Dates formatées pour le backend:', { startDate, endDate });
+
+      this.voyageAdminService.addVoyage({
+        pointOfInterestId: this.countryId,
+        title,
+        startDate,
+        endDate,
+        description: ''
+      }).subscribe({
+        next: () => {
+          this.voyageForm.reset();
+          this.loadAdminSummary();
+          console.log('Voyage ajouté avec succès');
+        },
+        error: (error) => {
+          console.error('Erreur lors de l\'ajout du voyage:', error);
+          // Ici vous pourriez afficher un message d'erreur à l'utilisateur
+        }
+      });
+    } catch (error) {
+      console.error('Erreur de formatage des dates:', error);
+      // Ici vous pourriez afficher un message d'erreur à l'utilisateur
+    }
+  }
+
+  // Méthode pour convertir une date au format DD-MM-YYYY
+  private formatDateToBackend(dateValue: string): string {
+    const date = new Date(dateValue);
+    
+    // Vérifier que la date est valide
+    if (isNaN(date.getTime())) {
+      throw new Error('Date invalide');
+    }
+
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // +1 car getMonth() retourne 0-11
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
   }
 
   publish(v: Voyage) {
-    this.voyageService.publishVoyage(v.id)
+    this.voyageAdminService.publishVoyage(v.id)
       .subscribe(() => {
-        this.unpublishedVoyages = this.unpublishedVoyages.filter(voyage => voyage.id !== v.id);
-        this.voyages = [...this.voyages, v];
+        this.loadAdminSummary();
       });
   }
 
   unpublish(voyage: Voyage) {
-    this.voyageService.unpublishVoyage(voyage.id).subscribe(() => {
-      this.voyages = this.voyages.filter(v => v.id !== voyage.id);
-      this.unpublishedVoyages = [...this.unpublishedVoyages, voyage];
+    this.voyageAdminService.unpublishVoyage(voyage.id).subscribe(() => {
+      this.loadAdminSummary();
     });
   }
 
   delete(v: Voyage) {
-    this.voyageService.deleteVoyage(v.id)
-      .subscribe(() => {
-        this.voyages = this.voyages.filter(voyage => voyage.id !== v.id);
-        this.unpublishedVoyages = this.unpublishedVoyages.filter(voyage => voyage.id !== v.id);
-        this.loadDeletedVoyages();
-      });
+    // Si le voyage est publié, on le dépublie d'abord
+    if (v.published) {
+      this.voyageAdminService.unpublishVoyage(v.id)
+        .subscribe({
+          next: () => {
+            // Maintenant on supprime le voyage dépublié
+            this.voyageAdminService.deleteVoyage(v.id)
+              .subscribe(() => {
+                this.loadAdminSummary();
+              });
+          },
+          error: (error) => {
+            console.error('Erreur lors de la dépublication avant suppression:', error);
+          }
+        });
+    } else {
+      // Le voyage n'est pas publié, suppression directe
+      this.voyageAdminService.deleteVoyage(v.id)
+        .subscribe(() => {
+          this.loadAdminSummary();
+        });
+    }
   }
 
   restore(v: Voyage) {
-    this.voyageService.restoreVoyage(v.id)
-      .subscribe(() => {
-        this.loadVoyages();
-        this.loadDeletedVoyages();
+    console.log('Restauration du voyage:', v);
+    this.voyageAdminService.restoreVoyage(v.id)
+      .subscribe({
+        next: (response) => {
+          console.log('Voyage restauré avec succès:', response);
+          this.loadAdminSummary();
+        },
+        error: (error) => {
+          console.error('Erreur lors de la restauration:', error);
+        }
       });
   }
 
   private startDateValidator() {
     return (control: AbstractControl) => {
       const startDate = new Date(control.value);
-      const endDate = new Date(this.voyageForm?.get('date_fin')?.value || '');
+      const endDate = new Date(this.voyageForm?.get('endDate')?.value || '');
       if (endDate && startDate > endDate) {
         return { afterEndDate: true };
       }
@@ -186,7 +231,7 @@ export class AdminVoyagesComponent implements OnInit {
   private endDateValidator() {
     return (control: AbstractControl) => {
       const endDate = new Date(control.value);
-      const startDate = new Date(this.voyageForm?.get('date_debut')?.value || '');
+      const startDate = new Date(this.voyageForm?.get('startDate')?.value || '');
       if (startDate && startDate > endDate) {
         return { beforeStartDate: true };
       }

@@ -1,0 +1,57 @@
+<div class="comments-section flex-1 lg:w-1/3 flex flex-col overflow-hidden">
+  <div class="px-6 py-4 lg:py-6 overflow-y-auto flex-1">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Commentaires</h3>
+    
+    <!-- Liste des commentaires -->
+    <div class="space-y-3 mb-4">
+      <div *ngFor="let comment of comments" class="bg-gray-50 rounded-lg p-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center">
+            <span class="font-medium text-gray-800 text-sm">{{ comment.author }}</span>
+            <span class="text-gray-500 text-xs ml-2">• {{ formatDate(comment.date) }}</span>
+          </div>
+          <button 
+            (click)="deleteComment(comment.id)"
+            class="text-gray-400 hover:text-red-500 text-xs"
+            title="Supprimer le commentaire"
+          >
+            ×
+          </button>
+        </div>
+        <p class="text-gray-700 text-sm">{{ comment.content }}</p>
+      </div>
+      
+      <!-- Message si aucun commentaire -->
+      <div *ngIf="comments.length === 0" class="text-center text-gray-500 py-8">
+        Aucun commentaire pour le moment.<br>
+        Soyez le premier à commenter !
+      </div>
+    </div>
+  </div>
+  
+  <!-- Formulaire d'ajout de commentaire (fixe en bas) -->
+  <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 bg-opacity-50">
+    <h4 class="text-sm font-medium text-gray-800 mb-3">Ajouter un commentaire</h4>
+    <form (ngSubmit)="addComment()" class="flex gap-3">
+      <div class="flex-1">
+        <textarea 
+          [(ngModel)]="newComment"
+          name="newComment"
+          class="w-full p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          rows="2"
+          placeholder="Écrivez votre commentaire..."
+          required
+        ></textarea>
+        <div class="flex justify-end mt-2">
+          <button 
+            type="submit"
+            [disabled]="!newComment.trim()"
+            class="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-xs font-medium"
+          >
+            Publier
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

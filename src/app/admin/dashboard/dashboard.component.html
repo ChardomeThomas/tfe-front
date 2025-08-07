@@ -7,12 +7,6 @@
     <mat-card-title>Utilisateurs</mat-card-title>
     <div class="table-container">
       <table mat-table [dataSource]="dataSource" class="mat-elevation-z1">
-        <!-- Nom -->
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Nom</th>
-          <td mat-cell *matCellDef="let user">{{ user.name }}</td>
-        </ng-container>
-
         <!-- Pseudo -->
         <ng-container matColumnDef="username">
           <th mat-header-cell *matHeaderCellDef>Pseudo</th>
@@ -28,7 +22,67 @@
         <!-- Rôle -->
         <ng-container matColumnDef="role">
           <th mat-header-cell *matHeaderCellDef>Rôle</th>
-          <td mat-cell *matCellDef="let user">{{ user.role }}</td>
+          <td mat-cell *matCellDef="let user">
+            <div class="relative">
+              <!-- Badge cliquable pour changer le rôle -->
+              <button 
+                mat-button
+                class="!p-0 !min-w-0 !m-0 !bg-transparent !shadow-none hover:!shadow-md transition-shadow"
+                [matMenuTriggerFor]="roleMenu"
+                *ngIf="canChangeRole(user.role); else readOnlyRole"
+              >
+                <span 
+                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+                  [ngClass]="{
+                    'bg-blue-100 text-blue-800 hover:bg-blue-200': user.role === 'INVITED',
+                    'bg-green-100 text-green-800 hover:bg-green-200': user.role === 'FRIEND',
+                    'bg-purple-100 text-purple-800 hover:bg-purple-200': user.role === 'ADMIN',
+                    'bg-red-100 text-red-800 hover:bg-red-200': user.role === 'SUPERADMIN'
+                  }"
+                >
+                  {{ user.role }}
+                  <mat-icon class="ml-1 !text-xs !w-4 !h-4">expand_more</mat-icon>
+                </span>
+              </button>
+              
+              <!-- Badge en lecture seule -->
+              <ng-template #readOnlyRole>
+                <span 
+                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
+                  [ngClass]="{
+                    'bg-blue-100 text-blue-800': user.role === 'INVITED',
+                    'bg-green-100 text-green-800': user.role === 'FRIEND',
+                    'bg-purple-100 text-purple-800': user.role === 'ADMIN',
+                    'bg-red-100 text-red-800': user.role === 'SUPERADMIN'
+                  }"
+                >
+                  {{ user.role }}
+                </span>
+              </ng-template>
+
+              <!-- Menu des rôles disponibles -->
+              <mat-menu #roleMenu="matMenu">
+                <button 
+                  mat-menu-item 
+                  *ngFor="let role of availableRoles"
+                  (click)="onRoleChange(user, role)"
+                  [disabled]="role === user.role"
+                >
+                  <span 
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mr-2"
+                    [ngClass]="{
+                      'bg-blue-100 text-blue-800': role === 'INVITED',
+                      'bg-green-100 text-green-800': role === 'FRIEND',
+                      'bg-purple-100 text-purple-800': role === 'ADMIN'
+                    }"
+                  >
+                    {{ role }}
+                  </span>
+                  <mat-icon *ngIf="role === user.role" class="ml-auto">check</mat-icon>
+                </button>
+              </mat-menu>
+            </div>
+          </td>
         </ng-container>
 
         <!-- Actions Utilisateurs -->

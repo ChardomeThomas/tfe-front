@@ -54,7 +54,7 @@ export class HeaderComponent {
   // Déconnexion et redirection
   logout(): void {
     this.authService.logout(); 
-    // this.router.navigate(['']); // Ou vers la page d'accueil
+    // La redirection vers la page d'accueil est maintenant gérée dans le service d'auth
   }
   
   // Vérifie si l'utilisateur est connecté

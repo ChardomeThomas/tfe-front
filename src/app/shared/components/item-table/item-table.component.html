@@ -4,7 +4,11 @@
     <table mat-table [dataSource]="filteredDataSource" class="mat-elevation-z1">
       <ng-container *ngFor="let column of columns" [matColumnDef]="column">
         <th mat-header-cell *matHeaderCellDef>
-          {{ column === 'flag' ? 'Drapeau' : column === 'name' ? 'Nom' : column === 'dates' ? 'Période' : column | titlecase }}
+          {{ column === 'flag' ? 'Drapeau' : 
+             column === 'name' ? 'Nom' : 
+             column === 'title' ? 'Titre' :
+             column === 'dates' ? 'Période' : 
+             column | titlecase }}
         </th>
         <td mat-cell *matCellDef="let element">
           <ng-container *ngIf="column === 'flag'; else urlOrDefaultCell">
@@ -12,11 +16,17 @@
           </ng-container>
           <ng-template #urlOrDefaultCell>
             <ng-container *ngIf="column === 'url'; else defaultCell">
-              <img [src]="element.url" alt="Drapeau de {{ element.name }}" width="32" height="20" style="object-fit:cover; border-radius:3px;" />
+              <img [src]="element.url" alt="Drapeau de {{ element.name || element.title }}" width="32" height="20" style="object-fit:cover; border-radius:3px;" />
             </ng-container>
             <ng-template #defaultCell>
               <ng-container *ngIf="column === 'dates'; else textCell">
-                {{ element.date_debut | date:'dd/MM/yyyy' }} → {{ element.date_fin | date:'dd/MM/yyyy' }}
+                <!-- Support pour les deux formats de dates -->
+                <ng-container *ngIf="element.date_debut && element.date_fin; else newDateFormat">
+                  {{ element.date_debut | date:'dd/MM/yyyy' }} → {{ element.date_fin | date:'dd/MM/yyyy' }}
+                </ng-container>
+                <ng-template #newDateFormat>
+                  {{ element.startDate | date:'dd/MM/yyyy' }} → {{ element.endDate | date:'dd/MM/yyyy' }}
+                </ng-template>
               </ng-container>
               <ng-template #textCell>{{ element[column] }}</ng-template>
             </ng-template>
