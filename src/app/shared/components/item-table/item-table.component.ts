@@ -32,4 +32,12 @@ export class ItemTableComponent implements OnChanges {
       ? this.dataSource.filter(item => item.status === this.statusFilter)
       : this.dataSource;
   }
+
+  // Helper method to format destinations display
+  formatDestinations(destinations: any[]): string {
+    if (!destinations || destinations.length === 0) {
+      return 'Aucune destination';
+    }
+    return destinations.map(dest => dest.name || dest).join(', ');
+  }
 }

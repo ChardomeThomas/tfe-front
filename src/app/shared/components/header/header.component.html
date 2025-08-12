@@ -12,20 +12,29 @@
   <!-- Liens / boutons -->
   @if (!isLoggedIn()) {
     <div class="flex items-center space-x-4">
-      <a (click)="onLogoClick()" class="text-gray-800 hover:text-gray-600 cursor-pointer">Accueil</a>
+      <a (click)="onLogoClick()" class="text-gray-800 hover:text-gray-600 cursor-pointer">
+        Accueil
+      </a>
       <button (click)="goToLogin()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
         Se connecter
       </button>
     </div>
   } @else {
     <div class="flex items-center space-x-4">
-      <a (click)="onLogoClick()" class="text-gray-800 hover:text-gray-600 cursor-pointer">Accueil</a>
-      <button (click)="admin()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
+      <a (click)="onLogoClick()" class="text-gray-800 hover:text-gray-600 cursor-pointer">
+        Accueil
+      </a>
+      
+      <button (click)="goToProfile()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
         Profil
       </button>
-      <button (click)="admin()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
-        Admin
-      </button>
+      
+      @if (isAdmin()) {
+        <button (click)="admin()" class="px-4 py-2 text-black bg-red-100 rounded-lg cursor-pointer">
+          🔧 Admin
+        </button>
+      }
+      
       <span>|</span>
       <button (click)="logout()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
         Se déconnecter

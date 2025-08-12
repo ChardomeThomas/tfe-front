@@ -28,7 +28,17 @@
                   {{ element.startDate | date:'dd/MM/yyyy' }} → {{ element.endDate | date:'dd/MM/yyyy' }}
                 </ng-template>
               </ng-container>
-              <ng-template #textCell>{{ element[column] }}</ng-template>
+              <ng-template #textCell>
+                <ng-container *ngIf="column === 'destinations'; else regularTextCell">
+                  <span *ngIf="element.destinations && element.destinations.length > 0; else noDestinations">
+                    {{ formatDestinations(element.destinations) }}
+                  </span>
+                  <ng-template #noDestinations>
+                    <span class="text-muted">Aucune destination</span>
+                  </ng-template>
+                </ng-container>
+                <ng-template #regularTextCell>{{ element[column] }}</ng-template>
+              </ng-template>
             </ng-template>
           </ng-template>
         </td>

@@ -9,7 +9,8 @@ import { AdminVoyagesComponent } from './admin/pages/voyages/voyages.component';
 import { AdminJoursComponent } from './admin/pages/jours/jours.component';
 import { LoginComponent } from './public/pages/login/login.component';
 import { RegisterComponent } from './public/pages/register/register.component';
-
+import { AuthGuard } from './core/guards/auth.guards';
+import { RoleGuard } from './core/guards/role.guards';
 export const routes: Routes = [
   // Public…
   { path: '', component: HomeComponent },
@@ -18,17 +19,19 @@ export const routes: Routes = [
   { path: 'countries/:countryId/voyages', component: VoyagesComponent },
   { path: 'countries/:countryId/voyages/:voyageId/jours', component: JoursComponent },
   { path: 'countries/:countryId/voyages/:voyageId/jours/:jourId/photos', component: PhotosComponent },
-  // { path: 'countries/:countryId/voyages/:voyageId/destinations', component: DestinationsComponent },
-  // { path: 'countries/:countryId/voyages/:voyageId/destinations/:destId/jours', component: JoursComponent },
-  // { path: 'countries/:countryId/voyages/:voyageId/destinations/:destId/jours/:jourId/photos', component: PhotosComponent },
+
 
   // Admin
-  { path: 'admin', component: DashboardComponent },
-  { path: 'admin/countries/:countryId/voyages', component: AdminVoyagesComponent },
-  // { path: 'admin/countries/:countryId/voyages/:voyageId/destinations', component: AdminDestinationsComponent },
-  { path: 'admin/countries/:countryId/voyages/:voyageId/jours', component: AdminJoursComponent },
-  { path: 'admin/countries/:countryId/voyages/:voyageId/jours/:jourId/photos', component: AdminPhotosComponent },
-
+  {
+    path: 'admin',
+    canActivate: [AuthGuard, RoleGuard],
+    children: [
+      { path: '', component: DashboardComponent },
+      { path: 'countries/:countryId/voyages', component: AdminVoyagesComponent },
+      { path: 'countries/:countryId/voyages/:voyageId/jours', component: AdminJoursComponent },
+      { path: 'countries/:countryId/voyages/:voyageId/jours/:jourId/photos', component: AdminPhotosComponent }
+    ]
+  },
   // Fallback
   { path: '**', redirectTo: '' }
 ];

@@ -49,6 +49,13 @@
 
   <ng-template #activeVoyageActions let-voyage>
     <button
+      mat-icon-button
+      [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
+      matTooltip="Voir les jours"
+    >
+      <mat-icon>navigate_next</mat-icon>
+    </button>
+    <button
       mat-button
       color="accent"
       (click)="unpublish(voyage)"
@@ -70,6 +77,13 @@
 
   <ng-template #unpublishedVoyageActions let-voyage>
     <button
+      mat-icon-button
+      [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
+      matTooltip="Voir les jours"
+    >
+      <mat-icon>navigate_next</mat-icon>
+    </button>
+    <button
       mat-button
       color="primary"
       (click)="publish(voyage)"
@@ -90,6 +104,13 @@
   ></app-item-table>
 
   <ng-template #deletedVoyageActions let-voyage>
+    <button
+      mat-icon-button
+      [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
+      matTooltip="Voir les jours"
+    >
+      <mat-icon>navigate_next</mat-icon>
+    </button>
     <button mat-button color="primary" (click)="restore(voyage)">
       Restaurer
     </button>

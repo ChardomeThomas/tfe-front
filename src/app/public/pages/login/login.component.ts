@@ -33,12 +33,14 @@ export class LoginComponent {
       this.errorMessage = '';
 
       const { email, password } = this.loginForm.value;
-      console.log(email);
+      console.log('Tentative de connexion pour:', email);
+      
       this.authService.login(email, password).subscribe({
         next: (response) => {
           console.log('Connexion réussie:', response);
-          // Rediriger vers l'admin après connexion
-          this.router.navigate(['/admin']);
+          
+          // ⭐ REDIRECTION BASÉE SUR LE RÔLE
+          this.redirectUserBasedOnRole();
         },
         error: (error) => {
           console.error('Erreur de connexion:', error);
@@ -55,7 +57,21 @@ export class LoginComponent {
     }
   }
 
-  // Getters pour faciliter l'accès aux contrôles dans le template
+  private redirectUserBasedOnRole(): void {
+    const userRole = this.authService.getUserRole();
+    console.log('Rôle utilisateur détecté:', userRole);
+    
+    // Vérifier le rôle et rediriger en conséquence
+    if (userRole === 'ADMIN' || userRole === 'admin') {
+      console.log('Redirection vers admin');
+      this.router.navigate(['/admin']);
+    } else {
+      console.log('Redirection vers accueil (utilisateur normal)');
+      this.router.navigate(['/']); 
+    }
+  }
+
+  
   get email() {
     return this.loginForm.get('email');
   }

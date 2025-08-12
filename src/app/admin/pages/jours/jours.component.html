@@ -1,1 +1,229 @@
-<p>jours works!</p>
+<div class="max-w-6xl mx-auto p-5 flex flex-col gap-5">
+  <!-- En-tête avec informations du voyage -->
+  <mat-card class="mb-5" *ngIf="voyage">
+    <mat-card-title>Jours du voyage : {{ voyage.title }}</mat-card-title>
+    <mat-card-content>
+      <p><strong>Période :</strong> {{ voyage.startDate }} - {{ voyage.endDate }}</p>
+      <p *ngIf="voyage.description"><strong>Description :</strong> {{ voyage.description }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Formulaire de création d'un nouveau jour -->
+  <mat-card class="mb-5">
+    <mat-card-title>
+      <div class="flex justify-between items-center w-full">
+        <span>Créer un nouveau jour</span>
+        <button mat-button type="button" (click)="toggleCreateForm()" class="ml-auto">
+          <mat-icon>{{ showCreateForm ? 'expand_less' : 'expand_more' }}</mat-icon>
+          {{ showCreateForm ? 'Masquer' : 'Afficher' }}
+        </button>
+      </div>
+    </mat-card-title>
+    <div *ngIf="showCreateForm">
+      <form [formGroup]="createForm" (ngSubmit)="createJour()" class="py-4">
+        <div class="flex flex-col gap-4 mb-6">
+          <mat-form-field appearance="fill">
+            <mat-label>Date du jour</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="date" 
+                   (click)="picker.open()" 
+                   (focus)="picker.open()"
+                   readonly>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Titre du jour</mat-label>
+            <input matInput formControlName="title" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Description</mat-label>
+            <textarea matInput rows="3" formControlName="description"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Destinations</mat-label>
+            <input matInput formControlName="destinations" placeholder="Paris, Londres, Berlin..." />
+            <mat-hint>Séparez les noms de destinations par des virgules</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="flex gap-3">
+          <button mat-raised-button color="primary" type="submit" [disabled]="createForm.invalid" class="min-w-[120px]">
+            <mat-icon>add</mat-icon>
+            Créer le jour
+          </button>
+          <button mat-button type="button" (click)="resetCreateForm()" class="min-w-[120px]">
+            <mat-icon>refresh</mat-icon>
+            Réinitialiser
+          </button>
+        </div>
+      </form>
+    </div>
+  </mat-card>
+
+  <!-- Modal d'édition -->
+  <div *ngIf="editingJour" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" (click)="cancelEdit()">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4" (click)="$event.stopPropagation()">
+      <div class="p-6">
+        <div class="flex items-center mb-4">
+          <mat-icon class="mr-2 text-blue-600">edit</mat-icon>
+          <h2 class="text-xl font-semibold">Modifier le jour</h2>
+          <button mat-icon-button class="ml-auto" (click)="cancelEdit()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        
+        <form [formGroup]="editForm" (ngSubmit)="saveJour()">
+          <div class="flex flex-col gap-4 mb-6">
+            <mat-form-field appearance="fill">
+              <mat-label>Titre du jour</mat-label>
+              <input matInput formControlName="title" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Description</mat-label>
+              <textarea matInput formControlName="description" rows="4"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="flex justify-end gap-3">
+            <button mat-button type="button" (click)="cancelEdit()">
+              <mat-icon>close</mat-icon>
+              Annuler
+            </button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="editForm.invalid">
+              <mat-icon>save</mat-icon>
+              Sauvegarder
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jours actifs -->
+  <app-item-table
+    title="Jours actifs"
+    [dataSource]="jours"
+    [columns]="['date', 'title', 'description', 'destinations']"
+    [actionsTemplate]="activeJourActions"
+  ></app-item-table>
+
+  <ng-template #activeJourActions let-jour>
+    <div class="flex items-center gap-2">
+      <button
+        mat-icon-button
+        [routerLink]="['/admin','countries',countryId,'voyages',voyageId,'jours',jour.id,'photos']"
+        matTooltip="Voir les photos"
+      >
+        <mat-icon>navigate_next</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="editJour(jour)"
+        matTooltip="Modifier"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="accent"
+        (click)="unpublish(jour)"
+        matTooltip="Dépublier"
+      >
+        <mat-icon>visibility_off</mat-icon>
+      </button>
+      <button 
+        mat-icon-button 
+        color="warn" 
+        (click)="delete(jour)"
+        matTooltip="Supprimer"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </ng-template>
+
+  <!-- Jours non publiés -->
+  <app-item-table
+    title="Jours non publiés"
+    [dataSource]="unpublishedJours"
+    [columns]="['date', 'title', 'description', 'destinations']"
+    [actionsTemplate]="unpublishedJourActions"
+  ></app-item-table>
+
+  <ng-template #unpublishedJourActions let-jour>
+    <div class="flex items-center gap-2">
+      <button
+        mat-icon-button
+        [routerLink]="['/admin','countries',countryId,'voyages',voyageId,'jours',jour.id,'photos']"
+        matTooltip="Voir les photos"
+      >
+        <mat-icon>navigate_next</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="editJour(jour)"
+        matTooltip="Modifier"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="publish(jour)"
+        matTooltip="Publier"
+      >
+        <mat-icon>visibility</mat-icon>
+      </button>
+      <button 
+        mat-icon-button 
+        color="warn" 
+        (click)="delete(jour)"
+        matTooltip="Supprimer"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </ng-template>
+
+  <!-- Jours supprimés -->
+  <app-item-table
+    title="Jours supprimés"
+    [dataSource]="deletedJours"
+    [columns]="['date', 'title', 'description', 'destinations']"
+    [actionsTemplate]="deletedJourActions"
+  ></app-item-table>
+
+  <ng-template #deletedJourActions let-jour>
+    <div class="flex items-center gap-2">
+      <button
+        mat-icon-button
+        [routerLink]="['/admin','countries',countryId,'voyages',voyageId,'jours',jour.id,'photos']"
+        matTooltip="Voir les photos"
+      >
+        <mat-icon>navigate_next</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="editJour(jour)"
+        matTooltip="Modifier"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button 
+        mat-icon-button 
+        color="primary" 
+        (click)="restore(jour)"
+        matTooltip="Restaurer"
+      >
+        <mat-icon>restore</mat-icon>
+      </button>
+    </div>
+  </ng-template>
+</div>

@@ -38,9 +38,82 @@ export class AuthService {
     this.router.navigate([redirectTo]);
   }
 
-  // Vérifie si l'utilisateur est connecté
+  // Vérifie si l'utilisateur est connecté ET si le token est valide
   isLoggedIn(): boolean {
-    return localStorage.getItem('isConnected') === 'true';
+    const isConnected = localStorage.getItem('isConnected') === 'true';
+    const token = this.getToken();
+    
+    // Si pas de token ou pas marqué comme connecté, retourner false
+    if (!isConnected || !token) {
+      return false;
+    }
+    
+    // Vérifier si le token est expiré
+    const hasValidToken = !this.isTokenExpired();
+    
+    // Si le token est expiré, on retourne false sans nettoyer ici
+    // Le nettoyage sera fait par l'interceptor lors d'une vraie requête 401
+    return hasValidToken;
+  }
+
+  // NOUVELLE MÉTHODE : Vérifie si le token est expiré
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) return true;
+
+    try {
+      const payload = this.decodeToken(token);
+      if (!payload || !payload.exp) return true;
+      
+      // Convertir le timestamp en secondes et comparer avec le temps actuel
+      const currentTime = Math.floor(Date.now() / 1000);
+      const isExpired = payload.exp < currentTime;
+      
+      if (isExpired) {
+        console.log('Token expiré à:', new Date(payload.exp * 1000));
+      }
+      
+      return isExpired;
+    } catch (error) {
+      console.error('Erreur lors de la vérification d\'expiration du token:', error);
+      return true;
+    }
+  }
+
+  // NOUVELLE MÉTHODE : Force la vérification du token et déconnecte si nécessaire
+  checkTokenValidity(): boolean {
+    if (this.isTokenExpired()) {
+      console.log('Token expiré, nettoyage des données...');
+      // Nettoyer sans rediriger
+      localStorage.removeItem('isConnected');
+      localStorage.removeItem('token');
+      return false;
+    }
+    return true;
+  }
+
+  // NOUVELLE MÉTHODE : Nettoyage silencieux du localStorage
+  private cleanExpiredSession(): void {
+    localStorage.removeItem('isConnected');
+    localStorage.removeItem('token');
+  }
+
+  // NOUVELLE MÉTHODE : Obtient le temps restant avant expiration (en minutes)
+  getTokenTimeRemaining(): number {
+    const token = this.getToken();
+    if (!token) return 0;
+
+    try {
+      const payload = this.decodeToken(token);
+      if (!payload || !payload.exp) return 0;
+      
+      const currentTime = Math.floor(Date.now() / 1000);
+      const timeRemaining = payload.exp - currentTime;
+      
+      return Math.max(0, Math.floor(timeRemaining / 60)); // Retour en minutes
+    } catch (error) {
+      return 0;
+    }
   }
 
   // Récupère le token
@@ -62,6 +135,8 @@ export class AuthService {
 
   // Récupère le rôle depuis le token
   getUserRole(): string | null {
+    if (this.isTokenExpired()) return null;
+    
     const token = this.getToken();
     if (!token) return null;
 
@@ -71,6 +146,8 @@ export class AuthService {
 
   // Récupère l'ID utilisateur depuis le token
   getUserId(): number | null {
+    if (this.isTokenExpired()) return null;
+    
     const token = this.getToken();
     if (!token) return null;
 
@@ -80,6 +157,8 @@ export class AuthService {
 
   // Récupère les infos utilisateur depuis le token
   getUserInfo(): any {
+    if (this.isTokenExpired()) return null;
+    
     const token = this.getToken();
     if (!token) return null;
 
@@ -88,6 +167,8 @@ export class AuthService {
 
   // Récupère l'email depuis le token
   getUserEmail(): string | null {
+    if (this.isTokenExpired()) return null;
+    
     const token = this.getToken();
     if (!token) return null;
 

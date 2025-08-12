@@ -19,10 +19,11 @@ import { MatButtonModule }  from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule }     from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter } from '@angular/material/core';
 import { Voyage } from '../../../interfaces/voyage.interface';
-import { VoyageAdminService } from '../../../core/services/admin/VoyageAdminService.service';
 import { ItemTableComponent } from '../../../shared/components/item-table/item-table.component';
+import { VoyageAdminService } from '../../../core/services/admin/voyageAdminService.service';
 
 export const EUROPEAN_DATE_FORMATS = {
   parse: {
@@ -51,6 +52,7 @@ export const EUROPEAN_DATE_FORMATS = {
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
+    MatTooltipModule,
     ItemTableComponent
   ],
   templateUrl: './voyages.component.html',

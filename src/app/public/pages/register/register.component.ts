@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { RegisterService } from '../../../core/services/admin/RegisterService.service';
+
 import { RegisterRequest } from '../../../interfaces/register.interface';
+import { RegisterService } from '../../../core/services/admin/registerService.service';
 
 
 

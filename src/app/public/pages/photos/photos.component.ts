@@ -10,7 +10,7 @@ import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 
 @Component({
     selector: 'app-photos',
-    imports: [CommonModule, BackgroundComponent,
+    imports: [CommonModule,
         NgxMasonryModule,
         HttpClientModule,
         LottieComponent
