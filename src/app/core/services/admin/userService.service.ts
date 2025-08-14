@@ -4,10 +4,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { User } from '../../../interfaces/user.interface';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-    private readonly baseUrl = 'http://localhost:48080/api/users';
+    private readonly baseUrl = `${environment.apiUrl}/users`;
       constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {

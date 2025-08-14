@@ -4,10 +4,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Country } from '../../../interfaces/country.interface';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CountryAdminService {
-  private readonly baseUrl = 'http://localhost:48080/api/points-of-interest';
+  private readonly baseUrl = `${environment.apiUrl}/points-of-interest`;
 
   constructor(private http: HttpClient) {}
 

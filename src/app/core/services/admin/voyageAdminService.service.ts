@@ -4,10 +4,11 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Voyage } from '../../../interfaces/voyage.interface';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class VoyageAdminService {
-  private apiUrl = 'http://localhost:48080/api/trips';
+  private apiUrl = `${environment.apiUrl}/trips`;
 
   constructor(private http: HttpClient) {}
   

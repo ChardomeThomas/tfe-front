@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Photo } from '../../interfaces/photo.interface';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PhotoService {
-  private readonly baseUrl = 'http://localhost:48080/api/photos';
+  private readonly baseUrl = `${environment.apiUrl}/photos`;
 
   constructor(private http: HttpClient) { }
 

@@ -55,7 +55,15 @@ loaderOptions: AnimationOptions = {
       });
       this.dayService.getDaysByTrip(tripId)
         .subscribe(jours => {
-          this.jours = jours;
+          // Filtrer pour ne garder que les jours publiés
+          this.jours = jours.filter(jour => 
+            jour.publishedDate !== null && 
+            jour.publishedDate !== undefined &&
+            !jour.deletedAt // Exclure les jours supprimés
+          );
+          console.log('Tous les jours récupérés:', jours);
+          console.log('Jours publiés filtrés:', this.jours);
+          
           this.jours.forEach(jour => {
             this.photoService.getRandomPhotoByDay(jour.id).subscribe(photo => {
               if (photo && photo.url && !photo.url.startsWith('http')) {

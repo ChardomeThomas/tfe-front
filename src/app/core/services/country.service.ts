@@ -3,11 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Country } from '../../interfaces/country.interface';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CountryService {
-  private apiUrl = 'http://localhost:48080/api/points-of-interest/countries';
-  
+  private apiUrl = `${environment.apiUrl}/points-of-interest/countries`;
+
   constructor(private http: HttpClient) {}
 
 

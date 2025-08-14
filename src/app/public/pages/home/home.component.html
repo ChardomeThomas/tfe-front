@@ -1,7 +1,9 @@
 
  <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Bienvenue sur notre site</h1>
-<h3 class="text-2xl md:text-3xl lg:text-4xl  text-gray-900 dark:text-white mb-4 text-center">Voici les pays que nous avons visités</h3>
- 
+
+<div *ngIf="countries.length > 0; else noCountry">
+  <h3 class="text-2xl md:text-3xl lg:text-4xl  text-gray-900 dark:text-white mb-4 text-center">Voici les pays que nous avons visités</h3>
+  
   <div class="container mx-auto px-6 py-8">
     <div class="flex flex-wrap justify-center gap-6">
       <ng-container *ngFor="let country of countries">
@@ -45,4 +47,16 @@
     
     </div>
   </div>
+</div>
 
+   <ng-template #noCountry>
+      <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Veuillez patienter</h1>
+    <div class="flex flex-col items-center justify-center mt-8">
+      <div class="w-64 h-64 sm:w-96 sm:h-96 md:w-[32rem] md:h-[32rem] lg:w-[560px] lg:h-[560px] flex items-center justify-center">
+        <ng-lottie [options]="loaderOptions" class="w-full h-full"></ng-lottie>
+      </div>
+      <span class="text-2xl sm:text-3xl font-bold text-gray-700 mt-2 text-center block">
+        {{ displayText }}
+      </span>
+    </div>
+  </ng-template>

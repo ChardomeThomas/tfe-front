@@ -3,13 +3,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { RegisterRequest, RegisterResponse } from '../../../interfaces/register.interface';
+import { environment } from '../../../../environments/environment';
 
 
 
 @Injectable({ providedIn: 'root' })
 export class RegisterService {
-  private readonly baseUrl = 'http://localhost:48080/api/auth/register';
-  
+  private readonly baseUrl = `${environment.apiUrl}/auth/register`;
+
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
