@@ -1,13 +1,17 @@
+<app-breadcrumb></app-breadcrumb>
 
-  <div *ngIf="voyages.length > 0; else noVoyages">
-    <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Découvrez nos Voyages</h1>
-    <p class="text-2xl md:text-3xl lg:text-4xl  text-gray-900 dark:text-white mb-4 text-center">{{ countryName }}</p>
-    
-    <div class="container mx-auto px-6 py-8">
-      <div class="flex flex-wrap justify-center gap-6">
-        <ng-container *ngFor="let voyage of voyages">
-          <div class="w-64 h-88 bg-white border border-gray-200 rounded-lg shadow-lg flex flex-col overflow-hidden cursor-pointer"
-               (click)="goToDays(voyage.id)">
+<div *ngIf="voyages.length > 0; else noVoyages">
+  <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Découvrez nos Voyages</h1>
+  <p class="text-2xl md:text-3xl lg:text-4xl  text-gray-900 dark:text-white mb-4 text-center">{{ countryName }}</p>
+       
+  <div class="container mx-auto px-6 py-8">
+    <div class="flex flex-wrap justify-center gap-6">
+      <ng-container *ngFor="let voyage of voyages">
+        <div class="w-64 h-88 bg-white border border-gray-200 rounded-lg shadow-lg flex flex-col overflow-hidden cursor-pointer">
+          <!-- Lien vers les jours avec slug - TEST avec debug -->
+          <a [routerLink]="['/', getCountrySlug(), getVoyageSlug(voyage)]" 
+             class="h-full flex flex-col"
+             (click)="debugNavigation(voyage)">
             <img
               class="w-full h-48 object-cover"
               [src]="voyage.photoUrl || 'https://material.angular.dev/assets/img/examples/shiba2.jpg'"
@@ -24,20 +28,21 @@
                 {{ voyage.description.split(' ').slice(0, 12).join(' ') }}<span *ngIf="voyage.description.split(' ').length > 12">...</span>
               </p>
             </div>
-          </div>
-        </ng-container>
-      </div>
+          </a>
+        </div>
+      </ng-container>
     </div>
   </div>
-  <ng-template #noVoyages>
-      <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Veuillez patienter</h1>
-    <div class="flex flex-col items-center justify-center mt-8">
-      <div class="w-64 h-64 sm:w-96 sm:h-96 md:w-[32rem] md:h-[32rem] lg:w-[560px] lg:h-[560px] flex items-center justify-center">
-        <ng-lottie [options]="loaderOptions" class="w-full h-full"></ng-lottie>
-      </div>
-      <span class="text-2xl sm:text-3xl font-bold text-gray-700 mt-2 text-center block">
-        {{ displayText }}
-      </span>
-    </div>
-  </ng-template>
+</div>
 
+<ng-template #noVoyages>
+  <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Veuillez patienter</h1>
+  <div class="flex flex-col items-center justify-center mt-8">
+    <div class="w-64 h-64 sm:w-96 sm:h-96 md:w-[32rem] md:h-[32rem] lg:w-[560px] lg:h-[560px] flex items-center justify-center">
+      <ng-lottie [options]="loaderOptions" class="w-full h-full"></ng-lottie>
+    </div>
+    <span class="text-2xl sm:text-3xl font-bold text-gray-700 mt-2 text-center block">
+      {{ displayText }}
+    </span>
+  </div>
+</ng-template>

@@ -9,7 +9,7 @@ import { Country } from '../../../interfaces/country.interface';
 import { CountryService } from '../../../core/services/country.service';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
-
+import { BreadcrumbComponent } from "../../../shared/components/breadcrumb/breadcrumb.component";
 
 @Component({
   selector: 'app-home',
@@ -21,21 +21,25 @@ import { AnimationOptions, LottieComponent } from 'ngx-lottie';
     ButtonModule,
     TagModule,
     LottieComponent,
-    RouterModule
+    RouterModule,
+    BreadcrumbComponent
 ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
- countries: Country[] = [];
+  countries: Country[] = [];
   voyageDescription: string = '';
-      baseText = 'Nous sommes a la recherche du prochain pays à découvrir';
-        dotCount = 0;
+  
+  baseText = 'Nous sommes a la recherche du prochain pays à découvrir';
+  dotCount = 0;
   intervalId: any;
   displayText = '';
-loaderOptions: AnimationOptions = {
-  path: '/assets/lottie/Search.json'
-};
+  
+  loaderOptions: AnimationOptions = {
+    path: '/assets/lottie/Search.json'
+  };
+
   constructor(private countryService: CountryService) {}
 
   ngOnInit(): void {
@@ -61,5 +65,15 @@ loaderOptions: AnimationOptions = {
       clearInterval(this.intervalId);
     }
   }
-    }
 
+  // Méthode pour créer un slug depuis le nom du pays
+  getCountrySlug(country: Country): string {
+    return country.name.toLowerCase()
+      .replace(/[àáâäãå]/g, 'a')
+      .replace(/[èéêë]/g, 'e')
+      .replace(/[ç]/g, 'c')
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+}

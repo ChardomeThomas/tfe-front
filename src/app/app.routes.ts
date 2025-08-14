@@ -13,15 +13,18 @@ import { AuthGuard } from './core/guards/auth.guards';
 import { RoleGuard } from './core/guards/role.guards';
 export const routes: Routes = [
   // Public…
+  // { path: '', component: HomeComponent },
+  // { path: 'login', component: LoginComponent },
+  // { path: 'register', component: RegisterComponent },
+  // { path: 'countries/:countryId/voyages', component: VoyagesComponent },
+  // { path: 'countries/:countryId/voyages/:voyageId/jours', component: JoursComponent },
+  // { path: 'countries/:countryId/voyages/:voyageId/jours/:jourId/photos', component: PhotosComponent },
+ // Public
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'countries/:countryId/voyages', component: VoyagesComponent },
-  { path: 'countries/:countryId/voyages/:voyageId/jours', component: JoursComponent },
-  { path: 'countries/:countryId/voyages/:voyageId/jours/:jourId/photos', component: PhotosComponent },
-
-
-  // Admin
+  
+  // Admin routes doivent être avant les routes génériques
   {
     path: 'admin',
     canActivate: [AuthGuard, RoleGuard],
@@ -32,6 +35,12 @@ export const routes: Routes = [
       { path: 'countries/:countryId/voyages/:voyageId/jours/:jourId/photos', component: AdminPhotosComponent }
     ]
   },
+  
+  // NOUVELLES ROUTES avec slugs - plus spécifiques en premier
+  { path: ':countrySlug/:voyageSlug/jour/:jourId/photos', component: PhotosComponent }, // Photos avec ID (backward compatibility)
+  { path: ':countrySlug/:voyageSlug/:jourSlug/photos', component: PhotosComponent }, // Photos avec slug (nouveau)
+  { path: ':countrySlug/:voyageSlug', component: JoursComponent }, // Jours d'un voyage
+  { path: ':countrySlug', component: VoyagesComponent }, // Page des voyages du pays
   // Fallback
   { path: '**', redirectTo: '' }
 ];

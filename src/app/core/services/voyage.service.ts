@@ -2,15 +2,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, switchMap } from 'rxjs/operators';
 import { Voyage } from '../../interfaces/voyage.interface';
 import { environment } from '../../../environments/environment';
+import { CountryService } from './country.service';
 
 @Injectable({ providedIn: 'root' })
 export class VoyageService {
   private apiUrl = `${environment.apiUrl}/trips`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private countryService: CountryService 
+  ) {}
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token') || '';
@@ -57,4 +61,34 @@ export class VoyageService {
         })
       );
   }
+    getVoyagesByCountrySlug(countrySlug: string): Observable<Voyage[]> {
+    return this.countryService.getCountryIdBySlug(countrySlug).pipe(
+      switchMap(countryId => this.getVoyagesByCountryId(countryId))
+    );
+  }
+
+  /** Récupère un voyage par le slug du pays et le slug du voyage */
+  getVoyageBySlug(countrySlug: string, voyageSlug: string): Observable<Voyage> {
+    return this.getVoyagesByCountrySlug(countrySlug).pipe(
+      map(voyages => {
+        const voyage = voyages.find(v => this.createSlug(v.title) === voyageSlug);
+        if (!voyage) {
+          throw new Error(`Voyage avec le slug "${voyageSlug}" non trouvé`);
+        }
+        return voyage;
+      })
+    );
+  }
+
+  /** Crée un slug à partir d'un titre */
+  private createSlug(title: string): string {
+    return title.toLowerCase()
+      .replace(/[àáâäãå]/g, 'a')
+      .replace(/[èéêë]/g, 'e')
+      .replace(/[ç]/g, 'c')
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+  
 }

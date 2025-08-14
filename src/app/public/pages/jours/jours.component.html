@@ -1,12 +1,12 @@
-
+<app-breadcrumb></app-breadcrumb>
   <div *ngIf="jours.length > 0; else noJours" class="flex justify-center py-8">
     <div class="w-full md:w-3/4">
       <h1 class="text-3xl font-bold mb-6 text-gray-700-mb relative after:content-[''] after:block after:mt-2 after:border-t-2 after:border-gray-700 after:w-[40px] after:ml-0">Jours</h1>
       <div *ngIf="voyageDescription" class="text-lg text-center text-gray-700 mb-8">{{ voyageDescription }}</div>
       <div *ngIf="jours.length === 0" class="text-center text-gray-500">Aucun jour trouvé pour ce voyage.</div>
       <div class="flex flex-col gap-6">
-        <div *ngFor="let jour of jours; let i = index" class="flex flex-col cursor-pointer" (click)="onJourClick(jour)">
-          <div class="flex flex-row items-stretch gap-4 p-2 min-h-32">
+        <div *ngFor="let jour of jours; let i = index" class="flex flex-col">
+          <a [routerLink]="getJourPhotoRoute(jour)" class="flex flex-row items-stretch gap-4 p-2 min-h-32 cursor-pointer hover:bg-gray-50 transition-colors duration-200">
             <div class="flex-shrink-0 w-full md:w-1/3 h-auto flex items-stretch">
               <img *ngIf="randomPhotos[jour.id]?.url" [src]="randomPhotos[jour.id]?.url" alt="Photo du jour" class="object-cover w-[300px] h-[250px] rounded" />
               <div *ngIf="!randomPhotos[jour.id]?.url" class="bg-gray-200 w-full h-full flex items-center justify-center rounded text-gray-400 text-xs" style="min-height:8rem;max-height:100%;">Aucune photo</div>
@@ -22,7 +22,7 @@
               </div>
               <div class="text-gray-700">{{ jour.description }}</div>
             </div>
-          </div>
+          </a>
           <div class="flex justify-center" *ngIf="jours.length > 1 && i < jours.length - 1">
             <div class="w-3/4 border-t border-gray-300"></div>
           </div>
