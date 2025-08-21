@@ -1,5 +1,9 @@
 
 <div class="container">
+  <!-- Popup de confirmation -->
+  <div *ngIf="showSuccess" class="fixed top-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 text-lg font-semibold transition-opacity duration-300">
+    Voyage ajouté avec succès !
+  </div>
   <!-- Formulaire d'ajout -->
   <mat-card class="section-card">
     <mat-card-title>Ajouter un voyage</mat-card-title>

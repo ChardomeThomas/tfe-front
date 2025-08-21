@@ -1,51 +1,51 @@
 <header class="flex items-center justify-between px-4 py-2">
-  <!-- Logo -->
-  <div class="logo">
-    <img
-      (click)="onLogoClick()"
-      src="assets/logo.png"
-      alt="Logo wandering soul"
-      class="w-[300px] h-[100px] sm:w-[150px] sm:h-auto cursor-pointer"
-    />
-  </div>
+ <!-- Logo -->
+ <div class="logo">
+   <img
+     routerLink="/"
+     src="assets/logo.png"
+     alt="Logo wandering soul"
+     class="w-[300px] h-[100px] sm:w-[150px] sm:h-auto cursor-pointer"
+   />
+ </div>
 
-  <!-- Liens / boutons -->
-  @if (!isLoggedIn()) {
-    <div class="flex items-center space-x-4">
-      <a (click)="onLogoClick()" class="text-gray-800 hover:text-gray-600 cursor-pointer">
-        Accueil
-      </a>
-      <button (click)="goToLogin()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
-        Se connecter
-      </button>
-    </div>
-  } @else {
-    <div class="flex items-center space-x-4">
-      <a (click)="onLogoClick()" class="text-gray-800 hover:text-gray-600 cursor-pointer">
-        Accueil
-      </a>
-      
-      <button (click)="goToProfile()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
-        Profil
-      </button>
-      
-      @if (isAdmin()) {
-        <button (click)="admin()" class="px-4 py-2 text-black bg-red-100 rounded-lg cursor-pointer">
-          🔧 Admin
-        </button>
-      }
-      
-      <span>|</span>
-      <button (click)="logout()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
-        Se déconnecter
-      </button>
-    </div>
-  }
+ <!-- Liens / boutons -->
+ @if (!isLoggedIn()) {
+   <div class="flex items-center space-x-4">
+     <a routerLink="/" class="text-gray-800 hover:text-gray-600 cursor-pointer">
+       Accueil
+     </a>
+     <a routerLink="/login" class="px-4 py-2 text-black rounded-lg cursor-pointer">
+       Se connecter
+     </a>
+   </div>
+ } @else {
+   <div class="flex items-center space-x-4">
+     <a routerLink="/" class="text-gray-800 hover:text-gray-600 cursor-pointer">
+       Accueil
+     </a>
+     
+     <a routerLink="/connected/profile" class="px-4 py-2 text-black rounded-lg cursor-pointer">
+       Profil
+     </a>
+     
+     @if (isAdmin()) {
+       <a routerLink="/admin" class="px-4 py-2 text-black bg-red-100 rounded-lg cursor-pointer">
+         🔧 Admin
+       </a>
+     }
+     
+     <span>|</span>
+     <button (click)="logout()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
+       Se déconnecter
+     </button>
+   </div>
+ }
 </header>
 
 <!-- Banner sur petits écrans -->
 <div class="banner bg-black text-white text-center p-2 sm:hidden">
-  <p class="text-xs">
-    appareil non pris en charge, utilisez un appareil plus grand pour une meilleure expérience
-  </p>
+ <p class="text-xs">
+   appareil non pris en charge, utilisez un appareil plus grand pour une meilleure expérience
+ </p>
 </div>

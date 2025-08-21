@@ -9,6 +9,7 @@ import { NgxMasonryComponent, NgxMasonryModule } from 'ngx-masonry';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { BreadcrumbComponent } from "../../../shared/components/breadcrumb/breadcrumb.component";
+import { CommentsComponent } from "../../../shared/components/comments/comments.component";
 
 @Component({
     selector: 'app-photos',
@@ -16,7 +17,8 @@ import { BreadcrumbComponent } from "../../../shared/components/breadcrumb/bread
         NgxMasonryModule,
         HttpClientModule,
         LottieComponent,
-        BreadcrumbComponent
+        BreadcrumbComponent,
+        CommentsComponent
     ],
     standalone: true,
     templateUrl: './photos.component.html',
@@ -55,7 +57,7 @@ loaderOptions: AnimationOptions = {
     const voyageSlug = this.route.snapshot.params['voyageSlug'];
     const jourSlug = this.route.snapshot.params['jourSlug'];
     const jourId = this.route.snapshot.params['jourId']; // Pour backward compatibility
-    const role = localStorage.getItem('role') || '';
+    // Note: On ne passe plus le rôle pour la vue publique
     
     this.intervalId = setInterval(() => {
       this.dotCount = (this.dotCount + 1) % 4; // 0 → 1 → 2 → 3 → 0
@@ -64,14 +66,14 @@ loaderOptions: AnimationOptions = {
 
     // Si on a un jourId (ancienne route), l'utiliser directement
     if (jourId) {
-      this.loadPhotosByDayId(+jourId, role);
+      this.loadPhotosByDayId(+jourId);
     } 
     // Sinon, utiliser la nouvelle méthode avec les slugs
     else if (countrySlug && voyageSlug && jourSlug) {
       // Récupérer le jour par ses slugs
       this.dayService.getDayBySlug(countrySlug, voyageSlug, jourSlug).subscribe({
         next: (jour) => {
-          this.loadPhotosByDayId(jour.id, role);
+          this.loadPhotosByDayId(jour.id);
         },
         error: (err) => {
           console.error('Erreur lors de la récupération du jour par slug:', err);
@@ -97,8 +99,10 @@ loaderOptions: AnimationOptions = {
     }, 15000);
   }
 
-  private loadPhotosByDayId(dayId: number, role: string): void {
-    this.photoService.getPhotosByDay(dayId, role).subscribe({
+  private loadPhotosByDayId(dayId: number): void {
+    // Pour la vue publique, on ne passe pas de rôle pour s'assurer 
+    // qu'on n'obtient que les photos publiées
+    this.photoService.getPhotosByDay(dayId).subscribe({
       next: (photos) => {
         this.photos = photos;
         this.loading = false;

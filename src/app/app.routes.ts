@@ -11,6 +11,7 @@ import { LoginComponent } from './public/pages/login/login.component';
 import { RegisterComponent } from './public/pages/register/register.component';
 import { AuthGuard } from './core/guards/auth.guards';
 import { RoleGuard } from './core/guards/role.guards';
+import { ProfileComponent } from './authenticated/pages/profile/profile.component';
 export const routes: Routes = [
   // Public…
   // { path: '', component: HomeComponent },
@@ -25,6 +26,14 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   
   // Admin routes doivent être avant les routes génériques
+    {
+    path: 'connected',
+    canActivate: [AuthGuard], // Juste connecté suffit
+    children: [
+      { path: 'profile', component: ProfileComponent },
+      // Autres pages pour utilisateurs connectés
+    ]
+  },
   {
     path: 'admin',
     canActivate: [AuthGuard, RoleGuard],

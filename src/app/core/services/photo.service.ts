@@ -81,6 +81,40 @@ export class PhotoService {
     return this.http.get<{ url: string }>(url, options);
   }
 
+  // Nouvelle méthode pour récupérer toutes les photos d'un voyage
+  getPhotosByTrip(tripId: number): Observable<Photo[]> {
+    const url = `${this.baseUrl}/trip/${tripId}`;
+    
+    if (this.hasValidToken()) {
+      return this.http.get<Photo[]>(url, { headers: this.getHeaders() });
+    } else {
+      // Si pas authentifié, récupérer seulement les photos publiques
+      const publicUrl = `${this.baseUrl}/trip/${tripId}/public`;
+      return this.http.get<Photo[]>(publicUrl);
+    }
+  }
+
+  // Méthode pour récupérer une photo aléatoire d'un voyage (favorite en priorité, sinon publique)
+  getRandomPhotoByTrip(tripId: number): Observable<Photo | null> {
+    return new Observable(observer => {
+      this.getPhotosByTrip(tripId).subscribe(photos => {
+        if (photos.length > 0) {
+          // Prioriser les photos favorites
+          const favoritePhotos = photos.filter(photo => photo.favorite);
+          const photosToChooseFrom = favoritePhotos.length > 0 ? favoritePhotos : photos;
+          
+          const randomIndex = Math.floor(Math.random() * photosToChooseFrom.length);
+          observer.next(photosToChooseFrom[randomIndex]);
+        } else {
+          observer.next(null);
+        }
+        observer.complete();
+      }, err => {
+        observer.error(err);
+      });
+    });
+  }
+
 
   getRandomPhotoByDay(dayId: number): Observable<Photo | null> {
     return new Observable(observer => {

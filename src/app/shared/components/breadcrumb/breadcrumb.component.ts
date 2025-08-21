@@ -38,96 +38,137 @@ export class BreadcrumbComponent implements OnInit {
     
     const segments = url.split('/').filter(segment => segment);
     
-    if (segments.length > 0) {
-      const countrySlug = segments[0];
+    if (segments.length === 0) {
+      return; // Page d'accueil seulement
+    }
+
+    const firstSegment = segments[0];
+    
+    // Routes /connected/*
+    if (firstSegment === 'connected') {
+      this.handleConnectedRoutes(segments);
+      return;
+    }
+    
+    // Routes /admin/*
+    if (firstSegment === 'admin') {
+      this.handleAdminRoutes(segments);
+      return;
+    }
+    
+    // Routes publiques avec login/register
+    if (firstSegment === 'login') {
+      this.breadcrumbs.push({ label: 'Connexion', url: '/login' });
+      return;
+    }
+    
+    if (firstSegment === 'register') {
+      this.breadcrumbs.push({ label: 'Inscription', url: '/register' });
+      return;
+    }
+    
+    // Routes dynamiques avec slugs (pays/voyages)
+    this.handlePublicRoutes(segments);
+  }
+
+  private handleConnectedRoutes(segments: string[]) {
+    if (segments.length < 2) return;
+    
+    switch (segments[1]) {
+      case 'profile':
+        this.breadcrumbs.push({ label: 'Profil', url: '/connected/profile' });
+        break;
+      // Ajouter d'autres routes connected ici
+      default:
+        this.breadcrumbs.push({ label: segments[1], url: `/connected/${segments[1]}` });
+    }
+  }
+
+  private handleAdminRoutes(segments: string[]) {
+    this.breadcrumbs.push({ label: 'Administration', url: '/admin' });
+    
+    // Gérer les sous-routes admin si nécessaire
+    if (segments.length > 1) {
+      // Exemple : /admin/countries/1/voyages
+      if (segments[1] === 'countries') {
+        this.breadcrumbs.push({ label: 'Pays', url: '/admin/countries' });
+        // Ajouter la logique pour les sous-routes admin
+      }
+    }
+  }
+
+  private handlePublicRoutes(segments: string[]) {
+    const countrySlug = segments[0];
+    
+    // Récupérer le nom du pays
+    this.countryService.getCountryBySlug(countrySlug).subscribe({
+      next: (country) => {
+        if (country) {
+          this.breadcrumbs.push({ label: country.name, url: `/${countrySlug}` });
+          this.handleVoyageRoutes(segments, countrySlug);
+        }
+      },
+      error: () => {
+        const countryName = this.slugToName(countrySlug);
+        this.breadcrumbs.push({ label: countryName, url: `/${countrySlug}` });
+        this.handleVoyageRoutes(segments, countrySlug);
+      }
+    });
+  }
+
+  private handleVoyageRoutes(segments: string[], countrySlug: string) {
+    if (segments.length < 2) return;
+    
+    const voyageSlug = segments[1];
+    
+    // Récupérer le nom du voyage
+    this.voyageService.getVoyageBySlug(countrySlug, voyageSlug).subscribe({
+      next: (voyage) => {
+        this.breadcrumbs.push({ label: voyage.title, url: `/${countrySlug}/${voyageSlug}` });
+        this.handleDayRoutes(segments, countrySlug, voyageSlug);
+      },
+      error: () => {
+        const voyageName = this.slugToName(voyageSlug);
+        this.breadcrumbs.push({ label: voyageName, url: `/${countrySlug}/${voyageSlug}` });
+        this.handleDayRoutes(segments, countrySlug, voyageSlug);
+      }
+    });
+  }
+
+  private handleDayRoutes(segments: string[], countrySlug: string, voyageSlug: string) {
+    if (segments.length < 3) return;
+    
+    const thirdSegment = segments[2];
+    
+    // Route ancienne: /country/voyage/jour/ID/photos
+    if (thirdSegment === 'jour' && segments.length > 4 && segments[4] === 'photos') {
+      const jourId = segments[3];
+      this.breadcrumbs.push({ 
+        label: 'Photos', 
+        url: `/${countrySlug}/${voyageSlug}/jour/${jourId}/photos` 
+      });
+      return;
+    }
+    
+    // Route nouvelle: /country/voyage/jourSlug/photos
+    if (segments.length > 3 && segments[3] === 'photos') {
+      const jourSlug = thirdSegment;
       
-      // Récupérer le vrai nom du pays
-      this.countryService.getCountryBySlug(countrySlug).subscribe({
-        next: (country) => {
-          if (country) {
-            // Remplacer le breadcrumb du pays par le vrai nom
-            const countryBreadcrumbIndex = this.breadcrumbs.findIndex(b => b.url === `/${countrySlug}`);
-            if (countryBreadcrumbIndex >= 0) {
-              this.breadcrumbs[countryBreadcrumbIndex].label = country.name;
-            } else {
-              this.breadcrumbs.push({ label: country.name, url: `/${countrySlug}` });
-            }
-          }
+      this.dayService.getDayBySlug(countrySlug, voyageSlug, jourSlug).subscribe({
+        next: (jour) => {
+          this.breadcrumbs.push({ 
+            label: jour.title, 
+            url: `/${countrySlug}/${voyageSlug}/${jourSlug}/photos` 
+          });
         },
         error: () => {
-          // Fallback au nom généré depuis le slug
-          const countryName = this.slugToName(countrySlug);
-          this.breadcrumbs.push({ label: countryName, url: `/${countrySlug}` });
-        }
-      });
-      
-      // Si on a plus de segments, ajouter les suivants
-      if (segments.length > 1) {
-        const voyageSlug = segments[1];
-        
-        if (voyageSlug === 'voyages') {
-          this.breadcrumbs.push({ label: 'Voyages', url: `/${countrySlug}/voyages` });
-        } else {
-          // C'est un voyage spécifique, récupérer le vrai titre
-          this.voyageService.getVoyageBySlug(countrySlug, voyageSlug).subscribe({
-            next: (voyage) => {
-              // Remplacer le breadcrumb du voyage par le vrai titre
-              const voyageBreadcrumbIndex = this.breadcrumbs.findIndex(b => b.url === `/${countrySlug}/${voyageSlug}`);
-              if (voyageBreadcrumbIndex >= 0) {
-                this.breadcrumbs[voyageBreadcrumbIndex].label = voyage.title;
-              } else {
-                this.breadcrumbs.push({ label: voyage.title, url: `/${countrySlug}/${voyageSlug}` });
-              }
-              
-              // Si on a un troisième segment
-              if (segments.length > 2) {
-                const thirdSegment = segments[2];
-                
-                // Ancienne route : /country/voyage/jour/ID/photos
-                if (thirdSegment === 'jour' && segments.length > 4 && segments[4] === 'photos') {
-                  this.breadcrumbs.push({ label: 'Photos', url: `/${countrySlug}/${voyageSlug}/jour/${segments[3]}/photos` });
-                }
-                // Nouvelle route : /country/voyage/jourSlug/photos  
-                else if (segments.length > 3 && segments[3] === 'photos') {
-                  const jourSlug = thirdSegment;
-                  // Essayer de récupérer le vrai nom du jour
-                  this.dayService.getDayBySlug(countrySlug, voyageSlug, jourSlug).subscribe({
-                    next: (jour) => {
-                      this.breadcrumbs.push({ label: jour.title, url: `/${countrySlug}/${voyageSlug}/${jourSlug}/photos` });
-                    },
-                    error: () => {
-                      // Fallback au nom généré depuis le slug
-                      const jourName = this.slugToName(jourSlug);
-                      this.breadcrumbs.push({ label: jourName, url: `/${countrySlug}/${voyageSlug}/${jourSlug}/photos` });
-                    }
-                  });
-                }
-              }
-            },
-            error: () => {
-              // Fallback au nom généré depuis le slug
-              const voyageName = this.slugToName(voyageSlug);
-              this.breadcrumbs.push({ label: voyageName, url: `/${countrySlug}/${voyageSlug}` });
-              
-              // Si on a un troisième segment
-              if (segments.length > 2) {
-                const thirdSegment = segments[2];
-                
-                // Ancienne route : /country/voyage/jour/ID/photos
-                if (thirdSegment === 'jour' && segments.length > 4 && segments[4] === 'photos') {
-                  this.breadcrumbs.push({ label: 'Photos', url: `/${countrySlug}/${voyageSlug}/jour/${segments[3]}/photos` });
-                }
-                // Nouvelle route : /country/voyage/jourSlug/photos  
-                else if (segments.length > 3 && segments[3] === 'photos') {
-                  const jourSlug = thirdSegment;
-                  const jourName = this.slugToName(jourSlug);
-                  this.breadcrumbs.push({ label: jourName, url: `/${countrySlug}/${voyageSlug}/${jourSlug}/photos` });
-                }
-              }
-            }
+          const jourName = this.slugToName(jourSlug);
+          this.breadcrumbs.push({ 
+            label: jourName, 
+            url: `/${countrySlug}/${voyageSlug}/${jourSlug}/photos` 
           });
         }
-      }
+      });
     }
   }
 

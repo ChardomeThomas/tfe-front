@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-header',
-  imports: [],
+  imports: [RouterLink],
   standalone: true,
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
@@ -93,4 +93,6 @@ export class HeaderComponent {
   private getUrlSegments(): string[] {
     return this.currentPage.split('?')[0].split('/').filter(segment => segment.length > 0);
   }
+
+  
 }

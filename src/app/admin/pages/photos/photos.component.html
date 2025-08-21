@@ -1,1 +1,186 @@
-<p>photos works!</p>
+<div class="p-5 max-w-7xl mx-auto">
+  <!-- Formulaire d'ajout multiple de photos -->
+  <mat-card class="mb-6">
+    <mat-card-title>Ajouter des photos</mat-card-title>
+    <form [formGroup]="multiplePhotoForm" (ngSubmit)="uploadMultiplePhotos()" class="p-4 flex flex-col gap-5" (keydown.enter)="$event.preventDefault()">
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-4">
+          <input type="file" #multipleFileInput (change)="onMultipleFilesSelected($event)" accept="image/*" multiple style="display: none;" />
+          <button mat-raised-button type="button" (click)="multipleFileInput.click()">
+            {{ selectedFiles.length > 0 ? 'Ajouter d\'autres photos' : 'Choisir des photos' }}
+          </button>
+          <span *ngIf="selectedFiles.length > 0" class="text-gray-600 italic text-sm">{{ selectedFiles.length }} fichier(s) sélectionné(s)</span>
+        </div>
+
+        <!-- Liste des fichiers sélectionnés avec descriptions individuelles -->
+        <div *ngIf="selectedFiles.length > 0" class="mt-4 border border-gray-300 rounded-lg p-4 bg-gray-50">
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="text-gray-800 text-base font-medium">Photos sélectionnées :</h4>
+            <button mat-button type="button" color="warn" (click)="clearAllSelectedFiles()" class="text-sm">
+              <mat-icon class="mr-1">clear_all</mat-icon>
+              Vider tout
+            </button>
+          </div>
+          <div *ngFor="let file of selectedFiles; let i = index" class="flex gap-4 mb-3 last:mb-0 p-3 bg-white rounded border border-gray-200 flex-col">
+            <!-- Première ligne : Image, nom et bouton de suppression -->
+            <div class="flex items-center gap-4">
+              <!-- Aperçu de l'image -->
+              <div class="w-20 h-20 flex-shrink-0">
+                <img [src]="getImagePreview(file)" [alt]="file.name" class="w-full h-full object-cover rounded border border-gray-200" />
+              </div>
+              
+              <!-- Informations du fichier -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <span class="font-bold text-blue-600 mr-2">{{ i + 1 }}.</span>
+                    <div class="min-w-0">
+                      <span class="text-sm text-gray-800 break-all block">{{ file.name }}</span>
+                      <span class="text-xs text-gray-500">{{ (file.size / 1024 / 1024).toFixed(2) }} MB</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Indicateurs d'état -->
+                  <div class="flex gap-1 ml-2">
+                    <span *ngIf="fileIsFavorite[i]" class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-yellow-100 text-yellow-800">
+                      <mat-icon class="w-3 h-3 mr-1 text-xs">star</mat-icon>
+                      Favori
+                    </span>
+                    <span *ngIf="!fileIsPublished[i]" class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
+                      Brouillon
+                    </span>
+                    <span *ngIf="fileIsPublished[i] && !fileIsPublic[i]" class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
+                      Privé
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Bouton de suppression -->
+              <button mat-icon-button type="button" color="warn" (click)="removeSelectedFile(i)" class="flex-shrink-0" matTooltip="Supprimer ce fichier">
+                <mat-icon class="text-lg">close</mat-icon>
+              </button>
+            </div>
+            
+            <!-- Deuxième ligne : Boutons d'options -->
+            <div class="flex flex-wrap gap-2 ml-24">
+              <button 
+                mat-button 
+                type="button"
+                [color]="fileIsPublished[i] ? 'primary' : 'basic'"
+                (click)="toggleFilePublished(i)"
+                class="text-sm"
+              >
+                <mat-icon class="mr-1">{{ fileIsPublished[i] ? 'publish' : 'unpublished' }}</mat-icon>
+                {{ fileIsPublished[i] ? 'Sera publiée' : 'Brouillon' }}
+              </button>
+              
+              <button 
+                mat-button 
+                type="button"
+                [color]="fileIsPublic[i] ? 'primary' : 'basic'"
+                (click)="toggleFilePublic(i)"
+                [class]="'text-sm ' + (isPublicToggleDisabled(i) ? 'opacity-50 cursor-not-allowed' : '')"
+                [disabled]="!fileIsPublished[i] || isPublicToggleDisabled(i)"
+                [matTooltip]="getPublicButtonTooltip(i)"
+              >
+                <mat-icon class="mr-1">{{ fileIsPublic[i] ? 'visibility' : 'visibility_off' }}</mat-icon>
+                {{ fileIsPublic[i] ? 'Publique' : 'Privée' }}
+                <mat-icon *ngIf="isPublicToggleDisabled(i)" class="ml-1 text-sm text-yellow-600">lock</mat-icon>
+              </button>
+              
+              <button 
+                mat-button 
+                type="button"
+                [color]="fileIsFavorite[i] ? 'accent' : 'basic'"
+                (click)="toggleFileFavorite(i)"
+                class="text-sm"
+              >
+                <mat-icon class="mr-1">{{ fileIsFavorite[i] ? 'star' : 'star_border' }}</mat-icon>
+                {{ fileIsFavorite[i] ? 'Favori' : 'Normal' }}
+              </button>
+            </div>
+            
+            <!-- Troisième ligne : Description -->
+            <div class="ml-24">
+              <mat-form-field appearance="fill" class="w-full">
+                <mat-label>Description pour {{ file.name }}</mat-label>
+                <input matInput 
+                       [(ngModel)]="fileDescriptions[i]"
+                       [ngModelOptions]="{standalone: true}"
+                       placeholder="Description optionnelle">
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="flex justify-end">
+        <button mat-raised-button color="accent" type="submit" [disabled]="selectedFiles.length === 0">
+          Uploader {{ selectedFiles.length }} photo(s)
+        </button>
+      </div>
+    </form>
+  </mat-card>
+
+  <!-- Photos publiées -->
+  <app-item-table
+    title="Photos publiées"
+    [dataSource]="photos"
+    [columns]="photoColumns"
+    [actionsTemplate]="publishedPhotoActions"
+  ></app-item-table>
+
+  <ng-template #publishedPhotoActions let-photo>
+    <button mat-icon-button (click)="toggleFavorite(photo)" [color]="photo.favorite ? 'accent' : 'basic'" matTooltip="{{ photo.favorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}">
+      <mat-icon>{{ photo.favorite ? 'star' : 'star_border' }}</mat-icon>
+    </button>
+    <button mat-icon-button (click)="togglePublic(photo)" [color]="photo.isPublic ? 'primary' : 'basic'" matTooltip="{{ photo.isPublic ? 'Rendre privé' : 'Rendre public' }}">
+      <mat-icon>{{ photo.isPublic ? 'visibility' : 'visibility_off' }}</mat-icon>
+    </button>
+    <button mat-button color="accent" (click)="unpublish(photo)">
+      Dépublier
+    </button>
+    <button mat-icon-button color="warn" (click)="delete(photo)">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </ng-template>
+
+  <!-- Photos non publiées -->
+  <app-item-table
+    title="Photos non publiées"
+    [dataSource]="unpublishedPhotos"
+    [columns]="unpublishedPhotoColumns"
+    [actionsTemplate]="unpublishedPhotoActions"
+  ></app-item-table>
+
+  <ng-template #unpublishedPhotoActions let-photo>
+    <button mat-icon-button (click)="toggleFavorite(photo)" [color]="photo.favorite ? 'accent' : 'basic'" matTooltip="{{ photo.favorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}">
+      <mat-icon>{{ photo.favorite ? 'star' : 'star_border' }}</mat-icon>
+    </button>
+    <button mat-icon-button (click)="togglePublic(photo)" [color]="photo.isPublic ? 'primary' : 'basic'" matTooltip="{{ photo.isPublic ? 'Rendre privé' : 'Rendre public' }}">
+      <mat-icon>{{ photo.isPublic ? 'visibility' : 'visibility_off' }}</mat-icon>
+    </button>
+    <button mat-button color="primary" (click)="publish(photo)">
+      Publier
+    </button>
+    <button mat-icon-button color="warn" (click)="delete(photo)">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </ng-template>
+
+  <!-- Photos supprimées -->
+  <app-item-table
+    title="Photos supprimées"
+    [dataSource]="deletedPhotos"
+    [columns]="deletedPhotoColumns"
+    [actionsTemplate]="deletedPhotoActions"
+  ></app-item-table>
+
+  <ng-template #deletedPhotoActions let-photo>
+    <button mat-button color="primary" (click)="restore(photo)">
+      Restaurer
+    </button>
+  </ng-template>
+</div>

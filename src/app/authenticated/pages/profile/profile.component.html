@@ -1,0 +1,79 @@
+<h1 class="text-center mb-4 text-4xl leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+  Mon Profil
+</h1>
+<app-breadcrumb></app-breadcrumb>
+
+<div class="container mx-auto px-6 py-8">
+  <!-- Section Newsletter -->
+  <section class="mb-8">
+    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6">
+      Préférences Newsletter
+    </h2>
+    
+    <div *ngIf="loading" class="text-center py-8">
+      <span class="text-lg text-gray-600 dark:text-gray-400">Chargement...</span>
+    </div>
+
+    <div *ngIf="!loading && countriesWithTrips.length > 0" class="space-y-6">
+      <ng-container *ngFor="let country of countriesWithTrips">
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-sm">
+          
+          <!-- Pays -->
+          <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-200 dark:border-gray-600">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+              {{ country.countryName }}
+            </h3>
+            <label class="flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                [checked]="isSubscribedToCountry(country.countryId)"
+                (change)="onCountryToggle(country.countryId)"
+                class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+              >
+              <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Tous les voyages
+              </span>
+            </label>
+          </div>
+
+          <!-- Voyages -->
+          <div *ngIf="country.trips.length > 0" class="space-y-3">
+            <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Voyages spécifiques :
+            </h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <ng-container *ngFor="let trip of country.trips">
+                <label class="flex items-center cursor-pointer p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <input 
+                    type="checkbox" 
+                    [checked]="isSubscribedToTrip(trip.tripId)"
+                    (change)="onTripToggle(trip.tripId)"
+                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  >
+                  <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">
+                    {{ trip.title }}
+                  </span>
+                </label>
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- Message si pas de voyages -->
+          <div *ngIf="country.trips.length === 0" class="text-sm text-gray-500 dark:text-gray-400 italic">
+            Aucun voyage disponible pour ce pays
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Message si pas de pays -->
+    <div *ngIf="!loading && countriesWithTrips.length === 0" class="text-center py-8">
+      <span class="text-lg text-gray-600 dark:text-gray-400">
+        Aucun pays disponible pour les abonnements newsletter
+      </span>
+    </div>
+  </section>
+
+  <!-- Autres sections du profil peuvent être ajoutées ici -->
+</div>

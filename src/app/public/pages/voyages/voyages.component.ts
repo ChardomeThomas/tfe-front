@@ -6,6 +6,7 @@ import { PhotoService } from '../../../core/services/photo.service';
 import { CountryService } from '../../../core/services/country.service';
 import { Voyage } from '../../../interfaces/voyage.interface';
 import { Country } from '../../../interfaces/country.interface';
+import { Photo } from '../../../interfaces/photo.interface';
 import { BackgroundComponent } from "../../../shared/components/background/background.component";
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -23,6 +24,7 @@ import { BreadcrumbComponent } from "../../../shared/components/breadcrumb/bread
 export class VoyagesComponent implements OnInit, OnDestroy {
     voyages: Voyage[] = [];
     countryName: string | null = null;
+    randomPhotos: { [tripId: number]: Photo | null } = {}; // Stocker les photos aléatoires
     baseText = 'Voyages en cours';
   displayText = '';
   dotCount = 0;
@@ -61,17 +63,20 @@ loaderOptions: AnimationOptions = {
                     console.log('Tous les voyages récupérés:', allVoyages);
                     console.log('Voyages publiés filtrés:', this.voyages);
                     
-                    // Pour chaque voyage publié, récupérer la photo favorite aléatoire
+                    // Pour chaque voyage publié, récupérer une photo aléatoire
                     this.voyages.forEach(voyage => {
                         console.log('Appel photo pour voyage.id =', voyage.id);
-                        this.photoService.getRandomFavoritePhotoByTripId(voyage.id).subscribe({
-                            next: (res) => {
-                                voyage.photoUrl = res.url;
-                                console.log(`Photo URL pour voyage ${voyage.id}:`, voyage.photoUrl);
+                        this.photoService.getRandomPhotoByTrip(voyage.id).subscribe({
+                            next: (photo) => {
+                                if (photo && photo.url && !photo.url.startsWith('http')) {
+                                    photo.url = `http://localhost:8080/${photo.url.replace(/^\/+/, '')}`;
+                                }
+                                this.randomPhotos[voyage.id] = photo;
+                                console.log(`Photo récupérée pour voyage ${voyage.id}:`, photo);
                             },
-                            error: () => {
-                                voyage.photoUrl = 'https://material.angular.dev/assets/img/examples/shiba2.jpg';
-                                console.log(`Photo URL par défaut pour voyage ${voyage.id}:`, voyage.photoUrl);
+                            error: (error) => {
+                                console.error(`Erreur lors de la récupération de la photo pour le voyage ${voyage.id}:`, error);
+                                this.randomPhotos[voyage.id] = null;
                             }
                         });
                     });

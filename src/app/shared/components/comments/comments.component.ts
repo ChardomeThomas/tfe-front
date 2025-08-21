@@ -1,13 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-export interface Comment {
-  id: number;
-  author: string;
-  content: string;
-  date: Date;
-}
+import { CommentService } from '../../../core/services/comment.service';
+import { Comment } from '../../../interfaces/comment.interface';
 
 @Component({
   selector: 'app-comments',
@@ -16,56 +11,76 @@ export interface Comment {
   templateUrl: './comments.component.html',
   styleUrls: ['./comments.component.css']
 })
-export class CommentsComponent {
+export class CommentsComponent implements OnInit, OnChanges {
   @Input() photoId?: number;
   
   newComment = '';
-  
-  // Simulation de commentaires (à remplacer par un service plus tard)
-  comments: Comment[] = [
-    {
-      id: 1,
-      author: 'Jean Dupont',
-      content: 'Magnifique photo ! J\'adore la lumière dans cette prise.',
-      date: new Date('2025-08-05')
-    },
-    {
-      id: 2,
-      author: 'Marie Laurent',
-      content: 'Quel endroit incroyable ! Merci pour le partage 📸',
-      date: new Date('2025-08-06')
-    },
-    {
-      id: 3,
-      author: 'Pierre Durand',
-      content: 'Les couleurs sont vraiment saisissantes ! 🌅',
-      date: new Date('2025-08-04')
+  comments: Comment[] = [];
+  isLoading = false;
+
+  constructor(private commentService: CommentService) {}
+
+  ngOnInit() {
+    if (this.photoId) {
+      this.loadComments();
     }
-  ];
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['photoId'] && this.photoId) {
+      this.loadComments();
+    }
+  }
+
+  loadComments() {
+    if (!this.photoId) return;
+    
+    this.isLoading = true;
+    this.commentService.getCommentsByPhoto(this.photoId).subscribe({
+      next: (comments) => {
+        // Filtrer les commentaires publiés et non supprimés
+        this.comments = comments.filter(comment => 
+          comment.published && !comment.deletedAt
+        );
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des commentaires:', error);
+        this.comments = [];
+        this.isLoading = false;
+      }
+    });
+  }
 
   addComment() {
-    if (this.newComment.trim()) {
-      const newCommentObj: Comment = {
-        id: Date.now(), // Simple ID generation
-        author: 'Utilisateur', // À remplacer par l'utilisateur connecté
-        content: this.newComment.trim(),
-        date: new Date()
-      };
-      
-      this.comments.unshift(newCommentObj); // Ajouter au début
-      this.newComment = '';
-    }
+    if (!this.newComment.trim() || !this.photoId || this.newComment.length > 500) return;
+    
+    this.commentService.addComment(this.photoId, this.newComment.trim()).subscribe({
+      next: (comment) => {
+        // Ajouter le nouveau commentaire au début de la liste
+        this.comments.unshift(comment);
+        this.newComment = '';
+      },
+      error: (error) => {
+        console.error('Erreur lors de l\'ajout du commentaire:', error);
+        // Vous pouvez ajouter une notification d'erreur ici
+      }
+    });
   }
 
   deleteComment(commentId: number) {
+    // Cette méthode pourrait être implémentée plus tard si vous avez un endpoint de suppression
     this.comments = this.comments.filter(comment => comment.id !== commentId);
   }
 
-  formatDate(date: Date): string {
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = { 
       day: 'numeric', 
       month: 'long', 
-      year: 'numeric' 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     };
     return date.toLocaleDateString('fr-FR', options);
   }

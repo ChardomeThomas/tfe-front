@@ -1,12 +1,12 @@
 
 
-<div class="container">
+<div class="container mx-auto px-4 py-8 flex flex-col gap-8">
   <!-- Section Utilisateurs -->
    <!-- METTRE LES UTILISATEURS SUR UNE PAGE DEDIEE AVEC LE MEME AFFICHAGE QUE SUR LES AUTRES PAGES SAUF QUE LES UTILISATEURS SERONT ACTIFS OU NON -->
-  <mat-card class="section-card">
-    <mat-card-title>Utilisateurs</mat-card-title>
-    <div class="table-container">
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z1">
+  <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+    <h2 class="text-2xl font-bold mb-4 text-gray-800">Utilisateurs</h2>
+    <div class="overflow-x-auto">
+      <table mat-table [dataSource]="dataSource" class="min-w-full divide-y divide-gray-200">
         <!-- Pseudo -->
         <ng-container matColumnDef="username">
           <th mat-header-cell *matHeaderCellDef>Pseudo</th>
@@ -98,29 +98,29 @@
           </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns" class="bg-gray-100"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-blue-50 transition-colors"></tr>
       </table>
     </div>
-  </mat-card>
+  </div>
 
   <!-- Section Pays -->
-  <mat-card class="section-card country-section">
-    <mat-card-title>Gestion des pays</mat-card-title>
+  <div class="bg-white rounded-xl shadow-lg p-6">
+    <h2 class="text-2xl font-bold mb-4 text-gray-800">Gestion des pays</h2>
 
     <!-- Formulaire d'ajout -->
-    <div class="add-country">
-      <div class="autocomplete">
+    <div class="flex items-center gap-4 mb-6">
+      <div class="relative max-w-xs w-full">
         <input
           type="text"
           [(ngModel)]="query"
           (ngModelChange)="onChange($event)"
           placeholder="Entrez le nom du pays..."
-          class="w-full px-4 py-3 text-gray-700 bg-white border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all duration-200 placeholder-gray-400"
+          class="w-full px-4 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all duration-200 placeholder-gray-400"
         />
-        <ul *ngIf="suggestions.length" class="absolute left-0 right-0 bg-white border-2 border-gray-200 rounded-lg shadow-lg mt-1 max-h-48 overflow-auto z-50">
+  <ul *ngIf="suggestions.length" class="absolute left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-48 overflow-auto z-50">
           <li *ngFor="let c of suggestions" (click)="selectCountry(c)" class="flex items-center px-4 py-3 cursor-pointer hover:bg-blue-50 transition-colors duration-150 border-b border-gray-100 last:border-b-0">
-            <img [src]="c.flags.png" width="24" height="16" alt="" class="mr-3 rounded-sm shadow-sm" />
+            <img [src]="c.flags.png" width="24" height="16" alt="" class="mr-3 rounded shadow-sm" />
             <span class="text-gray-700 font-medium">{{ c.translations?.['fra']?.common || c.name.common }}</span>
           </li>
         </ul>
@@ -130,6 +130,7 @@
         color="primary"
         [disabled]="!selectedCountry"
         (click)="addCountry()"
+        class="px-6 py-3 rounded-lg shadow bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-all"
       >
         Valider
       </button>
@@ -137,12 +138,14 @@
 
   
     <!-- Pays actifs -->
-    <app-item-table
-      title="Pays actifs"
-      [dataSource]="countries"
-      [columns]="['flag', 'name']"
-      [actionsTemplate]="activeCountryActions"
-    ></app-item-table>
+    <div class="mt-6">
+      <app-item-table
+        title="Pays actifs"
+        [dataSource]="countries"
+        [columns]="['flag', 'name']"
+        [actionsTemplate]="activeCountryActions"
+      ></app-item-table>
+    </div>
 
     <ng-template #activeCountryActions let-country>
       <button
@@ -177,12 +180,14 @@
     </ng-template>
 
     <!-- Pays non publiés -->
-    <app-item-table
-      title="Pays non publiés"
-      [dataSource]="unpublishedCountries"
-      [columns]="['flag', 'name']"
-      [actionsTemplate]="unpublishedCountryActions"
-    ></app-item-table>
+    <div class="mt-6">
+      <app-item-table
+        title="Pays non publiés"
+        [dataSource]="unpublishedCountries"
+        [columns]="['flag', 'name']"
+        [actionsTemplate]="unpublishedCountryActions"
+      ></app-item-table>
+    </div>
 
     <ng-template #unpublishedCountryActions let-country>
       <button
@@ -205,12 +210,14 @@
     </ng-template>
 
     <!-- Pays supprimés -->
-    <app-item-table
-      title="Pays supprimés"
-      [dataSource]="deletedCountries"
-      [columns]="['flag', 'name']"
-      [actionsTemplate]="deletedCountryActions"
-    ></app-item-table>
+    <div class="mt-6">
+      <app-item-table
+        title="Pays supprimés"
+        [dataSource]="deletedCountries"
+        [columns]="['flag', 'name']"
+        [actionsTemplate]="deletedCountryActions"
+      ></app-item-table>
+    </div>
 
     <ng-template #deletedCountryActions let-country>
       <button mat-button color="primary" (click)="restoreCountry(country)">
@@ -233,5 +240,5 @@
     </div>
   </div>
 </ng-template>
-  </mat-card>
+  </div>
 </div>

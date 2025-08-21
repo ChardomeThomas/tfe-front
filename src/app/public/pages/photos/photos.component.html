@@ -85,57 +85,7 @@
           </div>
           
           <!-- Section Commentaires (droite sur desktop, bas sur mobile) -->
-          <div class="flex-1 lg:w-1/3 flex flex-col overflow-hidden">
-            <div class="px-6 py-4 lg:py-6 overflow-y-auto flex-1">
-              <h3 class="text-lg font-semibold text-gray-800 mb-4">Commentaires</h3>
-              
-              <!-- Simulation de commentaires existants -->
-              <div class="space-y-3 mb-4">
-                <div class="bg-gray-50 rounded-lg p-3">
-                  <div class="flex items-center mb-2">
-                    <span class="font-medium text-gray-800 text-sm">Jean Dupont</span>
-                    <span class="text-gray-500 text-xs ml-2">• 5 août 2025</span>
-                  </div>
-                  <p class="text-gray-700 text-sm">Magnifique photo ! J'adore la lumière dans cette prise.</p>
-                </div>
-                
-                <div class="bg-gray-50 rounded-lg p-3">
-                  <div class="flex items-center mb-2">
-                    <span class="font-medium text-gray-800 text-sm">Marie Laurent</span>
-                    <span class="text-gray-500 text-xs ml-2">• 6 août 2025</span>
-                  </div>
-                  <p class="text-gray-700 text-sm">Quel endroit incroyable ! Merci pour le partage 📸</p>
-                </div>
-                
-                <div class="bg-gray-50 rounded-lg p-3">
-                  <div class="flex items-center mb-2">
-                    <span class="font-medium text-gray-800 text-sm">Pierre Durand</span>
-                    <span class="text-gray-500 text-xs ml-2">• 4 août 2025</span>
-                  </div>
-                  <p class="text-gray-700 text-sm">Les couleurs sont vraiment saisissantes ! 🌅</p>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Formulaire d'ajout de commentaire (fixe en bas) -->
-            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 bg-opacity-50">
-              <h4 class="text-sm font-medium text-gray-800 mb-3">Ajouter un commentaire</h4>
-              <div class="flex gap-3">
-                <div class="flex-1">
-                  <textarea 
-                    class="w-full p-2 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                    rows="2"
-                    placeholder="Écrivez votre commentaire..."
-                  ></textarea>
-                  <div class="flex justify-end mt-2">
-                    <button class="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-xs font-medium">
-                      Publier
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <app-comments [photoId]="selectedPhoto.id" class="lg:w-1/3 h-full"></app-comments>
         </div>
       </div>
     </div>

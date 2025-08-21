@@ -41,3 +41,24 @@ mat-header-row, mat-row {
 .section-card {
   margin-bottom: 16px;
 }
+
+.text-muted {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Styles pour l'icône d'appareil photo */
+.camera-icon-container {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.camera-icon {
+  font-size: 24px;
+  transition: color 0.2s ease;
+}
+
+/* Styles pour l'aperçu photo flottant (appliqués via JavaScript) */
+.photo-preview-floating {
+  opacity: 0;
+}

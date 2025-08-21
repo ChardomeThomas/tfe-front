@@ -80,6 +80,8 @@ export class AdminVoyagesComponent implements OnInit {
     ])
   });
 
+  showSuccess = false;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -117,12 +119,10 @@ export class AdminVoyagesComponent implements OnInit {
     if (this.voyageForm.invalid) return;
 
     try {
-      // On s'assure que ce sont bien des string, grâce à la déclaration FormControl<string>
       const title: string = this.voyageForm.get('title')!.value!;
       const startDateValue = this.voyageForm.get('startDate')!.value!;
       const endDateValue = this.voyageForm.get('endDate')!.value!;
 
-      // Conversion des dates au format DD-MM-YYYY attendu par le backend
       const startDate = this.formatDateToBackend(startDateValue);
       const endDate = this.formatDateToBackend(endDateValue);
 
@@ -137,17 +137,22 @@ export class AdminVoyagesComponent implements OnInit {
       }).subscribe({
         next: () => {
           this.voyageForm.reset();
+          // Retire l'état touched/dirty pour enlever le rouge
+          Object.keys(this.voyageForm.controls).forEach(key => {
+            this.voyageForm.get(key)?.markAsUntouched();
+            this.voyageForm.get(key)?.markAsPristine();
+          });
           this.loadAdminSummary();
+          this.showSuccess = true;
+          setTimeout(() => { this.showSuccess = false; }, 2000);
           console.log('Voyage ajouté avec succès');
         },
         error: (error) => {
           console.error('Erreur lors de l\'ajout du voyage:', error);
-          // Ici vous pourriez afficher un message d'erreur à l'utilisateur
         }
       });
     } catch (error) {
       console.error('Erreur de formatage des dates:', error);
-      // Ici vous pourriez afficher un message d'erreur à l'utilisateur
     }
   }
 
