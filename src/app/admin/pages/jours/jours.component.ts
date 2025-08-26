@@ -19,6 +19,7 @@ import { DayAdminService } from '../../../core/services/admin/dayAdminService.se
 import { PhotoService } from '../../../core/services/photo.service';
 import { VoyageService } from '../../../core/services/voyage.service';
 import { Voyage } from '../../../interfaces/voyage.interface';
+import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-admin-jours',
@@ -37,7 +38,8 @@ import { Voyage } from '../../../interfaces/voyage.interface';
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ItemTableComponent
+    ItemTableComponent,
+    BreadcrumbComponent
   ],
   templateUrl: './jours.component.html',
   styleUrl: './jours.component.css'

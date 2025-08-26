@@ -23,6 +23,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Photo } from '../../../interfaces/photo.interface';
 import { PhotoAdminService } from '../../../core/services/admin/photoAdminService.service';
 import { ItemTableComponent } from '../../../shared/components/item-table/item-table.component';
+import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
     selector: 'app-admin-photos',
@@ -41,7 +42,8 @@ import { ItemTableComponent } from '../../../shared/components/item-table/item-t
         MatInputModule,
         MatTooltipModule,
         MatCheckboxModule,
-        ItemTableComponent
+        ItemTableComponent,
+        BreadcrumbComponent
     ],
     templateUrl: './photos.component.html',
     styleUrl: './photos.component.css'
@@ -65,9 +67,10 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
   private imageUrls: Map<File, string> = new Map(); // Cache des URLs d'images
 
   // Propriétés pour les tableaux
-  photoColumns = ['image', 'description', 'status', 'datePublished'];
-  unpublishedPhotoColumns = ['image', 'description', 'status'];
-  deletedPhotoColumns = ['image', 'description', 'deletedDate'];
+  //ne pas oublier de remettre description plus tard
+  photoColumns = ['image', 'status', 'datePublished'];
+  unpublishedPhotoColumns = ['image', 'status'];
+  deletedPhotoColumns = ['image',  'deletedDate'];
 
   multiplePhotoForm = new FormGroup({
     description: new FormControl<string>('')
@@ -83,6 +86,7 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
     this.voyageId = Number(this.route.snapshot.paramMap.get('voyageId'));
     this.jourId = Number(this.route.snapshot.paramMap.get('jourId'));
     this.loadAdminSummary();
+    
   }
 
   private loadAdminSummary() {

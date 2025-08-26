@@ -63,25 +63,25 @@ toggleSubscription(request: ToggleSubscriptionRequest): Observable<{ success: bo
   // Méthodes utilitaires
   isSubscribedToCountry(subscriptions: Newsletter[], countryId: number): boolean {
     return subscriptions.some(sub => 
-      sub.targetType === 'COUNTRY' && sub.targetId === countryId
+      sub.targetType === 'PAYS' && sub.targetId === countryId
     );
   }
 
   isSubscribedToTrip(subscriptions: Newsletter[], tripId: number): boolean {
     return subscriptions.some(sub => 
-      sub.targetType === 'TRIP' && sub.targetId === tripId
+      sub.targetType === 'DESTINATION' && sub.targetId === tripId
     );
   }
 
   getSubscribedTripIds(subscriptions: Newsletter[]): number[] {
     return subscriptions
-      .filter(sub => sub.type === 'TRIP' && sub.isActive && typeof sub.entityId === 'number')
+      .filter(sub => sub.type === 'PAYS' && sub.isActive && typeof sub.entityId === 'number')
       .map(sub => sub.entityId as number);
   }
 
   getSubscribedCountryIds(subscriptions: Newsletter[]): number[] {
     return subscriptions
-      .filter(sub => sub.type === 'COUNTRY' && sub.isActive && typeof sub.entityId === 'number')
+      .filter(sub => sub.type === 'DESTINATION' && sub.isActive && typeof sub.entityId === 'number')
       .map(sub => sub.entityId as number);
   }
 }

@@ -1,122 +1,162 @@
-
-<div class="container">
-  <!-- Popup de confirmation -->
-  <div *ngIf="showSuccess" class="fixed top-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded shadow-lg z-50 text-lg font-semibold transition-opacity duration-300">
-    Voyage ajouté avec succès !
+<app-breadcrumb></app-breadcrumb>
+<div class="container mx-auto px-4 py-8 flex flex-col gap-8">
+  <div *ngIf="showSuccess" class="fixed top-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl shadow-lg z-50 text-lg font-semibold animate-fade-in-up">
+    <div class="flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>Voyage ajouté avec succès !</span>
+    </div>
   </div>
-  <!-- Formulaire d'ajout -->
-  <mat-card class="section-card">
-    <mat-card-title>Ajouter un voyage</mat-card-title>
-    <form [formGroup]="voyageForm" (ngSubmit)="addVoyage()" class="form-container">
-      <div class="form-fields">
-        <mat-form-field appearance="fill">
-          <mat-label>Titre du voyage</mat-label>
-          <input matInput formControlName="title" />
-        </mat-form-field>
 
-        <mat-form-field appearance="fill">
-          <mat-label>Date de début</mat-label>
-          <input matInput [matDatepicker]="startPicker" formControlName="startDate" />
-          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-          <mat-datepicker #startPicker></mat-datepicker>
-          <mat-error *ngIf="voyageForm.get('startDate')?.hasError('afterEndDate')">
-            La date de début ne peut pas être après la date de fin.
-          </mat-error>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill">
-          <mat-label>Date de fin</mat-label>
-          <input matInput [matDatepicker]="endPicker" formControlName="endDate" />
-          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-          <mat-datepicker #endPicker></mat-datepicker>
-          <mat-error *ngIf="voyageForm.get('endDate')?.hasError('beforeStartDate')">
-            La date de fin ne peut pas être avant la date de début.
-          </mat-error>
-        </mat-form-field>
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+  <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6">Ajouter un voyage</h2>
+  
+  <form [formGroup]="voyageForm" (ngSubmit)="addVoyage()" class="flex flex-col gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div>
+        <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Titre du voyage</label>
+        <input 
+          type="text" 
+          id="title" 
+          formControlName="title" 
+          placeholder="Ex: Aventure en Asie du Sud-Est"
+          class="w-full px-4 py-3 text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500"
+        >
+      </div>
+      
+      <div>
+        <label for="startDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date de début</label>
+        <input 
+          type="date"
+          id="startDate"
+          formControlName="startDate"
+          class="w-full px-4 py-3 text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+        >
       </div>
 
-      <div class="form-actions">
-        <button mat-raised-button color="primary" type="submit" [disabled]="voyageForm.invalid">
-          Ajouter
-        </button>
+      <div>
+        <label for="endDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date de fin</label>
+        <input 
+          type="date"
+          id="endDate"
+          formControlName="endDate"
+          class="w-full px-4 py-3 text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+        >
       </div>
-    </form>
-  </mat-card>
+    </div>
 
-  <!-- Voyages actifs -->
-  <app-item-table
-    title="Voyages actifs"
-    [dataSource]="voyages"
-    [columns]="['title', 'dates']"
-    [actionsTemplate]="activeVoyageActions"
-  ></app-item-table>
+    <div class="text-red-500 text-sm">
+      <div *ngIf="voyageForm.get('startDate')?.hasError('afterEndDate')">
+        La date de début ne peut pas être après la date de fin.
+      </div>
+      <div *ngIf="voyageForm.get('endDate')?.hasError('beforeStartDate')">
+        La date de fin ne peut pas être avant la date de début.
+      </div>
+    </div>
+
+    <div class="form-actions text-right">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit" 
+        [disabled]="voyageForm.invalid"
+        class="px-6 py-3 rounded-lg shadow bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold hover:from-blue-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Ajouter
+      </button>
+    </div>
+  </form>
+</div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+    <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">Voyages actifs</h3>
+    <app-item-table
+      [dataSource]="voyages"
+      [columns]="['title', 'dates']"
+      [actionsTemplate]="activeVoyageActions"
+    ></app-item-table>
+  </div>
 
   <ng-template #activeVoyageActions let-voyage>
-    <button
-      mat-icon-button
-      [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
-      matTooltip="Voir les jours"
-    >
-      <mat-icon>navigate_next</mat-icon>
-    </button>
-    <button
-      mat-button
-      color="accent"
-      (click)="unpublish(voyage)"
-    >
-      Dépublier
-    </button>
-    <button mat-icon-button color="warn" (click)="delete(voyage)">
-      <mat-icon>delete</mat-icon>
-    </button>
+    <div class="flex items-center gap-2">
+      <button
+        mat-icon-button
+        [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
+        matTooltip="Voir les jours"
+        class="text-blue-500 hover:text-blue-700 transition-colors"
+      >
+        <mat-icon>navigate_next</mat-icon>
+      </button>
+      <button
+        mat-button
+        color="accent"
+        (click)="unpublish(voyage)"
+        class="px-4 py-2 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition-colors"
+      >
+        Dépublier
+      </button>
+      <button mat-icon-button color="warn" (click)="delete(voyage)" class="text-red-500 hover:text-red-700 transition-colors">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
   </ng-template>
 
-  <!-- Voyages non publiés -->
-  <app-item-table
-    title="Voyages non publiés"
-    [dataSource]="unpublishedVoyages"
-    [columns]="['title', 'dates']"
-    [actionsTemplate]="unpublishedVoyageActions"
-  ></app-item-table>
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+    <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">Voyages non publiés</h3>
+    <app-item-table
+      [dataSource]="unpublishedVoyages"
+      [columns]="['title', 'dates']"
+      [actionsTemplate]="unpublishedVoyageActions"
+    ></app-item-table>
+  </div>
 
   <ng-template #unpublishedVoyageActions let-voyage>
-    <button
-      mat-icon-button
-      [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
-      matTooltip="Voir les jours"
-    >
-      <mat-icon>navigate_next</mat-icon>
-    </button>
-    <button
-      mat-button
-      color="primary"
-      (click)="publish(voyage)"
-    >
-      Publier
-    </button>
-    <button mat-icon-button color="warn" (click)="delete(voyage)">
-      <mat-icon>delete</mat-icon>
-    </button>
+    <div class="flex items-center gap-2">
+      <button
+        mat-icon-button
+        [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
+        matTooltip="Voir les jours"
+        class="text-blue-500 hover:text-blue-700 transition-colors"
+      >
+        <mat-icon>navigate_next</mat-icon>
+      </button>
+      <button
+        mat-button
+        color="primary"
+        (click)="publish(voyage)"
+        class="px-4 py-2 text-xs font-semibold rounded-full bg-green-100 text-green-800 hover:bg-green-200 transition-colors"
+      >
+        Publier
+      </button>
+      <button mat-icon-button color="warn" (click)="delete(voyage)" class="text-red-500 hover:text-red-700 transition-colors">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
   </ng-template>
 
-  <!-- Voyages supprimés -->
-  <app-item-table
-    title="Voyages supprimés"
-    [dataSource]="deletedVoyages"
-    [columns]="['title', 'dates']"
-    [actionsTemplate]="deletedVoyageActions"
-  ></app-item-table>
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+    <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">Voyages supprimés</h3>
+    <app-item-table
+      [dataSource]="deletedVoyages"
+      [columns]="['title', 'dates']"
+      [actionsTemplate]="deletedVoyageActions"
+    ></app-item-table>
+  </div>
 
   <ng-template #deletedVoyageActions let-voyage>
-    <button
-      mat-icon-button
-      [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
-      matTooltip="Voir les jours"
-    >
-      <mat-icon>navigate_next</mat-icon>
-    </button>
-    <button mat-button color="primary" (click)="restore(voyage)">
-      Restaurer
-    </button>
+    <div class="flex items-center gap-2">
+      <button
+        mat-icon-button
+        [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
+        matTooltip="Voir les jours"
+        class="text-blue-500 hover:text-blue-700 transition-colors"
+      >
+        <mat-icon>navigate_next</mat-icon>
+      </button>
+      <button mat-button color="primary" (click)="restore(voyage)" class="px-4 py-2 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors">
+        Restaurer
+      </button>
+    </div>
   </ng-template>
-</div>
+</div>  

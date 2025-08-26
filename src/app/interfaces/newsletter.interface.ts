@@ -1,12 +1,12 @@
 export interface Newsletter {
   id: number;
-  type?: 'COUNTRY' | 'TRIP';
+  type?: 'PAYS' | 'DESTINATION';
   entityId?: number | string; 
   entityName?: string;
   isActive: boolean;
   subscribedAt?: string;
   updatedAt?: string;
-  targetType?: 'COUNTRY' | 'TRIP';
+  targetType?: 'PAYS' | 'DESTINATION';
   targetId?: number;
 }
 
@@ -23,6 +23,6 @@ export interface Trip {
 }
 
 export interface ToggleSubscriptionRequest {
-  targetType: 'COUNTRY' | 'TRIP';
+  targetType: 'PAYS' | 'DESTINATION';
   targetId: number;
 }

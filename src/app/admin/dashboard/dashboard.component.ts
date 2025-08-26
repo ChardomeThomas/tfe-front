@@ -31,6 +31,7 @@ import { CountryAdminService } from '../../core/services/admin/countryAdmin.serv
 import { UserService } from '../../core/services/admin/userService.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ItemTableComponent } from '../../shared/components/item-table/item-table.component';
+import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -52,7 +53,8 @@ import { ItemTableComponent } from '../../shared/components/item-table/item-tabl
     MatOptionModule,
     MatDialogModule,
     MatMenuModule,
-    ItemTableComponent
+    ItemTableComponent,
+    BreadcrumbComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
@@ -98,6 +100,7 @@ export class DashboardComponent implements OnInit {
     this.loadAdminSummary();
     this.loadUsers();
     this.setCurrentUserRole();
+    
   }
 
   private loadAdminSummary() {

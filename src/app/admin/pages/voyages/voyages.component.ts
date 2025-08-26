@@ -24,6 +24,7 @@ import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter } fro
 import { Voyage } from '../../../interfaces/voyage.interface';
 import { ItemTableComponent } from '../../../shared/components/item-table/item-table.component';
 import { VoyageAdminService } from '../../../core/services/admin/voyageAdminService.service';
+import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 export const EUROPEAN_DATE_FORMATS = {
   parse: {
@@ -53,7 +54,8 @@ export const EUROPEAN_DATE_FORMATS = {
     MatInputModule,
     MatDatepickerModule,
     MatTooltipModule,
-    ItemTableComponent
+    ItemTableComponent,
+    BreadcrumbComponent
   ],
   templateUrl: './voyages.component.html',
   styleUrls: ['./voyages.component.css'],
@@ -91,6 +93,7 @@ export class AdminVoyagesComponent implements OnInit {
   ngOnInit() {
     this.countryId = Number(this.route.snapshot.paramMap.get('countryId'));
     this.loadAdminSummary();
+    
   }
 
   onLogoClick() {
@@ -106,9 +109,10 @@ export class AdminVoyagesComponent implements OnInit {
         })
       )
       .subscribe(summary => {
-        this.voyages = summary.published;
-        this.unpublishedVoyages = summary.drafts;
-        this.deletedVoyages = summary.deleted;
+        // Filtrer les voyages pour ne garder que ceux du pays sélectionné
+        this.voyages = summary.published.filter(v => v.pointOfInterestId === this.countryId);
+        this.unpublishedVoyages = summary.drafts.filter(v => v.pointOfInterestId === this.countryId);
+        this.deletedVoyages = summary.deleted.filter(v => v.pointOfInterestId === this.countryId);
         console.log('Voyages actifs:', this.voyages);
         console.log('Voyages non publiés:', this.unpublishedVoyages);
         console.log('Voyages supprimés:', this.deletedVoyages);

@@ -12,17 +12,17 @@ import { BreadcrumbComponent } from "../../../shared/components/breadcrumb/bread
 import { CommentsComponent } from "../../../shared/components/comments/comments.component";
 
 @Component({
-    selector: 'app-photos',
-    imports: [CommonModule,
-        NgxMasonryModule,
-        HttpClientModule,
-        LottieComponent,
-        BreadcrumbComponent,
-        CommentsComponent
-    ],
-    standalone: true,
-    templateUrl: './photos.component.html',
-    styleUrl: './photos.component.css'
+  selector: 'app-photos',
+  imports: [CommonModule,
+    NgxMasonryModule,
+    HttpClientModule,
+    LottieComponent,
+    BreadcrumbComponent,
+    CommentsComponent
+  ],
+  standalone: true,
+  templateUrl: './photos.component.html',
+  styleUrl: './photos.component.css'
 })
 export class PhotosComponent implements OnInit {
   @ViewChild(NgxMasonryComponent) masonry!: NgxMasonryComponent;
@@ -37,13 +37,16 @@ export class PhotosComponent implements OnInit {
   dotCount = 0;
   intervalId: any;
   
-  // Variables pour le modal
   showModal = false;
   selectedPhoto: Photo | null = null;
+  selectedIndex: number = -1;
 
-loaderOptions: AnimationOptions = {
-  path: '/assets/lottie/Photo.json'
-};
+  // Configuration de l'animation Lottie pour qu'elle ne boucle pas
+  loaderOptions: AnimationOptions = {
+    path: '/assets/lottie/Photo.json',
+    loop: false // <-- C'est l'ajout le plus important
+  };
+
   constructor(
     private route: ActivatedRoute,
     private photoService: PhotoService,
@@ -56,21 +59,17 @@ loaderOptions: AnimationOptions = {
     const countrySlug = this.route.snapshot.params['countrySlug'];
     const voyageSlug = this.route.snapshot.params['voyageSlug'];
     const jourSlug = this.route.snapshot.params['jourSlug'];
-    const jourId = this.route.snapshot.params['jourId']; // Pour backward compatibility
-    // Note: On ne passe plus le rôle pour la vue publique
+    const jourId = this.route.snapshot.params['jourId']; 
     
     this.intervalId = setInterval(() => {
-      this.dotCount = (this.dotCount + 1) % 4; // 0 → 1 → 2 → 3 → 0
+      this.dotCount = (this.dotCount + 1) % 4; 
       this.displayText = this.baseText + '.'.repeat(this.dotCount);
     }, 500); 
 
-    // Si on a un jourId (ancienne route), l'utiliser directement
     if (jourId) {
       this.loadPhotosByDayId(+jourId);
     } 
-    // Sinon, utiliser la nouvelle méthode avec les slugs
     else if (countrySlug && voyageSlug && jourSlug) {
-      // Récupérer le jour par ses slugs
       this.dayService.getDayBySlug(countrySlug, voyageSlug, jourSlug).subscribe({
         next: (jour) => {
           this.loadPhotosByDayId(jour.id);
@@ -90,7 +89,6 @@ loaderOptions: AnimationOptions = {
       this.cdr.detectChanges();
     }
 
-    // Sécurité : affichage forcé si bug de chargement
     setTimeout(() => {
       if (!this.allLoaded) {
         this.allLoaded = true;
@@ -100,14 +98,11 @@ loaderOptions: AnimationOptions = {
   }
 
   private loadPhotosByDayId(dayId: number): void {
-    // Pour la vue publique, on ne passe pas de rôle pour s'assurer 
-    // qu'on n'obtient que les photos publiées
     this.photoService.getPhotosByDay(dayId).subscribe({
       next: (photos) => {
         this.photos = photos;
         this.loading = false;
         
-        // Si pas de photos, on peut directement afficher
         if (photos.length === 0) {
           this.allLoaded = true;
           this.cdr.detectChanges();
@@ -128,11 +123,8 @@ loaderOptions: AnimationOptions = {
     
     if (this.loadedImagesCount === this.photos.length) {
       this.allLoaded = true;
-      
-      // Forcer la détection de changement
       this.cdr.detectChanges();
       
-      // Masonry sera visible et ViewChild dispo après le DOM render
       setTimeout(() => {
         this.masonry?.reloadItems();
         this.masonry?.layout();
@@ -156,22 +148,35 @@ loaderOptions: AnimationOptions = {
 
   openModal(photo: Photo) {
     this.selectedPhoto = photo;
+    this.selectedIndex = this.photos.findIndex(p => p.id === photo.id);
     this.showModal = true;
-    // Empêcher le scroll du body
     document.body.style.overflow = 'hidden';
   }
 
   closeModal() {
     this.showModal = false;
     this.selectedPhoto = null;
-    // Restaurer le scroll du body
+    this.selectedIndex = -1;
     document.body.style.overflow = 'auto';
   }
 
-  // Fermer le modal en cliquant sur l'overlay
   onOverlayClick(event: Event) {
     if (event.target === event.currentTarget) {
       this.closeModal();
+    }
+  }
+
+  previousPhoto(): void {
+    if (this.selectedIndex > 0) {
+      this.selectedIndex--;
+      this.selectedPhoto = this.photos[this.selectedIndex];
+    }
+  }
+
+  nextPhoto(): void {
+    if (this.selectedIndex < this.photos.length - 1) {
+      this.selectedIndex++;
+      this.selectedPhoto = this.photos[this.selectedIndex];
     }
   }
 }

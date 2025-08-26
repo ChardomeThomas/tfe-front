@@ -1,60 +1,41 @@
-
-<h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Bienvenue sur notre site</h1>
+<h1 class="text-center text-4xl sm:text-5xl lg:text-7xl font-extrabold text-gray-900 dark:text-white mt-8 mb-4">Bienvenue sur notre site 🌎</h1>
 <app-breadcrumb></app-breadcrumb>
 
-<div *ngIf="countries.length > 0; else noCountry">
-  <h3 class="text-2xl md:text-3xl lg:text-4xl  text-gray-900 dark:text-white mb-4 text-center">Voici les pays que nous avons visités</h3>
+<div *ngIf="countries.length > 0; else noCountry" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <h2 class="text-center text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-700 dark:text-gray-200 mb-12">Voici les pays que nous avons visités</h2>
   
-  <div class="container mx-auto px-6 py-8">
-    <div class="flex flex-wrap justify-center gap-6">
-      <ng-container *ngFor="let country of countries">
-        <div
-          class="w-64 h-80 bg-white border border-gray-200 rounded-lg shadow-sm
-                 dark:bg-gray-800 dark:border-gray-700 flex flex-col"
-        >
-          <!-- Image -->
-          <a [routerLink]="[getCountrySlug(country)]" class="block">
-            <img
-              class="rounded-t-lg w-full h-48 object-cover"
-              [src]="country.url"
-              [alt]="country.name"
-            />
-          </a>
-          <!-- Contenu -->
-          <div class="p-5 flex-1 flex flex-col justify-between">
-            <a [routerLink]="[getCountrySlug(country)]" class="block">
-              <h5
-                class=" text-center mb-2 text-2xl font-bold tracking-tight text-gray-900
-                       dark:text-white"
-              >
-                {{ country.name }}
-              </h5>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <ng-container *ngFor="let country of countries">
+      <div class="relative overflow-hidden rounded-2xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
+        <a [routerLink]="[getCountrySlug(country)]" class="block w-full h-full">
+          <img
+            class="w-full h-80 object-cover transition-transform duration-300 hover:scale-110"
+            [src]="country.url"
+            [alt]="country.name"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent p-6 flex flex-col justify-end text-white">
+            <h5 class="text-3xl font-extrabold tracking-tight text-white mb-2">{{ country.name }}</h5>
+            <a
+              [routerLink]="[getCountrySlug(country)]"
+              class="inline-flex items-center justify-center px-4 py-2 mt-2 text-sm font-semibold rounded-full bg-white text-gray-900 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50"
+            >
+              Découvrir
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </a>
-
-            <div class="mt-auto flex justify-center">
-              <a
-                [routerLink]="[getCountrySlug(country)]"
-                class="inline-flex items-center px-3 py-2 text-sm font-medium
-                       text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-100
-                       focus:ring-2 focus:outline-none focus:ring-gray-300"
-              >
-                Visiter le pays
-              </a>
-            </div>
           </div>
-        </div>
-      </ng-container>
-    </div>
+        </a>
+      </div>
+    </ng-container>
   </div>
 </div>
 
 <ng-template #noCountry>
-  <h1 class=" text-center mb-4 text-4xl  leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Veuillez patienter</h1>
-  <div class="flex flex-col items-center justify-center mt-8">
-    <div class="w-64 h-64 sm:w-96 sm:h-96 md:w-[32rem] md:h-[32rem] lg:w-[560px] lg:h-[560px] flex items-center justify-center">
+  <div class="flex flex-col items-center justify-center h-[calc(100vh-200px)] text-center px-4">
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 animate-pulse">Chargement en cours...</h1>
+    <div class="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 flex items-center justify-center">
       <ng-lottie [options]="loaderOptions" class="w-full h-full"></ng-lottie>
     </div>
-    <span class="text-2xl sm:text-3xl font-bold text-gray-700 mt-2 text-center block">
+    <span class="text-lg sm:text-xl font-medium text-gray-500 dark:text-gray-400 mt-4 max-w-lg">
       {{ displayText }}
     </span>
   </div>

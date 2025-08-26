@@ -19,7 +19,6 @@ export class ProfileComponent implements OnInit {
   loading = true;
 
 
-  // ...autres propriétés...
 
   constructor(
     private newsletterService: NewsletterService,
@@ -94,7 +93,7 @@ private loadCountriesWithTrips(): void {
 
   onCountryToggle(countryId: number): void {
     this.newsletterService.toggleSubscription({
-      targetType: 'COUNTRY',
+      targetType: 'PAYS',
       targetId: countryId
     }).subscribe({
       next: (response) => {
@@ -112,7 +111,7 @@ private loadCountriesWithTrips(): void {
 
   onTripToggle(tripId: number): void {
     this.newsletterService.toggleSubscription({
-      targetType: 'TRIP',
+      targetType: 'DESTINATION',
       targetId: tripId
     }).subscribe({
       next: (response) => {
