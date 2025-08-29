@@ -80,18 +80,22 @@
                     <mat-icon *ngIf="isPublicToggleDisabled(i)" class="ml-1 text-sm text-yellow-600">lock</mat-icon>
                   </button>
                   
-                  <button 
-                    mat-button 
-                    type="button"
-                    [class.bg-yellow-100]="fileIsFavorite[i]" 
-                    [class.text-yellow-800]="fileIsFavorite[i]" 
-                    [class.bg-gray-100]="!fileIsFavorite[i]" 
-                    [class.text-gray-800]="!fileIsFavorite[i]" 
-                    (click)="toggleFileFavorite(i)"
-                    class="px-3 py-1 text-xs rounded-full font-semibold transition-colors"
-                  >
-                    <mat-icon class="text-sm mr-1">{{ fileIsFavorite[i] ? 'star' : 'star_border' }}</mat-icon> {{ fileIsFavorite[i] ? 'Favori' : 'Normal' }}
-                  </button>
+<button 
+  mat-button 
+  type="button"
+  [class.bg-yellow-100]="fileIsFavorite[i]" 
+  [class.text-yellow-800]="fileIsFavorite[i]" 
+  [class.bg-gray-100]="!fileIsFavorite[i]" 
+  [class.text-gray-800]="!fileIsFavorite[i]" 
+  (click)="toggleFileFavorite(i)"
+  [disabled]="isFavoriteToggleDisabled(i)"
+  [matTooltip]="getFavoriteButtonTooltip(i)"
+  class="px-3 py-1 text-xs rounded-full font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  <mat-icon class="text-sm mr-1">{{ fileIsFavorite[i] ? 'star' : 'star_border' }}</mat-icon> 
+  {{ fileIsFavorite[i] ? 'Favori' : 'Normal' }}
+  <mat-icon *ngIf="isFavoriteToggleDisabled(i)" class="ml-1 text-sm text-red-600">block</mat-icon>
+</button>
                 </div>
               </div>
             </div>
@@ -122,22 +126,34 @@
       [actionsTemplate]="publishedPhotoActions"
     ></app-item-table>
 
-    <ng-template #publishedPhotoActions let-photo>
-      <div class="flex items-center gap-2">
-        <button mat-icon-button (click)="toggleFavorite(photo)" [color]="photo.favorite ? 'accent' : 'basic'" matTooltip="{{ photo.favorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}" class="text-yellow-500 hover:text-yellow-700 transition-colors">
-          <mat-icon>{{ photo.favorite ? 'star' : 'star_border' }}</mat-icon>
-        </button>
-        <button mat-icon-button (click)="togglePublic(photo)" [color]="photo.isPublic ? 'primary' : 'basic'" matTooltip="{{ photo.isPublic ? 'Rendre privé' : 'Rendre public' }}" class="text-blue-500 hover:text-blue-700 transition-colors">
-          <mat-icon>{{ photo.isPublic ? 'visibility' : 'visibility_off' }}</mat-icon>
-        </button>
-        <button mat-button color="accent" (click)="unpublish(photo)" class="text-sm text-orange-500 hover:text-orange-700 transition-colors">
-          Dépublier
-        </button>
-        <button mat-icon-button color="warn" (click)="delete(photo)" class="text-red-500 hover:text-red-700 transition-colors">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-    </ng-template>
+<ng-template #publishedPhotoActions let-photo>
+  <div class="flex items-center gap-2">
+    <button 
+      mat-icon-button 
+      (click)="toggleFavorite(photo)" 
+      [color]="photo.favorite ? 'accent' : 'basic'" 
+      [disabled]="!canToggleFavorite(photo)"
+      [matTooltip]="getFavoriteTooltip(photo)" 
+      class="text-yellow-500 hover:text-yellow-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+      <mat-icon>{{ photo.favorite ? 'star' : 'star_border' }}</mat-icon>
+    </button>
+    <button 
+      mat-icon-button 
+      (click)="togglePublic(photo)" 
+      [color]="photo.isPublic ? 'primary' : 'basic'" 
+      [disabled]="!canTogglePublic(photo)"
+      [matTooltip]="getPublicTooltip(photo)" 
+      class="text-blue-500 hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+      <mat-icon>{{ photo.isPublic ? 'visibility' : 'visibility_off' }}</mat-icon>
+    </button>
+    <button mat-button color="accent" (click)="unpublish(photo)" class="text-sm text-orange-500 hover:text-orange-700 transition-colors">
+      Dépublier
+    </button>
+    <button mat-icon-button color="warn" (click)="delete(photo)" class="text-red-500 hover:text-red-700 transition-colors">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</ng-template>
   </div>
 
   <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
@@ -148,22 +164,34 @@
       [actionsTemplate]="unpublishedPhotoActions"
     ></app-item-table>
 
-    <ng-template #unpublishedPhotoActions let-photo>
-      <div class="flex items-center gap-2">
-        <button mat-icon-button (click)="toggleFavorite(photo)" [color]="photo.favorite ? 'accent' : 'basic'" matTooltip="{{ photo.favorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}" class="text-yellow-500 hover:text-yellow-700 transition-colors">
-          <mat-icon>{{ photo.favorite ? 'star' : 'star_border' }}</mat-icon>
-        </button>
-        <button mat-icon-button (click)="togglePublic(photo)" [color]="photo.isPublic ? 'primary' : 'basic'" matTooltip="{{ photo.isPublic ? 'Rendre privé' : 'Rendre public' }}" class="text-blue-500 hover:text-blue-700 transition-colors">
-          <mat-icon>{{ photo.isPublic ? 'visibility' : 'visibility_off' }}</mat-icon>
-        </button>
-        <button mat-button color="primary" (click)="publish(photo)" class="text-sm text-green-500 hover:text-green-700 transition-colors">
-          Publier
-        </button>
-        <button mat-icon-button color="warn" (click)="delete(photo)" class="text-red-500 hover:text-red-700 transition-colors">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </div>
-    </ng-template>
+<ng-template #unpublishedPhotoActions let-photo>
+  <div class="flex items-center gap-2">
+    <button 
+      mat-icon-button 
+      (click)="toggleFavorite(photo)" 
+      [color]="photo.favorite ? 'accent' : 'basic'" 
+      [disabled]="!canToggleFavorite(photo)"
+      [matTooltip]="getFavoriteTooltip(photo)" 
+      class="text-yellow-500 hover:text-yellow-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+      <mat-icon>{{ photo.favorite ? 'star' : 'star_border' }}</mat-icon>
+    </button>
+    <button 
+      mat-icon-button 
+      (click)="togglePublic(photo)" 
+      [color]="photo.isPublic ? 'primary' : 'basic'" 
+      [disabled]="!canTogglePublic(photo)"
+      [matTooltip]="getPublicTooltip(photo)" 
+      class="text-blue-500 hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+      <mat-icon>{{ photo.isPublic ? 'visibility' : 'visibility_off' }}</mat-icon>
+    </button>
+    <button mat-button color="primary" (click)="publish(photo)" class="text-sm text-green-500 hover:text-green-700 transition-colors">
+      Publier
+    </button>
+    <button mat-icon-button color="warn" (click)="delete(photo)" class="text-red-500 hover:text-red-700 transition-colors">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</ng-template>
   </div>
 
   <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">

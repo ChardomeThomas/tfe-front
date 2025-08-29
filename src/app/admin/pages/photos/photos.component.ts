@@ -80,7 +80,9 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
 
   multiplePhotoForm = new FormGroup({
     description: new FormControl<string>('')
-  });  constructor(
+  });
+
+  constructor(
     private router: Router,
     private route: ActivatedRoute,
     private photoAdminService: PhotoAdminService,
@@ -96,9 +98,9 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
     this.jourSlug = this.route.snapshot.paramMap.get('jourSlug')!;
     
     this.loadAllDataFromSlugs();
-    
   }
- private loadAllDataFromSlugs() {
+
+  private loadAllDataFromSlugs() {
     // 1. Récupérer le pays
     this.countryService.getCountryBySlug(this.countrySlug).subscribe({
       next: (country) => {
@@ -109,13 +111,38 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
           next: (voyage) => {
             this.voyageId = voyage.id;
             
-            // 3. Récupérer le jour (vous devrez créer cette méthode)
+            // 3. Récupérer le jour
             this.loadJourFromSlug();
           }
         });
       }
     });
   }
+
+  private loadJourFromSlug() {
+    this.dayAdminService.getAdminSummary(this.voyageId).subscribe({
+      next: (summary) => {
+        const allJours = [...summary.published, ...summary.drafts, ...summary.deleted];
+        const jour = allJours.find(j => this.createJourSlug(j.title) === this.jourSlug);
+        
+        if (jour) {
+          this.jourId = jour.id;
+          this.loadAdminSummary(); // Maintenant charger les photos
+        }
+      }
+    });
+  }
+
+  private createJourSlug(title: string): string {
+    return title.toLowerCase()
+      .replace(/[àáâäãå]/g, 'a')
+      .replace(/[èéêë]/g, 'e')
+      .replace(/[ç]/g, 'c')
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
   private loadAdminSummary() {
     this.photoAdminService.getAdminSummary(this.jourId)
       .pipe(
@@ -133,6 +160,8 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
         console.log('Photos supprimées:', this.deletedPhotos);
       });
   }
+
+  // === GESTION DES FICHIERS SÉLECTIONNÉS ===
 
   onMultipleFilesSelected(event: any) {
     const newFiles = Array.from(event.target.files) as File[];
@@ -209,8 +238,35 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
     return this.fileDescriptions[index] || '';
   }
 
+  getImagePreview(file: File): string {
+    // Retourner l'URL mise en cache au lieu de créer une nouvelle
+    return this.imageUrls.get(file) || '';
+  }
+
+  clearAllSelectedFiles() {
+    // Nettoyer toutes les URLs d'objet avant de vider la sélection
+    this.objectUrls.forEach(url => URL.revokeObjectURL(url));
+    this.objectUrls = [];
+    this.imageUrls.clear();
+    
+    this.selectedFiles = [];
+    this.fileDescriptions = [];
+    this.fileIsFavorite = [];
+    this.fileIsPublic = [];
+    this.fileIsPublished = [];
+    console.log('Tous les fichiers supprimés');
+  }
+
+  // === TOGGLE METHODS POUR FICHIERS SÉLECTIONNÉS (avec validation cohérente) ===
+
   toggleFileFavorite(index: number) {
     if (index >= 0 && index < this.fileIsFavorite.length) {
+      // Empêcher de mettre en favori si la photo est privée
+      if (!this.fileIsFavorite[index] && !this.fileIsPublic[index]) {
+        console.log(`Photo ${index + 1} - Impossible de mettre en favori : photo privée`);
+        return;
+      }
+      
       this.fileIsFavorite[index] = !this.fileIsFavorite[index];
       console.log(`Photo ${index + 1} - Favori:`, this.fileIsFavorite[index]);
       
@@ -232,12 +288,53 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
       
       this.fileIsPublic[index] = !this.fileIsPublic[index];
       console.log(`Photo ${index + 1} - Public:`, this.fileIsPublic[index]);
+      
+      // Si on met en privé, on retire automatiquement des favoris
+      if (!this.fileIsPublic[index] && this.fileIsFavorite[index]) {
+        this.fileIsFavorite[index] = false;
+        console.log(`Photo ${index + 1} - Automatiquement retirée des favoris car privée`);
+      }
     }
   }
 
-  // Méthode pour vérifier si le bouton privé doit être désactivé
+  toggleFilePublished(index: number) {
+    if (index >= 0 && index < this.fileIsPublished.length) {
+      this.fileIsPublished[index] = !this.fileIsPublished[index];
+      console.log(`Photo ${index + 1} - Publié:`, this.fileIsPublished[index]);
+      // Si on met en brouillon, on rend automatiquement privé et retire des favoris
+      if (!this.fileIsPublished[index]) {
+        this.fileIsPublic[index] = false;
+        this.fileIsFavorite[index] = false;
+        console.log(`Photo ${index + 1} - Automatiquement mis en privé et retiré des favoris car brouillon`);
+      } else {
+        // Si on remet en publié, on remet public par défaut
+        this.fileIsPublic[index] = true;
+        console.log(`Photo ${index + 1} - Automatiquement mis en public car publié`);
+      }
+    }
+  }
+
+  // === MÉTHODES DE VALIDATION POUR FICHIERS SÉLECTIONNÉS ===
+
+  // Méthode pour vérifier si le bouton favori doit être désactivé
+  isFavoriteToggleDisabled(index: number): boolean {
+    return !this.fileIsPublic[index] && !this.fileIsFavorite[index];
+  }
+
+  // Méthode pour vérifier si le bouton privé doit être désactivé  
   isPublicToggleDisabled(index: number): boolean {
     return this.fileIsFavorite[index] && this.fileIsPublic[index];
+  }
+
+  // Méthode pour afficher le tooltip du bouton favori
+  getFavoriteButtonTooltip(index: number): string {
+    if (!this.fileIsPublished[index]) {
+      return 'Publiez d\'abord la photo pour gérer ses favoris';
+    }
+    if (this.isFavoriteToggleDisabled(index)) {
+      return 'Les photos privées ne peuvent pas être favorites';
+    }
+    return this.fileIsFavorite[index] ? 'Retirer des favoris' : 'Ajouter aux favoris';
   }
 
   // Méthode pour afficher le tooltip du bouton public/privé
@@ -251,64 +348,7 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
     return this.fileIsPublic[index] ? 'Mettre en privé' : 'Mettre en public';
   }
 
-  toggleFilePublished(index: number) {
-    if (index >= 0 && index < this.fileIsPublished.length) {
-      this.fileIsPublished[index] = !this.fileIsPublished[index];
-      console.log(`Photo ${index + 1} - Publié:`, this.fileIsPublished[index]);
-      // Si on met en brouillon, on rend automatiquement privé
-      if (!this.fileIsPublished[index]) {
-        this.fileIsPublic[index] = false;
-        console.log(`Photo ${index + 1} - Automatiquement mis en privé car brouillon`);
-      } else {
-        // Si on remet en publié, on remet public par défaut
-        this.fileIsPublic[index] = true;
-        console.log(`Photo ${index + 1} - Automatiquement mis en public car publié`);
-      }
-    }
-  }
-
-  getImagePreview(file: File): string {
-    // Retourner l'URL mise en cache au lieu de créer une nouvelle
-    return this.imageUrls.get(file) || '';
-  }
-
-  ngOnDestroy() {
-    // Nettoyer toutes les URLs d'objet pour éviter les fuites mémoire
-    this.objectUrls.forEach(url => URL.revokeObjectURL(url));
-    this.objectUrls = [];
-    this.imageUrls.clear();
-  }
-
-  clearAllSelectedFiles() {
-    // Nettoyer toutes les URLs d'objet avant de vider la sélection
-    this.objectUrls.forEach(url => URL.revokeObjectURL(url));
-    this.objectUrls = [];
-    this.imageUrls.clear();
-    
-    this.selectedFiles = [];
-    this.fileDescriptions = [];
-    this.fileIsFavorite = [];
-    this.fileIsPublic = [];
-    this.fileIsPublished = [];
-    console.log('Tous les fichiers supprimés');
-  }
-
-  private finishUpload() {
-    // Nettoyer toutes les URLs d'objet après un upload réussi
-    this.objectUrls.forEach(url => URL.revokeObjectURL(url));
-    this.objectUrls = [];
-    this.imageUrls.clear();
-    
-    // Réinitialiser seulement après un upload réussi
-    this.multiplePhotoForm.reset();
-    this.selectedFiles = [];
-    this.fileDescriptions = [];
-    this.fileIsFavorite = [];
-    this.fileIsPublic = [];
-    this.fileIsPublished = [];
-    this.loadAdminSummary();
-    console.log('Upload terminé avec succès');
-  }
+  // === UPLOAD DES PHOTOS ===
 
   uploadMultiplePhotos() {
     if (this.selectedFiles.length === 0) return;
@@ -433,6 +473,128 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
       });
   }
 
+  private finishUpload() {
+    // Nettoyer toutes les URLs d'objet après un upload réussi
+    this.objectUrls.forEach(url => URL.revokeObjectURL(url));
+    this.objectUrls = [];
+    this.imageUrls.clear();
+    
+    // Réinitialiser seulement après un upload réussi
+    this.multiplePhotoForm.reset();
+    this.selectedFiles = [];
+    this.fileDescriptions = [];
+    this.fileIsFavorite = [];
+    this.fileIsPublic = [];
+    this.fileIsPublished = [];
+    this.loadAdminSummary();
+    console.log('Upload terminé avec succès');
+  }
+
+  // === GESTION DES PHOTOS EXISTANTES (avec validation cohérente) ===
+
+  toggleFavorite(photo: Photo) {
+    // Empêcher de mettre en favori si la photo est privée
+    if (!photo.favorite && !photo.isPublic) {
+      console.log(`Photo ${photo.id} - Impossible de mettre en favori : photo privée`);
+      return;
+    }
+
+    this.photoAdminService.toggleFavorite(photo.id)
+      .subscribe({
+        next: () => {
+          // Si on vient de mettre en favori, s'assurer que la photo est publique
+          if (!photo.favorite) { // Elle va devenir favorite
+            if (!photo.isPublic) {
+              // Mettre automatiquement en public
+              this.photoAdminService.togglePublic(photo.id)
+                .subscribe({
+                  next: () => {
+                    console.log(`Photo ${photo.id} - Automatiquement mise en public car favorite`);
+                    this.loadAdminSummary();
+                  },
+                  error: (error) => {
+                    console.error('Erreur lors de la mise en public automatique:', error);
+                    this.loadAdminSummary();
+                  }
+                });
+            } else {
+              this.loadAdminSummary();
+            }
+          } else {
+            this.loadAdminSummary();
+          }
+        },
+        error: (error) => {
+          console.error('Erreur lors du toggle favori:', error);
+        }
+      });
+  }
+
+  togglePublic(photo: Photo) {
+    // Empêcher de mettre en privé si la photo est favorite
+    if (photo.isPublic && photo.favorite) {
+      console.log(`Photo ${photo.id} - Impossible de mettre en privé : photo favorite`);
+      return;
+    }
+
+    this.photoAdminService.togglePublic(photo.id)
+      .subscribe({
+        next: () => {
+          // Si on vient de mettre en privé, retirer automatiquement des favoris si nécessaire
+          if (photo.isPublic && photo.favorite) { // Elle va devenir privée et elle est favorite
+            this.photoAdminService.toggleFavorite(photo.id)
+              .subscribe({
+                next: () => {
+                  console.log(`Photo ${photo.id} - Automatiquement retirée des favoris car privée`);
+                  this.loadAdminSummary();
+                },
+                error: (error) => {
+                  console.error('Erreur lors du retrait automatique des favoris:', error);
+                  this.loadAdminSummary();
+                }
+              });
+          } else {
+            this.loadAdminSummary();
+          }
+        },
+        error: (error) => {
+          console.error('Erreur lors du toggle public:', error);
+        }
+      });
+  }
+
+  // === MÉTHODES DE VALIDATION POUR PHOTOS EXISTANTES ===
+
+  // Méthodes utilitaires pour désactiver les boutons dans les templates
+  canToggleFavorite(photo: Photo): boolean {
+    // Peut toggle favori seulement si :
+    // - Soit la photo est déjà favorite (pour la retirer)
+    // - Soit la photo est publique (pour l'ajouter)
+    return photo.favorite || photo.isPublic;
+  }
+
+  canTogglePublic(photo: Photo): boolean {
+    // Peut toggle public seulement si la photo n'est pas favorite
+    // (ou si elle est favorite et publique, on ne peut pas la rendre privée)
+    return !photo.favorite || !photo.isPublic;
+  }
+
+  getFavoriteTooltip(photo: Photo): string {
+    if (!photo.favorite && !photo.isPublic) {
+      return 'Les photos privées ne peuvent pas être favorites';
+    }
+    return photo.favorite ? 'Retirer des favoris' : 'Ajouter aux favoris';
+  }
+
+  getPublicTooltip(photo: Photo): string {
+    if (photo.isPublic && photo.favorite) {
+      return 'Les photos favorites doivent rester publiques';
+    }
+    return photo.isPublic ? 'Rendre privé' : 'Rendre public';
+  }
+
+  // === AUTRES ACTIONS PHOTOS ===
+
   publish(photo: Photo) {
     this.photoAdminService.publishPhoto(photo.id)
       .subscribe(() => {
@@ -486,30 +648,6 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
       });
   }
 
-  toggleFavorite(photo: Photo) {
-    this.photoAdminService.toggleFavorite(photo.id)
-      .subscribe({
-        next: () => {
-          this.loadAdminSummary();
-        },
-        error: (error) => {
-          console.error('Erreur lors du toggle favori:', error);
-        }
-      });
-  }
-
-  togglePublic(photo: Photo) {
-    this.photoAdminService.togglePublic(photo.id)
-      .subscribe({
-        next: () => {
-          this.loadAdminSummary();
-        },
-        error: (error) => {
-          console.error('Erreur lors du toggle public:', error);
-        }
-      });
-  }
-
   editDescription(photo: Photo, newDescription: string) {
     this.photoAdminService.updatePhoto(photo.id, { description: newDescription })
       .subscribe({
@@ -521,32 +659,13 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
         }
       });
   }
- 
 
- private loadJourFromSlug() {
 
-    this.dayAdminService.getAdminSummary(this.voyageId).subscribe({
-      next: (summary) => {
-        const allJours = [...summary.published, ...summary.drafts, ...summary.deleted];
-        const jour = allJours.find(j => this.createJourSlug(j.title) === this.jourSlug);
-        
-        if (jour) {
-          this.jourId = jour.id;
-          this.loadAdminSummary(); // Maintenant charger les photos
-        }
-      }
-    });
+
+  ngOnDestroy() {
+    // Nettoyer toutes les URLs d'objet pour éviter les fuites mémoire
+    this.objectUrls.forEach(url => URL.revokeObjectURL(url));
+    this.objectUrls = [];
+    this.imageUrls.clear();
   }
-
-  private createJourSlug(title: string): string {
-    return title.toLowerCase()
-      .replace(/[àáâäãå]/g, 'a')
-      .replace(/[èéêë]/g, 'e')
-      .replace(/[ç]/g, 'c')
-      .replace(/[^a-z0-9]/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-  }
-
-
 }

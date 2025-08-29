@@ -95,13 +95,28 @@ export class PhotoService {
   }
 
   // Méthode pour récupérer une photo aléatoire d'un voyage (favorite en priorité, sinon publique)
-  getRandomPhotoByTrip(tripId: number): Observable<Photo | null> {
+
+getRandomPhotoByTrip(tripId: number, includePrivate: boolean = false): Observable<Photo | null> {
     return new Observable(observer => {
       this.getPhotosByTrip(tripId).subscribe(photos => {
         if (photos.length > 0) {
-          // Prioriser les photos favorites
-          const favoritePhotos = photos.filter(photo => photo.favorite);
-          const photosToChooseFrom = favoritePhotos.length > 0 ? favoritePhotos : photos;
+          // Filtrer les photos selon le paramètre includePrivate
+          let filteredPhotos = photos;
+          if (!includePrivate) {
+            // Si includePrivate est false, on exclut les photos privées
+            filteredPhotos = photos.filter(photo => photo.isPublic); 
+          }
+          
+          // Vérifier qu'il reste des photos après filtrage
+          if (filteredPhotos.length === 0) {
+            observer.next(null);
+            observer.complete();
+            return;
+          }
+          
+          // Prioriser les photos favorites parmi les photos filtrées
+          const favoritePhotos = filteredPhotos.filter(photo => photo.favorite);
+          const photosToChooseFrom = favoritePhotos.length > 0 ? favoritePhotos : filteredPhotos;
           
           const randomIndex = Math.floor(Math.random() * photosToChooseFrom.length);
           observer.next(photosToChooseFrom[randomIndex]);
@@ -113,8 +128,7 @@ export class PhotoService {
         observer.error(err);
       });
     });
-  }
-
+}
 
   getRandomPhotoByDay(dayId: number): Observable<Photo | null> {
     return new Observable(observer => {
