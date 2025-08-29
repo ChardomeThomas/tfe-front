@@ -157,4 +157,8 @@ export class VoyageAdminService {
         })
       );
   }
+  getVoyage(voyageId: string): Observable<Voyage> {
+  return this.http.get<Voyage>(`${this.apiUrl}/voyages/${voyageId}`);
+}
+
 }

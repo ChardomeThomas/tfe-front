@@ -12,7 +12,13 @@ import { AuthService } from '../../../core/services/auth.service';
 export class HeaderComponent {
   currentPage: string = '';
   currentForm: string = '';
-
+   public isMobileMenuOpen = false;
+     toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+  }
   constructor(private router: Router, public authService: AuthService) { // ⭐ Ajouté public
     // Mise à jour de currentPage dès qu'une navigation se termine
     this.router.events.subscribe((event) => {

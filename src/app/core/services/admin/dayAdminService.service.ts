@@ -197,4 +197,7 @@ export class DayAdminService {
         })
       );
   }
+  getDay(dayId: string): Observable<Jour> {
+  return this.http.get<Jour>(`${this.apiUrl}/days/${dayId}`);
+}
 }

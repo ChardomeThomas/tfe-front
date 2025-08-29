@@ -82,7 +82,7 @@
     <div class="flex items-center gap-2">
       <button
         mat-icon-button
-        [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
+         [routerLink]="['/admin', countrySlug, getVoyageSlug(voyage)]"
         matTooltip="Voir les jours"
         class="text-blue-500 hover:text-blue-700 transition-colors"
       >
@@ -115,7 +115,7 @@
     <div class="flex items-center gap-2">
       <button
         mat-icon-button
-        [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
+         [routerLink]="['/admin', countrySlug, getVoyageSlug(voyage)]"
         matTooltip="Voir les jours"
         class="text-blue-500 hover:text-blue-700 transition-colors"
       >
@@ -148,7 +148,7 @@
     <div class="flex items-center gap-2">
       <button
         mat-icon-button
-        [routerLink]="['/admin','countries',countryId,'voyages',voyage.id,'jours']"
+         [routerLink]="['/admin', countrySlug, getVoyageSlug(voyage)]"
         matTooltip="Voir les jours"
         class="text-blue-500 hover:text-blue-700 transition-colors"
       >

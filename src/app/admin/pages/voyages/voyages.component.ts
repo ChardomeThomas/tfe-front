@@ -25,6 +25,7 @@ import { Voyage } from '../../../interfaces/voyage.interface';
 import { ItemTableComponent } from '../../../shared/components/item-table/item-table.component';
 import { VoyageAdminService } from '../../../core/services/admin/voyageAdminService.service';
 import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { CountryService } from '../../../core/services/country.service';
 
 export const EUROPEAN_DATE_FORMATS = {
   parse: {
@@ -67,6 +68,7 @@ export const EUROPEAN_DATE_FORMATS = {
 })
 export class AdminVoyagesComponent implements OnInit {
   countryId!: number;
+  countrySlug!: string;
   voyages: Voyage[] = [];
   deletedVoyages: Voyage[] = [];
   unpublishedVoyages: Voyage[] = []; // Voyages dépubliés
@@ -87,13 +89,27 @@ export class AdminVoyagesComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private voyageAdminService: VoyageAdminService
+    private voyageAdminService: VoyageAdminService,
+    private countryService: CountryService
   ) {}
 
   ngOnInit() {
     this.countryId = Number(this.route.snapshot.paramMap.get('countryId'));
     this.loadAdminSummary();
-    
+ this.countrySlug = this.route.snapshot.paramMap.get('countrySlug')!;
+    console.log('Country slug récupéré:', this.countrySlug);
+
+    // Récupérer l'ID du pays à partir du slug
+    this.countryService.getCountryBySlug(this.countrySlug).subscribe({
+      next: (country) => {
+        this.countryId = country.id;
+        console.log('Country ID trouvé:', this.countryId);
+        this.loadAdminSummary(); // Maintenant on peut charger les voyages
+      },
+      error: (error) => {
+        console.error('Erreur lors de la récupération du pays:', error);
+      }
+    });
   }
 
   onLogoClick() {
@@ -248,5 +264,14 @@ export class AdminVoyagesComponent implements OnInit {
       }
       return null;
     };
+  }
+   getVoyageSlug(voyage: any): string {
+    return voyage.title.toLowerCase()
+      .replace(/[àáâäãå]/g, 'a')
+      .replace(/[èéêë]/g, 'e')
+      .replace(/[ç]/g, 'c')
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
   }
 }

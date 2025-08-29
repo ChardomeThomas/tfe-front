@@ -24,12 +24,15 @@ import { Photo } from '../../../interfaces/photo.interface';
 import { PhotoAdminService } from '../../../core/services/admin/photoAdminService.service';
 import { ItemTableComponent } from '../../../shared/components/item-table/item-table.component';
 import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { CountryService } from '../../../core/services/country.service';
+import { VoyageService } from '../../../core/services/voyage.service';
+import { DayAdminService } from '../../../core/services/admin/dayAdminService.service';
 
 @Component({
     selector: 'app-admin-photos',
     standalone: true,
     imports: [
-        CommonModule,
+    CommonModule,
         RouterModule,
         ReactiveFormsModule,
         FormsModule,
@@ -49,6 +52,9 @@ import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/bread
     styleUrl: './photos.component.css'
 })
 export class AdminPhotosComponent implements OnInit, OnDestroy {
+  countrySlug!: string;
+  voyageSlug!: string;
+  jourSlug!: string;
   countryId!: number;
   voyageId!: number;
   jourId!: number;
@@ -78,17 +84,38 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private photoAdminService: PhotoAdminService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private countryService : CountryService,
+    private voyageService: VoyageService,
+    private dayAdminService: DayAdminService
   ) {}
 
   ngOnInit() {
-    this.countryId = Number(this.route.snapshot.paramMap.get('countryId'));
-    this.voyageId = Number(this.route.snapshot.paramMap.get('voyageId'));
-    this.jourId = Number(this.route.snapshot.paramMap.get('jourId'));
-    this.loadAdminSummary();
+    this.countrySlug = this.route.snapshot.paramMap.get('countrySlug')!;
+    this.voyageSlug = this.route.snapshot.paramMap.get('voyageSlug')!;
+    this.jourSlug = this.route.snapshot.paramMap.get('jourSlug')!;
+    
+    this.loadAllDataFromSlugs();
     
   }
-
+ private loadAllDataFromSlugs() {
+    // 1. Récupérer le pays
+    this.countryService.getCountryBySlug(this.countrySlug).subscribe({
+      next: (country) => {
+        this.countryId = country.id;
+        
+        // 2. Récupérer le voyage  
+        this.voyageService.getVoyageBySlug(this.countrySlug, this.voyageSlug).subscribe({
+          next: (voyage) => {
+            this.voyageId = voyage.id;
+            
+            // 3. Récupérer le jour (vous devrez créer cette méthode)
+            this.loadJourFromSlug();
+          }
+        });
+      }
+    });
+  }
   private loadAdminSummary() {
     this.photoAdminService.getAdminSummary(this.jourId)
       .pipe(
@@ -496,7 +523,30 @@ export class AdminPhotosComponent implements OnInit, OnDestroy {
   }
  
 
+ private loadJourFromSlug() {
 
+    this.dayAdminService.getAdminSummary(this.voyageId).subscribe({
+      next: (summary) => {
+        const allJours = [...summary.published, ...summary.drafts, ...summary.deleted];
+        const jour = allJours.find(j => this.createJourSlug(j.title) === this.jourSlug);
+        
+        if (jour) {
+          this.jourId = jour.id;
+          this.loadAdminSummary(); // Maintenant charger les photos
+        }
+      }
+    });
+  }
+
+  private createJourSlug(title: string): string {
+    return title.toLowerCase()
+      .replace(/[àáâäãå]/g, 'a')
+      .replace(/[èéêë]/g, 'e')
+      .replace(/[ç]/g, 'c')
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
 
 
 }

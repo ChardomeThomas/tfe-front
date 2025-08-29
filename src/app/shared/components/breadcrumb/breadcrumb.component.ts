@@ -5,6 +5,9 @@ import { CommonModule } from '@angular/common';
 import { CountryService } from '../../../core/services/country.service';
 import { VoyageService } from '../../../core/services/voyage.service';
 import { DayService } from '../../../core/services/day.service';
+import { CountryAdminService } from '../../../core/services/admin/countryAdmin.service';
+import { VoyageAdminService } from '../../../core/services/admin/voyageAdminService.service';
+import { DayAdminService } from '../../../core/services/admin/dayAdminService.service';
 
 @Component({
   selector: 'app-breadcrumb',
@@ -21,7 +24,10 @@ export class BreadcrumbComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private countryService: CountryService,
     private voyageService: VoyageService,
-    private dayService: DayService
+    private dayService: DayService,
+    private countryAdminService: CountryAdminService,
+    private voyageAdminService : VoyageAdminService,
+    private dayAdminService: DayAdminService
   ) {}
 
   ngOnInit() {
@@ -84,19 +90,80 @@ export class BreadcrumbComponent implements OnInit {
     }
   }
 
-  private handleAdminRoutes(segments: string[]) {
-    this.breadcrumbs.push({ label: 'Administration', url: '/admin' });
-    
-    // Gérer les sous-routes admin si nécessaire
-    if (segments.length > 1) {
-      // Exemple : /admin/countries/1/voyages
-      if (segments[1] === 'countries') {
-        this.breadcrumbs.push({ label: 'Pays', url: '/admin/countries' });
-        // Ajouter la logique pour les sous-routes admin
-      }
-    }
-  }
 
+// Dans breadcrumb.component.ts
+private handleAdminRoutes(segments: string[]) {
+  this.breadcrumbs.push({ label: 'Administration', url: '/admin' });
+  
+  if (segments.length >= 2) {
+    const countrySlug = segments[1];
+    
+    this.countryService.getCountryBySlug(countrySlug).subscribe({
+      next: (country) => {
+        this.breadcrumbs.push({
+          label: country.name,
+          url: `/admin/${countrySlug}`
+        });
+
+        if (segments.length >= 3) {
+          const voyageSlug = segments[2];
+          this.voyageService.getVoyageBySlug(countrySlug, voyageSlug).subscribe({
+            next: (voyage) => {
+              this.breadcrumbs.push({
+                label: voyage.title,
+                url: `/admin/${countrySlug}/${voyageSlug}`
+              });
+
+              if (segments.length >= 5 && segments[4] === 'photos') {
+                const jourSlug = segments[3];
+                const jourName = jourSlug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                this.breadcrumbs.push({
+                  label: jourName,
+                  url: `/admin/${countrySlug}/${voyageSlug}/${jourSlug}/photos`
+                });
+              }
+            }
+          });
+        }
+      }
+      
+    });
+
+  }
+  
+}
+// private updateBreadcrumbForCountry(countryName: string, countryId: string, segments: string[]) {
+//   // Supprimer le dernier breadcrumb "Pays" s'il existe et le remplacer
+//   if (this.breadcrumbs.length > 1 && this.breadcrumbs[this.breadcrumbs.length - 1].label === 'Pays') {
+//     this.breadcrumbs.pop();
+//   }
+  
+//   this.breadcrumbs.push({ 
+//     label: countryName, 
+//     url: `/admin/countries/${countryId}/voyages` 
+//   });
+  
+//   // Si c'est une route vers les jours : /admin/countries/1/voyages/2/jours
+//   if (segments.length >= 6 && segments[4] === 'voyages') {
+//     const voyageId = segments[5];
+    
+//     // Pour maintenant, on utilise un nom générique pour le voyage
+//     // Vous pourrez l'améliorer plus tard avec un appel API
+//     this.breadcrumbs.push({ 
+//       label: `Voyage ${voyageId}`, 
+//       url: `/admin/countries/${countryId}/voyages/${voyageId}/jours` 
+//     });
+    
+//     // Si c'est une route vers les photos : /admin/countries/1/voyages/2/jours/3/photos
+//     if (segments.length >= 8 && segments[6] === 'jours' && segments[8] === 'photos') {
+//       const jourId = segments[7];
+//       this.breadcrumbs.push({ 
+//         label: `Jour ${jourId}`, 
+//         url: `/admin/countries/${countryId}/voyages/${voyageId}/jours/${jourId}/photos` 
+//       });
+//     }
+//   }
+// }
   private handlePublicRoutes(segments: string[]) {
     const countrySlug = segments[0];
     

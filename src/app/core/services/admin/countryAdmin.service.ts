@@ -109,4 +109,8 @@ export class CountryAdminService {
       })
     );
   }
+  getCountry(countryId: string): Observable<Country> {
+    return this.http.get<Country>(`${this.baseUrl}/countries/${countryId}`);
+  }
+
 }

@@ -95,7 +95,7 @@
     <app-item-table [dataSource]="jours" [columns]="['date', 'title', 'description', 'destinations']" [actionsTemplate]="activeJourActions"></app-item-table>
     <ng-template #activeJourActions let-jour>
         <div class="flex items-center gap-2">
-            <button mat-icon-button [routerLink]="['/admin','countries',countryId,'voyages',voyageId,'jours',jour.id,'photos']" matTooltip="Gérer les photos" class="text-gray-500 hover:text-purple-500"><mat-icon>camera_alt</mat-icon></button>
+            <button mat-icon-button  [routerLink]="['/admin', countrySlug, voyageSlug, getJourSlug(jour), 'photos']"  matTooltip="Gérer les photos" class="text-gray-500 hover:text-purple-500"><mat-icon>camera_alt</mat-icon></button>
             <button mat-icon-button (click)="editJour(jour)" matTooltip="Modifier" class="text-gray-500 hover:text-blue-500"><mat-icon>edit</mat-icon></button>
             <button mat-button (click)="unpublish(jour)" class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Dépublier</button>
             <button mat-icon-button (click)="delete(jour)" matTooltip="Supprimer" class="text-gray-500 hover:text-red-500"><mat-icon>delete</mat-icon></button>
@@ -108,7 +108,7 @@
     <app-item-table [dataSource]="unpublishedJours" [columns]="['date', 'title', 'description', 'destinations']" [actionsTemplate]="unpublishedJourActions"></app-item-table>
     <ng-template #unpublishedJourActions let-jour>
         <div class="flex items-center gap-2">
-            <button mat-icon-button [routerLink]="['/admin','countries',countryId,'voyages',voyageId,'jours',jour.id,'photos']" matTooltip="Gérer les photos" class="text-gray-500 hover:text-purple-500"><mat-icon>camera_alt</mat-icon></button>
+            <button mat-icon-button  [routerLink]="['/admin', countrySlug, voyageSlug, getJourSlug(jour), 'photos']"  matTooltip="Gérer les photos" class="text-gray-500 hover:text-purple-500"><mat-icon>camera_alt</mat-icon></button>
             <button mat-icon-button (click)="editJour(jour)" matTooltip="Modifier" class="text-gray-500 hover:text-blue-500"><mat-icon>edit</mat-icon></button>
             <button mat-button (click)="publish(jour)" class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 hover:bg-green-200">Publier</button>
             <button mat-icon-button (click)="delete(jour)" matTooltip="Supprimer" class="text-gray-500 hover:text-red-500"><mat-icon>delete</mat-icon></button>
@@ -121,7 +121,7 @@
     <app-item-table [dataSource]="deletedJours" [columns]="['date', 'title', 'description', 'destinations']" [actionsTemplate]="deletedJourActions"></app-item-table>
     <ng-template #deletedJourActions let-jour>
         <div class="flex items-center gap-2">
-            <button mat-icon-button [routerLink]="['/admin','countries',countryId,'voyages',voyageId,'jours',jour.id,'photos']" matTooltip="Gérer les photos" class="text-gray-500 hover:text-purple-500"><mat-icon>camera_alt</mat-icon></button>
+            <button mat-icon-button  [routerLink]="['/admin', countrySlug, voyageSlug, getJourSlug(jour), 'photos']"  matTooltip="Gérer les photos" class="text-gray-500 hover:text-purple-500"><mat-icon>camera_alt</mat-icon></button>
             <button mat-button (click)="restore(jour)" class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 hover:bg-blue-200">Restaurer</button>
         </div>
     </ng-template>

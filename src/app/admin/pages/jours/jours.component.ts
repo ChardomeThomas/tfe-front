@@ -20,6 +20,8 @@ import { PhotoService } from '../../../core/services/photo.service';
 import { VoyageService } from '../../../core/services/voyage.service';
 import { Voyage } from '../../../interfaces/voyage.interface';
 import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { Country } from '../../../interfaces/country.interface';
+import { CountryService } from '../../../core/services/country.service';
 
 @Component({
   selector: 'app-admin-jours',
@@ -45,6 +47,8 @@ import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/bread
   styleUrl: './jours.component.css'
 })
 export class AdminJoursComponent implements OnInit {
+   countrySlug!: string;
+  voyageSlug!: string;
   countryId!: number;
   voyageId!: number;
   voyage: Voyage | null = null;
@@ -66,7 +70,8 @@ export class AdminJoursComponent implements OnInit {
     private dayService: DayService,
     private dayAdminService: DayAdminService,
     private photoService: PhotoService,
-    private voyageService: VoyageService
+    private voyageService: VoyageService,
+    private countryService: CountryService
   ) {
     // Initialize edit form
     this.editForm = new FormGroup({
@@ -84,23 +89,40 @@ export class AdminJoursComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.countryId = Number(this.route.snapshot.paramMap.get('countryId'));
-    this.voyageId = Number(this.route.snapshot.paramMap.get('voyageId'));
+    // Récupérer les slugs depuis l'URL
+    this.countrySlug = this.route.snapshot.paramMap.get('countrySlug')!;
+    this.voyageSlug = this.route.snapshot.paramMap.get('voyageSlug')!;
     
-    this.loadVoyageDetails();
-    this.loadJours();
-  }
+    console.log('Country slug:', this.countrySlug);
+    console.log('Voyage slug:', this.voyageSlug);
 
-  private loadVoyageDetails() {
-    this.voyageService.getVoyageById(this.voyageId).subscribe({
-      next: (voyage) => {
-        this.voyage = voyage;
+    // D'abord récupérer le pays
+    this.countryService.getCountryBySlug(this.countrySlug).subscribe({
+      next: (country) => {
+        this.countryId = country.id;
+        console.log('Country ID:', this.countryId);
+        
+        // Puis récupérer le voyage
+        this.loadVoyageFromSlug();
       },
       error: (error) => {
-        console.error('Erreur lors du chargement du voyage:', error);
+        console.error('Erreur récupération pays:', error);
       }
     });
   }
+
+private loadVoyageFromSlug() {
+  this.voyageService.getVoyageBySlug(this.countrySlug, this.voyageSlug).subscribe({
+    next: (voyage) => {
+      this.voyage = voyage;
+      this.voyageId = voyage.id; // Maintenant vous récupérez l'ID depuis l'objet voyage
+      this.loadJours(); // Une fois l'ID récupéré, vous pouvez charger les jours
+    },
+    error: (error) => {
+      console.error('Erreur lors du chargement du voyage:', error);
+    }
+  });
+}
 
   private loadJours() {
     this.dayAdminService.getAdminSummary(this.voyageId).subscribe({
@@ -258,5 +280,14 @@ export class AdminJoursComponent implements OnInit {
 
   onLogoClick() {
     this.router.navigate(['']);
+  }
+    getJourSlug(jour: any): string {
+    return jour.title.toLowerCase()
+      .replace(/[àáâäãå]/g, 'a')
+      .replace(/[èéêë]/g, 'e')
+      .replace(/[ç]/g, 'c')
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
   }
 }

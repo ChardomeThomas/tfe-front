@@ -1,51 +1,55 @@
-<header class="flex items-center justify-between px-4 py-2">
- <!-- Logo -->
- <div class="logo">
-   <img
-     routerLink="/"
-     src="assets/logo.png"
-     alt="Logo wandering soul"
-     class="w-[300px] h-[100px] sm:w-[150px] sm:h-auto cursor-pointer"
-   />
- </div>
+<header class="flex items-center justify-between px-4 py-3 shadow-md">
+  <a routerLink="/" class="shrink-0"> <img
+      src="assets/logo.png"
+      alt="Logo wandering soul"
+      class="h-12 w-auto sm:h-16 cursor-pointer" 
+      />
+  </a>
 
- <!-- Liens / boutons -->
- @if (!isLoggedIn()) {
-   <div class="flex items-center space-x-4">
-     <a routerLink="/" class="text-gray-800 hover:text-gray-600 cursor-pointer">
-       Accueil
-     </a>
-     <a routerLink="/login" class="px-4 py-2 text-black rounded-lg cursor-pointer">
-       Se connecter
-     </a>
-   </div>
- } @else {
-   <div class="flex items-center space-x-4">
-     <a routerLink="/" class="text-gray-800 hover:text-gray-600 cursor-pointer">
-       Accueil
-     </a>
-     
-     <a routerLink="/connected/profile" class="px-4 py-2 text-black rounded-lg cursor-pointer">
-       Profil
-     </a>
-     
-     @if (isAdmin()) {
-       <a routerLink="/admin" class="px-4 py-2 text-black bg-red-100 rounded-lg cursor-pointer">
-         🔧 Admin
-       </a>
-     }
-     
-     <span>|</span>
-     <button (click)="logout()" class="px-4 py-2 text-black rounded-lg cursor-pointer">
-       Se déconnecter
-     </button>
-   </div>
- }
+  <nav class="hidden sm:flex items-center space-x-6">
+    @if (!isLoggedIn()) {
+      <a routerLink="/" class="text-gray-700 hover:text-blue-600 transition-colors">Accueil</a>
+      <a routerLink="/login" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+        Se connecter
+      </a>
+    } @else {
+      <a routerLink="/" class="text-gray-700 hover:text-blue-600 transition-colors">Accueil</a>
+      <a routerLink="/connected/profile" class="text-gray-700 hover:text-blue-600 transition-colors">Profil</a>
+      
+      @if (isAdmin()) {
+        <a routerLink="/admin" class="text-red-700 bg-red-100 px-3 py-1 rounded-full text-sm font-semibold">
+          🔧 Admin
+        </a>
+      }
+      
+      <div class="h-6 w-px bg-gray-300"></div> <button (click)="logout()" class="text-gray-700 hover:text-red-600 transition-colors">
+        Se déconnecter
+      </button>
+    }
+  </nav>
+
+  <div class="sm:hidden">
+    <button (click)="toggleMobileMenu()" class="text-gray-800">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+      </svg>
+    </button>
+  </div>
 </header>
 
-<!-- Banner sur petits écrans -->
-<div class="banner bg-black text-white text-center p-2 sm:hidden">
- <p class="text-xs">
-   appareil non pris en charge, utilisez un appareil plus grand pour une meilleure expérience
- </p>
-</div>
+@if (isMobileMenuOpen) {
+  <nav class="sm:hidden bg-white shadow-lg px-4 pt-2 pb-4 flex flex-col space-y-3">
+    @if (!isLoggedIn()) {
+        <a routerLink="/" (click)="closeMobileMenu()">Accueil</a>
+        <a routerLink="/login" (click)="closeMobileMenu()">Se connecter</a>
+    } @else {
+        <a routerLink="/" (click)="closeMobileMenu()">Accueil</a>
+        <a routerLink="/connected/profile" (click)="closeMobileMenu()">Profil</a>
+        @if (isAdmin()) {
+            <a routerLink="/admin" (click)="closeMobileMenu()">🔧 Admin</a>
+        }
+        <hr/>
+        <button (click)="logout()">Se déconnecter</button>
+    }
+  </nav>
+}

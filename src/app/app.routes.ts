@@ -34,17 +34,26 @@ export const routes: Routes = [
       // Autres pages pour utilisateurs connectés
     ]
   },
+  // {
+  //   path: 'admin',
+  //   canActivate: [AuthGuard, RoleGuard],
+  //   children: [
+  //     { path: '', component: DashboardComponent },
+  //     { path: 'countries/:countryId/voyages', component: AdminVoyagesComponent },
+  //     { path: 'countries/:countryId/voyages/:voyageId/jours', component: AdminJoursComponent },
+  //     { path: 'countries/:countryId/voyages/:voyageId/jours/:jourId/photos', component: AdminPhotosComponent }
+  //   ]
+  // },
   {
     path: 'admin',
     canActivate: [AuthGuard, RoleGuard],
     children: [
       { path: '', component: DashboardComponent },
-      { path: 'countries/:countryId/voyages', component: AdminVoyagesComponent },
-      { path: 'countries/:countryId/voyages/:voyageId/jours', component: AdminJoursComponent },
-      { path: 'countries/:countryId/voyages/:voyageId/jours/:jourId/photos', component: AdminPhotosComponent }
+      { path: ':countrySlug', component: AdminVoyagesComponent },
+      { path: ':countrySlug/:voyageSlug', component: AdminJoursComponent },
+      { path: ':countrySlug/:voyageSlug/:jourSlug/photos', component: AdminPhotosComponent }
     ]
   },
-  
   // NOUVELLES ROUTES avec slugs - plus spécifiques en premier
   { path: ':countrySlug/:voyageSlug/jour/:jourId/photos', component: PhotosComponent }, // Photos avec ID (backward compatibility)
   { path: ':countrySlug/:voyageSlug/:jourSlug/photos', component: PhotosComponent }, // Photos avec slug (nouveau)

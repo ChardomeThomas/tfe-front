@@ -32,6 +32,7 @@ import { UserService } from '../../core/services/admin/userService.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ItemTableComponent } from '../../shared/components/item-table/item-table.component';
 import { BreadcrumbComponent } from '../../shared/components/breadcrumb/breadcrumb.component';
+import { CountryService } from '../../core/services/country.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -82,6 +83,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private countrySearchService: CountrySearchService,
+    private countryService: CountryService,
     private countryAdminService: CountryAdminService,
     private userService: UserService,
     private authService: AuthService,
@@ -299,5 +301,8 @@ this.countryAdminService.addCountry({ name, flag }).subscribe({
     this.selectedCountry = undefined;
     this.suggestions = [];
     this.countryForm.reset();
+  }
+  getCountrySlug(country: any): string {
+    return this.countryService.createSlug(country.name);
   }
 }
