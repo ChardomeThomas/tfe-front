@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
     }
     
     // Si pas connecté ou token expiré, rediriger vers login
-    console.log('Accès refusé - Token expiré ou utilisateur non connecté');
+    // console.log('Accès refusé - Token expiré ou utilisateur non connecté');
     this.authService.logout('');
     return false;
   }

@@ -27,9 +27,9 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     // Ajoutez ces logs de debug comme dans votre dashboard
-    console.log('Token info:', this.authService.getUserInfo());
-    console.log('User role:', this.authService.getUserRole());
-    console.log('User email:', this.authService.getUserEmail());
+    // console.log('Token info:', this.authService.getUserInfo());
+    // console.log('User role:', this.authService.getUserRole());
+    // console.log('User email:', this.authService.getUserEmail());
     
     this.loadData();
   }
@@ -40,7 +40,7 @@ export class ProfileComponent implements OnInit {
   }
 
 private loadCountriesWithTrips(): void {
-  console.log('Début de loadCountriesWithTrips');
+  // console.log('Début de loadCountriesWithTrips');
   this.newsletterService.getCountriesWithTrips()
     .pipe(
       catchError(err => {
@@ -52,7 +52,7 @@ private loadCountriesWithTrips(): void {
     )
     .subscribe({
       next: (countries) => {
-        console.log('SUCCESS: Données reçues pour countriesWithTrips:', countries);
+        // console.log('SUCCESS: Données reçues pour countriesWithTrips:', countries);
         this.countriesWithTrips = countries;
         this.checkIfDataLoaded();
       },
@@ -73,7 +73,7 @@ private loadCountriesWithTrips(): void {
       )
       .subscribe(subscriptions => {
         this.mySubscriptions = subscriptions;
-        console.log('mySubscriptions:', this.mySubscriptions);
+        // console.log('mySubscriptions:', this.mySubscriptions);
         this.checkIfDataLoaded();
       });
   }
@@ -98,7 +98,7 @@ private loadCountriesWithTrips(): void {
     }).subscribe({
       next: (response) => {
         if (response.success) {
-          console.log('Toggle pays réussi');
+          // console.log('Toggle pays réussi');
           // Recharge immédiatement la liste des abonnements pour mettre à jour l'état des cases
           this.loadMySubscriptions();
         }
@@ -116,7 +116,7 @@ private loadCountriesWithTrips(): void {
     }).subscribe({
       next: (response) => {
         if (response.success) {
-          console.log('Toggle voyage réussi');
+          // console.log('Toggle voyage réussi');
           this.loadMySubscriptions();
         }
       },

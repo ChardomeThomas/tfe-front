@@ -97,13 +97,13 @@ export class AdminVoyagesComponent implements OnInit {
     this.countryId = Number(this.route.snapshot.paramMap.get('countryId'));
     this.loadAdminSummary();
  this.countrySlug = this.route.snapshot.paramMap.get('countrySlug')!;
-    console.log('Country slug récupéré:', this.countrySlug);
+    // console.log('Country slug récupéré:', this.countrySlug);
 
     // Récupérer l'ID du pays à partir du slug
     this.countryService.getCountryBySlug(this.countrySlug).subscribe({
       next: (country) => {
         this.countryId = country.id;
-        console.log('Country ID trouvé:', this.countryId);
+        // console.log('Country ID trouvé:', this.countryId);
         this.loadAdminSummary(); // Maintenant on peut charger les voyages
       },
       error: (error) => {
@@ -129,9 +129,9 @@ export class AdminVoyagesComponent implements OnInit {
         this.voyages = summary.published.filter(v => v.pointOfInterestId === this.countryId);
         this.unpublishedVoyages = summary.drafts.filter(v => v.pointOfInterestId === this.countryId);
         this.deletedVoyages = summary.deleted.filter(v => v.pointOfInterestId === this.countryId);
-        console.log('Voyages actifs:', this.voyages);
-        console.log('Voyages non publiés:', this.unpublishedVoyages);
-        console.log('Voyages supprimés:', this.deletedVoyages);
+        // console.log('Voyages actifs:', this.voyages);
+        // console.log('Voyages non publiés:', this.unpublishedVoyages);
+        // console.log('Voyages supprimés:', this.deletedVoyages);
       });
   }
 
@@ -146,7 +146,7 @@ export class AdminVoyagesComponent implements OnInit {
       const startDate = this.formatDateToBackend(startDateValue);
       const endDate = this.formatDateToBackend(endDateValue);
 
-      console.log('Dates formatées pour le backend:', { startDate, endDate });
+      // console.log('Dates formatées pour le backend:', { startDate, endDate });
 
       this.voyageAdminService.addVoyage({
         pointOfInterestId: this.countryId,
@@ -165,7 +165,7 @@ export class AdminVoyagesComponent implements OnInit {
           this.loadAdminSummary();
           this.showSuccess = true;
           setTimeout(() => { this.showSuccess = false; }, 2000);
-          console.log('Voyage ajouté avec succès');
+          // console.log('Voyage ajouté avec succès');
         },
         error: (error) => {
           console.error('Erreur lors de l\'ajout du voyage:', error);
@@ -231,11 +231,11 @@ export class AdminVoyagesComponent implements OnInit {
   }
 
   restore(v: Voyage) {
-    console.log('Restauration du voyage:', v);
+    // console.log('Restauration du voyage:', v);
     this.voyageAdminService.restoreVoyage(v.id)
       .subscribe({
         next: (response) => {
-          console.log('Voyage restauré avec succès:', response);
+          // console.log('Voyage restauré avec succès:', response);
           this.loadAdminSummary();
         },
         error: (error) => {

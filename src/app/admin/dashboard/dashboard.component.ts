@@ -139,7 +139,7 @@ export class DashboardComponent implements OnInit {
     const roleFromToken = this.authService.getUserRole();
     if (roleFromToken) {
       this.currentUserRole = roleFromToken;
-      console.log('Current user role from token:', this.currentUserRole);
+      // console.log('Current user role from token:', this.currentUserRole);
       this.setAvailableRoles();
       return;
     }
@@ -147,12 +147,12 @@ export class DashboardComponent implements OnInit {
     // Si pas de rôle dans le token, récupérer via l'email
     const email = this.authService.getUserEmail();
     if (email) {
-      console.log('Fetching user role via email:', email);
+      // console.log('Fetching user role via email:', email);
       this.userService.getCurrentUser(email).subscribe({
         next: (user) => {
           if (user) {
             this.currentUserRole = user.role;
-            console.log('Current user role from API:', this.currentUserRole);
+            // console.log('Current user role from API:', this.currentUserRole);
             this.setAvailableRoles();
           } else {
             console.error('Utilisateur non trouvé avec l\'email:', email);
@@ -166,7 +166,7 @@ export class DashboardComponent implements OnInit {
       console.error('Impossible de récupérer l\'email du token');
     }
     
-    console.log('Token info:', this.authService.getUserInfo());
+    // console.log('Token info:', this.authService.getUserInfo());
   }
 
   private setAvailableRoles() {
@@ -177,17 +177,17 @@ export class DashboardComponent implements OnInit {
     } else {
       this.availableRoles = [];
     }
-    console.log('Available roles set to:', this.availableRoles);
+    // console.log('Available roles set to:', this.availableRoles);
   }
 
   canChangeRole(userRole: string): boolean {
     // Un utilisateur ne peut pas modifier son propre rôle
     // Et ne peut modifier que les rôles inférieurs au sien
-    console.log('canChangeRole check:', {
-      currentUserRole: this.currentUserRole,
-      userRole: userRole,
-      canChange: this.currentUserRole === 'ROLE_SUPERADMIN' ? userRole !== 'SUPERADMIN' : false
-    });
+    // console.log('canChangeRole check:', {
+    //   currentUserRole: this.currentUserRole,
+    //   userRole: userRole,
+    //   canChange: this.currentUserRole === 'ROLE_SUPERADMIN' ? userRole !== 'SUPERADMIN' : false
+    // });
     
     if (this.currentUserRole === 'ROLE_SUPERADMIN') {
       return userRole !== 'SUPERADMIN';

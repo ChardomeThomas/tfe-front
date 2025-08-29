@@ -22,7 +22,7 @@ export class AppComponent {
     // Vérifier le token toutes les 5 minutes (300000ms)
     this.tokenCheckInterval = setInterval(() => {
       if (this.authService.isLoggedIn()) {
-        console.log(`Token valide - Temps restant: ${this.authService.getTokenTimeRemaining()} minutes`);
+        // console.log(`Token valide - Temps restant: ${this.authService.getTokenTimeRemaining()} minutes`);
         this.authService.checkTokenValidity();
       }
     }, 5 * 60 * 1000);

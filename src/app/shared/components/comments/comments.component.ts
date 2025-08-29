@@ -2,7 +2,9 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CommentService } from '../../../core/services/comment.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Comment } from '../../../interfaces/comment.interface';
+import { UserService } from '../../../core/services/admin/userService.service';
 
 @Component({
   selector: 'app-comments',
@@ -17,12 +19,15 @@ export class CommentsComponent implements OnInit, OnChanges {
   newComment = '';
   comments: Comment[] = [];
   isLoading = false;
+  isAuthenticated = false;
 
-  constructor(private commentService: CommentService) {}
+  constructor(private commentService: CommentService, private authService: AuthService) {}
 
   ngOnInit() {
+    this.isAuthenticated = this.authService.isLoggedIn(); 
     if (this.photoId) {
       this.loadComments();
+      
     }
   }
 
@@ -33,6 +38,7 @@ export class CommentsComponent implements OnInit, OnChanges {
   }
 
   loadComments() {
+
     if (!this.photoId) return;
     
     this.isLoading = true;
@@ -41,7 +47,9 @@ export class CommentsComponent implements OnInit, OnChanges {
         // Filtrer les commentaires publiés et non supprimés
         this.comments = comments.filter(comment => 
           comment.published && !comment.deletedAt
+          
         );
+        
         this.isLoading = false;
       },
       error: (error) => {

@@ -63,7 +63,7 @@
   </div>
   
   <!-- Formulaire d'ajout de commentaire amélioré - fixe en bas -->
-  <div class="px-6 py-5 bg-white border-t border-gray-100 flex-shrink-0">
+  <div *ngIf="isAuthenticated" class="px-6 py-5 bg-white border-t border-gray-100 flex-shrink-0">
     <form (ngSubmit)="addComment()" class="space-y-3">
       <div class="relative">
         <textarea 

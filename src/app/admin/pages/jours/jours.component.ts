@@ -93,14 +93,14 @@ export class AdminJoursComponent implements OnInit {
     this.countrySlug = this.route.snapshot.paramMap.get('countrySlug')!;
     this.voyageSlug = this.route.snapshot.paramMap.get('voyageSlug')!;
     
-    console.log('Country slug:', this.countrySlug);
-    console.log('Voyage slug:', this.voyageSlug);
+    // console.log('Country slug:', this.countrySlug);
+    // console.log('Voyage slug:', this.voyageSlug);
 
     // D'abord récupérer le pays
     this.countryService.getCountryBySlug(this.countrySlug).subscribe({
       next: (country) => {
         this.countryId = country.id;
-        console.log('Country ID:', this.countryId);
+        // console.log('Country ID:', this.countryId);
         
         // Puis récupérer le voyage
         this.loadVoyageFromSlug();
@@ -131,9 +131,9 @@ private loadVoyageFromSlug() {
         this.unpublishedJours = summary.drafts;
         this.deletedJours = summary.deleted;
         
-        console.log('Jours actifs:', this.jours);
-        console.log('Jours non publiés:', this.unpublishedJours);
-        console.log('Jours supprimés:', this.deletedJours);
+        // console.log('Jours actifs:', this.jours);
+        // console.log('Jours non publiés:', this.unpublishedJours);
+        // console.log('Jours supprimés:', this.deletedJours);
       },
       error: (error) => {
         console.error('Erreur lors du chargement des jours:', error);
@@ -144,7 +144,7 @@ private loadVoyageFromSlug() {
   publish(jour: Jour) {
     this.dayAdminService.publishDay(jour.id).subscribe({
       next: () => {
-        console.log('Jour publié avec succès');
+        // console.log('Jour publié avec succès');
         this.loadJours(); // Recharger les données
       },
       error: (error) => {
@@ -156,7 +156,7 @@ private loadVoyageFromSlug() {
   unpublish(jour: Jour) {
     this.dayAdminService.unpublishDay(jour.id).subscribe({
       next: () => {
-        console.log('Jour dépublié avec succès');
+        // console.log('Jour dépublié avec succès');
         this.loadJours(); // Recharger les données
       },
       error: (error) => {
@@ -168,7 +168,7 @@ private loadVoyageFromSlug() {
   delete(jour: Jour) {
     this.dayAdminService.deleteDay(jour.id).subscribe({
       next: () => {
-        console.log('Jour supprimé avec succès');
+        // console.log('Jour supprimé avec succès');
         this.loadJours(); // Recharger les données
       },
       error: (error) => {
@@ -180,7 +180,7 @@ private loadVoyageFromSlug() {
   restore(jour: Jour) {
     this.dayAdminService.restoreDay(jour.id).subscribe({
       next: () => {
-        console.log('Jour restauré avec succès');
+        // console.log('Jour restauré avec succès');
         this.loadJours(); // Recharger les données
       },
       error: (error) => {
@@ -208,7 +208,7 @@ private loadVoyageFromSlug() {
 
       this.dayAdminService.updateDay(this.editingJour.id, updatedJour).subscribe({
         next: () => {
-          console.log('Jour modifié avec succès');
+          // console.log('Jour modifié avec succès');
           this.cancelEdit();
           this.loadJours(); // Recharger les données
         },
@@ -258,11 +258,11 @@ private loadVoyageFromSlug() {
         destinationNames: destinationNames // Changé de 'destinations' à 'destinationNames'
       };
 
-      console.log('Données envoyées à l\'API:', newJour); // Pour débugger
+      // console.log('Données envoyées à l\'API:', newJour); // Pour débugger
 
       this.dayAdminService.createDay(newJour).subscribe({
         next: (response: any) => {
-          console.log('Jour créé avec succès:', response);
+          // console.log('Jour créé avec succès:', response);
           this.resetCreateForm();
           this.showCreateForm = false;
           this.loadJours(); // Recharger les données
