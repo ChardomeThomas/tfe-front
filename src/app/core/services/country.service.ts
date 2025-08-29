@@ -1,52 +1,78 @@
-// src/app/core/services/country.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Country } from '../../../interfaces/country.interface';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { Country } from '../../interfaces/country.interface';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CountryService {
-  private apiUrl = 'https://thomas-chardome.be/ajout-json/countries.php';
-  private headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  private apiUrl = `${environment.apiUrl}/points-of-interest/countries`;
+  private countriesCache: Map<string, Country> = new Map();
+  private idToSlugMap: Map<number, string> = new Map();
 
   constructor(private http: HttpClient) {}
 
-  /** Pays non supprimés */
   getCountries(): Observable<Country[]> {
-    return this.http
-      .get<{ countries: Country[] }>(this.apiUrl)
-      .pipe(map(r => r.countries));
-  }
+    return this.http.get<any>(this.apiUrl).pipe(
+      map(r => {
+        let countries = [];
+        if (r && r.countries) {
+          countries = r.countries;
+        } else if (Array.isArray(r)) {
+          countries = r;
+        } else if (r && r.data) {
+          countries = r.data;
+        }
 
-  /** Pays supprimés (soft-delete) */
-  getDeletedCountries(): Observable<Country[]> {
-    return this.http
-      .get<{ countries: Country[] }>(`${this.apiUrl}?deleted=1`)
-      .pipe(map(r => r.countries));
-  }
+        // Construire le cache slug/country
+        countries.forEach((country: Country) => {
+          const slug = this.createSlug(country.name);
+          this.countriesCache.set(slug, country);
+          this.idToSlugMap.set(country.id, slug);
+        });
 
-  addCountry(country: { name: string; flag: string }): Observable<{ countryId: number }> {
-    return this.http.post<{ countryId: number }>(
-      this.apiUrl,
-      country,
-      { headers: this.headers }
+        return countries;
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la récupération des pays:', error);
+        return throwError(error);
+      })
     );
   }
 
-  publishCountry(id: number) {
-    return this.http.post(this.apiUrl, { action: 'publish', countryId: id }, { headers: this.headers });
+  // Nouvelles méthodes pour les slugs
+  getCountryBySlug(slug: string): Observable<Country> {
+    if (this.countriesCache.has(slug)) {
+      return of(this.countriesCache.get(slug)!);
+    }
+    return this.getCountries().pipe(
+      map(countries => countries.find(c => this.createSlug(c.name) === slug)!)
+    );
   }
 
-  unpublishCountry(id: number) {
-    return this.http.post(this.apiUrl, { action: 'unpublish', countryId: id }, { headers: this.headers });
+  getCountryIdBySlug(slug: string): Observable<number> {
+    return this.getCountryBySlug(slug).pipe(
+      map(country => country.id)
+    );
   }
 
-  deleteCountry(id: number) {
-    return this.http.post(this.apiUrl, { action: 'delete', countryId: id }, { headers: this.headers });
+  getCountrySlugById(id: number): Observable<string> {
+    if (this.idToSlugMap.has(id)) {
+      return of(this.idToSlugMap.get(id)!);
+    }
+    return this.getCountries().pipe(
+      map(() => this.idToSlugMap.get(id) || 'inconnu')
+    );
   }
 
-  restoreCountry(id: number) {
-    return this.http.post(this.apiUrl, { action: 'restore', countryId: id }, { headers: this.headers });
+  createSlug(name: string): string {
+    return name.toLowerCase()
+      .replace(/[àáâäãå]/g, 'a')
+      .replace(/[èéêë]/g, 'e')
+      .replace(/[ç]/g, 'c')
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
   }
 }

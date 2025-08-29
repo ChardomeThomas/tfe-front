@@ -1,0 +1,84 @@
+/* Styles spécifiques pour le composant comments */
+
+/* Animation d'apparition pour les commentaires */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.group {
+  animation: slideInUp 0.3s ease-out forwards;
+}
+
+/* Scrollbar personnalisée pour Webkit */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+  background-color: rgb(209 213 219);
+  border-radius: 3px;
+}
+
+.scrollbar-thumb-gray-300::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(156 163 175);
+}
+
+.scrollbar-track-gray-100::-webkit-scrollbar-track {
+  background-color: rgb(243 244 246);
+  border-radius: 3px;
+}
+
+/* Animation pour le focus du textarea */
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Animation pour le bouton hover */
+button:hover {
+  transform: translateY(-1px);
+}
+
+/* Animation de pulsation pour le loader */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Style pour l'avatar gradient */
+.bg-gradient-to-br {
+  background: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+
+/* Animation pour l'ajout/suppression de commentaires */
+.comment-item {
+  transition: all 0.3s ease;
+}
+
+.comment-item:hover {
+  background-color: #f8fafc;
+}
+
+/* Amélioration du bouton de suppression */
+.delete-button {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.comment-item:hover .delete-button {
+  opacity: 1;
+}

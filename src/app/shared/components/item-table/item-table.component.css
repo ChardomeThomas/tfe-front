@@ -3,7 +3,7 @@
 }
 
 .table-container table {
-  table-layout: fixed; /* Forcer une largeur fixe pour les colonnes */
+  table-layout: fixed; 
   width: 100%;
 }
 
@@ -11,27 +11,27 @@ mat-header-cell, mat-cell {
   text-align: center;
   vertical-align: middle;
   padding: 8px;
-  width: 200px; /* Largeur fixe pour aligner les colonnes */
+  width: 200px;
 }
 
 mat-header-cell:first-child, mat-cell:first-child {
-  width: 150px; /* Largeur spécifique pour la colonne des noms */
+  width: 150px; 
 }
 
 mat-header-cell.flag, mat-cell.flag {
-  width: 100px; /* Largeur fixe pour la colonne Drapeau */
+  width: 100px; 
 }
 
 mat-header-cell.name, mat-cell.name {
-  width: 200px; /* Largeur fixe pour la colonne Nom */
+  width: 200px; 
 }
 
 mat-header-cell.dates, mat-cell.dates {
-  width: 250px; /* Largeur fixe pour la colonne Période */
+  width: 250px;
 }
 
 mat-header-cell.actions, mat-cell.actions {
-  width: 150px; /* Largeur fixe pour la colonne Actions */
+  width: 150px; 
 }
 
 mat-header-row, mat-row {
@@ -40,4 +40,41 @@ mat-header-row, mat-row {
 
 .section-card {
   margin-bottom: 16px;
+}
+
+.text-muted {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Styles pour l'icône d'appareil photo */
+.camera-icon-container {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.camera-icon {
+  font-size: 24px;
+  transition: color 0.2s ease;
+}
+
+
+.photo-preview-floating {
+  opacity: 0;
+}
+
+.camera-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  /* Gardez le reste de vos styles existants */
+}
+
+.camera-icon {
+  font-size: 24px;
+  transition: color 0.2s ease;
+  line-height: 1; /* Cette ligne peut aider au centrage vertical */
 }

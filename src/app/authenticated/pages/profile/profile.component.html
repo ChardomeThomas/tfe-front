@@ -1,0 +1,83 @@
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="text-center mb-12">
+    <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-gray-900 dark:text-white mb-2">
+      Mon Profil 👤
+    </h1>
+    <p class="text-xl sm:text-2xl lg:text-3xl font-medium text-gray-700 dark:text-gray-200">
+      Gérez vos préférences de newsletter
+    </p>
+  </div>
+  <app-breadcrumb></app-breadcrumb>
+
+  <section class="mt-8 mb-8 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+    <div class="flex items-center justify-between mb-6 border-b pb-4 border-gray-200 dark:border-gray-700">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white flex items-center">
+        <svg class="w-8 h-8 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        </svg>
+        Préférences Newsletter
+      </h2>
+    </div>
+
+    <div *ngIf="loading" class="text-center py-8">
+      <span class="text-lg text-gray-600 dark:text-gray-400">Chargement...</span>
+    </div>
+
+    <div *ngIf="!loading && countriesWithTrips.length > 0" class="space-y-6">
+      <ng-container *ngFor="let country of countriesWithTrips">
+        <div class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-6 shadow-md transform transition-transform duration-200 hover:scale-[1.01] hover:shadow-xl">
+          
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 pb-4 border-b border-gray-200 dark:border-gray-600">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-0">
+              {{ country.countryName }}
+            </h3>
+            <label class="flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                [checked]="isSubscribedToCountry(country.countryId)"
+                (change)="onCountryToggle(country.countryId)"
+                class="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+              >
+              <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Tous les voyages
+              </span>
+            </label>
+          </div>
+
+          <div *ngIf="country.trips.length > 0" class="space-y-3">
+            <h4 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Voyages spécifiques :
+            </h4>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <ng-container *ngFor="let trip of country.trips">
+                <label class="flex items-center cursor-pointer p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <input 
+                    type="checkbox" 
+                    [checked]="isSubscribedToTrip(trip.tripId)"
+                    (change)="onTripToggle(trip.tripId)"
+                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                  >
+                  <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ trip.title }}
+                  </span>
+                </label>
+              </ng-container>
+            </div>
+          </div>
+
+          <div *ngIf="country.trips.length === 0" class="text-sm text-gray-500 dark:text-gray-400 italic mt-4">
+            Aucun voyage disponible pour ce pays.
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div *ngIf="!loading && countriesWithTrips.length === 0" class="text-center py-8">
+      <span class="text-lg text-gray-600 dark:text-gray-400">
+        Aucun pays disponible pour les abonnements newsletter.
+      </span>
+    </div>
+  </section>
+
+  </div>

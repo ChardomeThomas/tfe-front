@@ -1,31 +1,51 @@
-<app-background>
-  <section class="title">
-    <h1>Découvrez nos Voyages</h1>
-    <p class="font-200">en {{ countryName }}</p>
-  </section>
-<div class="test" *ngIf="voyages.length > 0; else noVoyages">
- 
- 
-    <div  *ngFor="let voyage of voyages">
-     <mat-card class="example-card" appearance="outlined">
-  <mat-card-header  class="center">
-    
- <h3>{{ voyage.name }}</h3>
-  </mat-card-header>
-  <img mat-card-image src="https://material.angular.dev/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
-  <mat-card-content>
-<p class="center"> du {{ voyage.date_debut }}  au {{ voyage.date_fin }}</p>
-      
-  </mat-card-content>
+<app-breadcrumb></app-breadcrumb>
 
-</mat-card>
-      
-</div>
- 
+<div *ngIf="voyages.length > 0; else noVoyages" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <h1 class="text-center text-4xl sm:text-5xl lg:text-7xl font-extrabold text-gray-900 dark:text-white mt-8 mb-4">Découvrez nos voyages 🗺️</h1>
+  <p class="text-center text-xl sm:text-2xl lg:text-3xl font-medium text-gray-700 dark:text-gray-200 mb-12">{{ countryName }}</p>
+  
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <ng-container *ngFor="let voyage of voyages">
+      <a [routerLink]="['/', getCountrySlug(), getVoyageSlug(voyage)]"
+        class="relative overflow-hidden rounded-2xl shadow-lg transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl group">
+        <div class="w-full h-80 flex items-center justify-center">
+          <img *ngIf="randomPhotos[voyage.id]?.url"
+            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            [src]="randomPhotos[voyage.id]?.url"
+            [alt]="voyage.title" />
+          <div *ngIf="!randomPhotos[voyage.id]?.url"
+            class="bg-gray-200 w-full h-full flex items-center justify-center text-gray-400 text-sm">
+            Aucune photo disponible
+          </div>
+        </div>
+        
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent p-6 flex flex-col justify-end text-white">
+          <h5 class="text-3xl font-extrabold tracking-tight text-white mb-2">{{ voyage.title }}</h5>
+          <div class="flex items-center gap-2 mb-2 text-sm font-medium">
+            <span>{{ voyage.startDate | date:'dd/MM/yyyy'}}</span>
+            <span>-</span>
+            <span>{{ voyage.endDate | date:'dd/MM/yyyy'}}</span>
+          </div>
+          <a
+            [routerLink]="['/', getCountrySlug(), getVoyageSlug(voyage)]"
+            class="inline-flex items-center justify-center px-4 py-2 mt-2 text-sm font-semibold rounded-full bg-white text-gray-900 hover:bg-gray-200 transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50">
+            Découvrir
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </a>
+        </div>
+      </a>
+    </ng-container>
+  </div>
 </div>
 
 <ng-template #noVoyages>
-  <p>Aucun voyage disponible pour ce pays.</p>
+  <div class="flex flex-col items-center justify-center h-[calc(100vh-200px)] text-center px-4">
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white mb-6 animate-pulse">Chargement en cours...</h1>
+    <div class="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 flex items-center justify-center">
+      <ng-lottie [options]="loaderOptions" class="w-full h-full"></ng-lottie>
+    </div>
+    <span class="text-lg sm:text-xl font-medium text-gray-500 dark:text-gray-400 mt-4 max-w-lg">
+      {{ displayText }}
+    </span>
+  </div>
 </ng-template>
-
-</app-background>

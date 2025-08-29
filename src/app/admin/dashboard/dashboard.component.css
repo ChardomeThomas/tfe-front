@@ -3,22 +3,7 @@ body{
 	z-index:1;
 }
 
-.logo{
-	z-index:5;
-  height: 40px;
 
-}
-.logo img{
-        margin: 0;
-        width: 150px;
-        height: 100%;
-        top: 0;
-        left: 0;
-        margin-left: 25px;
-        /* margin-top: 25px; */
-        display: block;
-        cursor: pointer;
-}
 
 mat-toolbar{
     background-color: lightsteelblue;
@@ -32,91 +17,6 @@ mat-toolbar{
   flex-direction: column;
   gap: 16px;
   padding: 16px;
+
   margin: 0 auto; /* Center the container */
-  max-width: 1200px; /* Add a maximum width */
 }
-
-
-
-.section-card {
-  padding: 16px;
-  margin-bottom: 16px; /* Add space below each card */
-}
-
-.table-container {
-  overflow: auto;
-}
-
-.country-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.add-country {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.autocomplete { position: relative; max-width: 300px;z-index: 1000;    }
-  ul {
-    position: absolute;
-    left: 0; right: 0;
-    background: #fff;
-    border: 1px solid #ccc;
-    max-height: 200px;
-    overflow: auto;
-    margin: 0; padding: 0;
-    list-style: none;
-  }
-  li {
-    display: flex;
-    align-items: center;
-    padding: 4px 8px;
-    cursor: pointer;
-  }
-  li img { margin-right: 8px; }
-  li:hover { background: #f0f0f0; }
-
-  /* liste pays */
-
-.mat-mdc-list-item-unscoped-content {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-.country-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.country-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.country-flag {
-  height: 24px;
-  width: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.country-info h4 {
-  margin: 0;
-  line-height: 1.5;
-}
-
-.delete-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
